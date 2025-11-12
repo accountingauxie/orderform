@@ -57,20 +57,16 @@
   <p id="result"></p>
 
   <script>
-    // === CONFIG ===
-    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec'; // untuk kirim order
-    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec'; // untuk ambil dropdown & harga
-
+    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
+    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec';
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
 
-    // === LOAD DROPDOWN DATA ===
     async function loadDropdowns() {
       try {
         const res = await fetch(`${databaseURL}?action=getData`);
         if (!res.ok) throw new Error("Gagal ambil data dari database");
         const data = await res.json();
-
         fillSelect('customer', data.customers);
         fillSelect('product', data.products);
         fillSelect('thickness', data.thicknesses);
@@ -82,21 +78,19 @@
     }
 
     function fillSelect(id, options) {
-      const select = document.getElementById(id);
-      select.innerHTML = '<option value="">-- Pilih --</option>';
+      const list = document.getElementById(id + 'List');
+      list.innerHTML = '';
       options.forEach(o => {
         const opt = document.createElement('option');
-        opt.value = opt.textContent = o;
-        select.appendChild(opt);
+        opt.value = o;
+        list.appendChild(opt);
       });
     }
 
-    // === LOOKUP UNIT PRICE ===
     async function updatePrice() {
       const product = document.getElementById('product').value;
       const thickness = document.getElementById('thickness').value;
       const colour = document.getElementById('colour').value;
-
       if (product && thickness && colour) {
         try {
           const res = await fetch(`${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`);
@@ -110,27 +104,22 @@
       }
     }
 
-    // === CALCULATE TOTAL ===
     function calculateTotal() {
       const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
       const meter = parseFloat(document.getElementById('meter').value) || 0;
       const qty = parseFloat(document.getElementById('quantity').value) || 0;
-
       const pricePerQty = unitPrice * meter;
       const totalPrice = pricePerQty * qty;
-
       document.getElementById('pricePerQty').value = pricePerQty.toFixed(2);
       document.getElementById('totalPrice').value = totalPrice.toFixed(2);
     }
 
-    // === EVENT LISTENERS ===
     document.getElementById('product').addEventListener('change', updatePrice);
     document.getElementById('thickness').addEventListener('change', updatePrice);
     document.getElementById('colour').addEventListener('change', updatePrice);
     document.getElementById('meter').addEventListener('input', calculateTotal);
     document.getElementById('quantity').addEventListener('input', calculateTotal);
 
-    // === SUBMIT FORM ===
     form.addEventListener('submit', e => {
       e.preventDefault();
       result.textContent = "⏳ Mengirim...";
@@ -145,5 +134,3 @@
 
     loadDropdowns();
   </script>
-</body>
-</html>
