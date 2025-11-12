@@ -39,25 +39,18 @@
   <p id="result"></p>
 
   <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
-  const form = document.getElementById('orderForm');
-  const result = document.getElementById('result');
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    result.textContent = "⏳ Mengirim...";
-    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-      .then(response => result.textContent = "✅ Order berhasil dikirim!")
-      .catch(error => result.textContent = "❌ Terjadi kesalahan: " + error.message);
-    form.reset();
-  });
-</script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
+    const form = document.getElementById('orderForm');
+    const result = document.getElementById('result');
 
     form.addEventListener('submit', e => {
       e.preventDefault();
       result.textContent = "⏳ Mengirim...";
       fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-        .then(response => result.textContent = "✅ Order berhasil dikirim!")
+        .then(response => {
+          if (!response.ok) throw new Error('Gagal kirim ke server');
+          result.textContent = "✅ Order berhasil dikirim!";
+        })
         .catch(error => result.textContent = "❌ Terjadi kesalahan: " + error.message);
       form.reset();
     });
