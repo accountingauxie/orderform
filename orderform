@@ -39,7 +39,7 @@
   <p id="result"></p>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
+    const scriptURL = '1VAzrgusC_jdLAB4IZe3qdaqAGXNIx4lm9GfdANxOx98';
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
 
