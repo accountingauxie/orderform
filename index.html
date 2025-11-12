@@ -103,8 +103,7 @@
 
   <script>
     // === CONFIGURATION ===
-    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec'; // web app utama (simpan order)
-    const databaseURL   = 'https://script.google.com/macros/s/AKfycbzYjm_JLXeJ5QmabOLY7JyyMDebRx_AwO3Hp2oC08HFH-i6KcNjW55jieulziC0at90ag/exec'; // web app database (validasi + harga)
+    const baseURL = 'https://script.google.com/macros/s/AKfycbYOUR_DEPLOYMENT_ID/exec'; // 🔁 Ganti dengan URL web app kamu
 
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
@@ -114,11 +113,17 @@
     // === LOAD DROPDOWN DATA ===
     async function loadDropdowns() {
       try {
-        const res = await fetch(`${databaseURL}?action=getData`);
+        const res = await fetch(`${baseURL}?action=getdata`);
         if (!res.ok) throw new Error("Gagal ambil data dari database");
         const data = await res.json();
 
-        // isi dropdown dengan Choices.js
+        // destroy dropdown lama kalau ada
+        if (choiceCustomer) choiceCustomer.destroy();
+        if (choiceProduct) choiceProduct.destroy();
+        if (choiceThickness) choiceThickness.destroy();
+        if (choiceColour) choiceColour.destroy();
+
+        // inisialisasi Choices.js baru
         choiceCustomer = new Choices('#customer', { searchEnabled: true, itemSelectText: '', shouldSort: false });
         choiceProduct = new Choices('#product', { searchEnabled: true, itemSelectText: '', shouldSort: false });
         choiceThickness = new Choices('#thickness', { searchEnabled: true, itemSelectText: '', shouldSort: false });
@@ -129,6 +134,7 @@
         choiceThickness.setChoices(data.thicknesses.map(v => ({ value: v, label: v })), 'value', 'label', true);
         choiceColour.setChoices(data.colours.map(v => ({ value: v, label: v })), 'value', 'label', true);
 
+        result.textContent = "";
       } catch (err) {
         console.error(err);
         result.textContent = "❌ Gagal memuat data dropdown!";
@@ -140,11 +146,10 @@
       const product = document.getElementById('product').value.trim();
       const thickness = document.getElementById('thickness').value.trim();
       const colour = document.getElementById('colour').value.trim();
-
       if (!product || !thickness || !colour) return;
 
       try {
-        const url = `${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`;
+        const url = `${baseURL}?action=getprice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`;
         console.log("🔍 Lookup URL:", url);
 
         const res = await fetch(url);
@@ -194,16 +199,10 @@
       result.textContent = "⏳ Mengirim...";
 
       try {
-        const res = await fetch(formSubmitURL, { method: 'POST', body: new FormData(form) });
+        const res = await fetch(baseURL, { method: 'POST', body: new FormData(form) });
         if (!res.ok) throw new Error('Gagal kirim ke server');
         result.textContent = "✅ Order berhasil dikirim!";
         form.reset();
-
-        // reset juga dropdown Choices
-        choiceCustomer.clearStore();
-        choiceProduct.clearStore();
-        choiceThickness.clearStore();
-        choiceColour.clearStore();
         await loadDropdowns();
       } catch (err) {
         console.error(err);
