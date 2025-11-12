@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Order Form</title>
+
+  <!-- === STYLING === -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,8 +23,9 @@
     }
     label {
       font-weight: bold;
+      margin-top: 5px;
     }
-    input, textarea, button {
+    input, textarea, select, button {
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
@@ -32,6 +36,7 @@
       color: white;
       border: none;
       cursor: pointer;
+      margin-top: 10px;
     }
     button:hover {
       background-color: #23497f;
@@ -43,29 +48,26 @@
     }
   </style>
 </head>
+
 <body>
   <h2>Form Pemesanan</h2>
-  <form id="orderForm">
 
+  <form id="orderForm">
     <!-- Customer -->
     <label>Customer:</label>
-    <input list="customerList" name="customer" id="customer" required>
-    <datalist id="customerList"></datalist>
+    <select name="customer" id="customer" required></select>
 
     <!-- Product -->
     <label>Product:</label>
-    <input list="productList" name="product" id="product" required>
-    <datalist id="productList"></datalist>
+    <select name="product" id="product" required></select>
 
     <!-- Thickness -->
     <label>Thickness:</label>
-    <input list="thicknessList" name="thickness" id="thickness" required>
-    <datalist id="thicknessList"></datalist>
+    <select name="thickness" id="thickness" required></select>
 
     <!-- Colour -->
     <label>Colour:</label>
-    <input list="colourList" name="colour" id="colour" required>
-    <datalist id="colourList"></datalist>
+    <select name="colour" id="colour" required></select>
 
     <!-- Meter -->
     <label>Meter:</label>
@@ -96,13 +98,18 @@
 
   <p id="result"></p>
 
+  <!-- === SCRIPT LIBRARY === -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
   <script>
-    // === CONFIG ===
+    // === CONFIGURATION ===
     const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec'; // web app utama (simpan order)
-    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec'; // web app database (validasi + harga)
+    const databaseURL   = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec'; // web app database (validasi + harga)
 
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
+
+    let choiceCustomer, choiceProduct, choiceThickness, choiceColour;
 
     // === LOAD DROPDOWN DATA ===
     async function loadDropdowns() {
@@ -110,44 +117,54 @@
         const res = await fetch(`${databaseURL}?action=getData`);
         if (!res.ok) throw new Error("Gagal ambil data dari database");
         const data = await res.json();
-        fillSelect('customer', data.customers);
-        fillSelect('product', data.products);
-        fillSelect('thickness', data.thicknesses);
-        fillSelect('colour', data.colours);
+
+        // isi dropdown dengan Choices.js
+        choiceCustomer = new Choices('#customer', { searchEnabled: true, itemSelectText: '', shouldSort: false });
+        choiceProduct = new Choices('#product', { searchEnabled: true, itemSelectText: '', shouldSort: false });
+        choiceThickness = new Choices('#thickness', { searchEnabled: true, itemSelectText: '', shouldSort: false });
+        choiceColour = new Choices('#colour', { searchEnabled: true, itemSelectText: '', shouldSort: false });
+
+        choiceCustomer.setChoices(data.customers.map(v => ({ value: v, label: v })), 'value', 'label', true);
+        choiceProduct.setChoices(data.products.map(v => ({ value: v, label: v })), 'value', 'label', true);
+        choiceThickness.setChoices(data.thicknesses.map(v => ({ value: v, label: v })), 'value', 'label', true);
+        choiceColour.setChoices(data.colours.map(v => ({ value: v, label: v })), 'value', 'label', true);
+
       } catch (err) {
         console.error(err);
         result.textContent = "❌ Gagal memuat data dropdown!";
       }
     }
 
-    function fillSelect(id, options) {
-      const list = document.getElementById(id + 'List');
-      list.innerHTML = '';
-      options.forEach(o => {
-        const opt = document.createElement('option');
-        opt.value = o;
-        list.appendChild(opt);
-      });
-    }
-
     // === LOOKUP UNIT PRICE ===
     async function updatePrice() {
-      const product = document.getElementById('product').value;
-      const thickness = document.getElementById('thickness').value;
-      const colour = document.getElementById('colour').value;
+      const product = document.getElementById('product').value.trim();
+      const thickness = document.getElementById('thickness').value.trim();
+      const colour = document.getElementById('colour').value.trim();
 
-      if (product && thickness && colour) {
-        try {
-          const res = await fetch(
-            `${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`
-          );
-          const price = await res.text();
-          document.getElementById('unitPrice').value = price || 0;
+      if (!product || !thickness || !colour) return;
+
+      try {
+        const url = `${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`;
+        console.log("🔍 Lookup URL:", url);
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const priceText = (await res.text()).trim();
+        console.log("💰 Lookup result (raw):", priceText);
+
+        const price = parseFloat(priceText.replace(/[^\d.-]/g, ''));
+        if (!isNaN(price) && price > 0) {
+          document.getElementById('unitPrice').value = price.toFixed(2);
           calculateTotal();
-        } catch (err) {
-          console.error(err);
-          document.getElementById('unitPrice').value = 0;
+        } else {
+          document.getElementById('unitPrice').value = '';
+          console.warn("⚠️ Harga tidak ditemukan untuk kombinasi:", product, thickness, colour);
         }
+
+      } catch (err) {
+        console.error("❌ Error saat lookup harga:", err);
+        document.getElementById('unitPrice').value = '';
       }
     }
 
@@ -156,30 +173,42 @@
       const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
       const meter = parseFloat(document.getElementById('meter').value) || 0;
       const qty = parseFloat(document.getElementById('quantity').value) || 0;
+
       const pricePerQty = unitPrice * meter;
       const totalPrice = pricePerQty * qty;
+
       document.getElementById('pricePerQty').value = pricePerQty.toFixed(2);
       document.getElementById('totalPrice').value = totalPrice.toFixed(2);
     }
 
     // === EVENT LISTENERS ===
-    document.getElementById('product').addEventListener('input', updatePrice);
-    document.getElementById('thickness').addEventListener('input', updatePrice);
-    document.getElementById('colour').addEventListener('input', updatePrice);
+    document.getElementById('product').addEventListener('change', updatePrice);
+    document.getElementById('thickness').addEventListener('change', updatePrice);
+    document.getElementById('colour').addEventListener('change', updatePrice);
     document.getElementById('meter').addEventListener('input', calculateTotal);
     document.getElementById('quantity').addEventListener('input', calculateTotal);
 
     // === SUBMIT FORM ===
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       result.textContent = "⏳ Mengirim...";
-      fetch(formSubmitURL, { method: 'POST', body: new FormData(form)})
-        .then(r => {
-          if (!r.ok) throw new Error('Gagal kirim ke server');
-          result.textContent = "✅ Order berhasil dikirim!";
-          form.reset();
-        })
-        .catch(err => result.textContent = "❌ Terjadi kesalahan: " + err.message);
+
+      try {
+        const res = await fetch(formSubmitURL, { method: 'POST', body: new FormData(form) });
+        if (!res.ok) throw new Error('Gagal kirim ke server');
+        result.textContent = "✅ Order berhasil dikirim!";
+        form.reset();
+
+        // reset juga dropdown Choices
+        choiceCustomer.clearStore();
+        choiceProduct.clearStore();
+        choiceThickness.clearStore();
+        choiceColour.clearStore();
+        await loadDropdowns();
+      } catch (err) {
+        console.error(err);
+        result.textContent = "❌ Terjadi kesalahan: " + err.message;
+      }
     });
 
     // === INIT ===
