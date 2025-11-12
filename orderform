@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    h2 { color: #2b5da4; text-align: center; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    label { font-weight: bold; }
+    input, textarea, button {
+      padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;
+    }
+    button {
+      background-color: #2b5da4; color: white; border: none; cursor: pointer;
+    }
+    button:hover { background-color: #23497f; }
+    #result { text-align: center; margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Form Pemesanan</h2>
+  <form id="orderForm">
+    <label>Nama:</label>
+    <input type="text" name="nama" required>
+
+    <label>Produk:</label>
+    <input type="text" name="produk" required>
+
+    <label>Jumlah:</label>
+    <input type="number" name="jumlah" required>
+
+    <label>Catatan tambahan:</label>
+    <textarea name="catatan" rows="3"></textarea>
+
+    <button type="submit">Kirim Order</button>
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
+    const form = document.getElementById('orderForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      result.textContent = "⏳ Mengirim...";
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(response => result.textContent = "✅ Order berhasil dikirim!")
+        .catch(error => result.textContent = "❌ Terjadi kesalahan: " + error.message);
+      form.reset();
+    });
+  </script>
+</body>
+</html>
