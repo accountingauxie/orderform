@@ -203,12 +203,25 @@ form.addEventListener('submit', async e => {
 
   try {
     const res = await fetch(baseURL, { method: 'POST', body: new FormData(form) });
-    if (!res.ok) throw new Error('Gagal kirim ke server');
+    const text = await res.text();
+
+    if (!res.ok || !text.includes('✅')) throw new Error(text);
+
+    // ✅ sukses → reset form
     result.textContent = "✅ Order berhasil dikirim!";
     form.reset();
+
+    // kosongkan field hasil perhitungan
+    document.getElementById('unitPrice').value = '';
+    document.getElementById('pricePerQty').value = '';
+    document.getElementById('totalPrice').value = '';
+
+    // reload dropdown agar segar
     await loadDropdowns();
+
   } catch (err) {
     console.error(err);
+    // ❌ gagal → form tetap dipertahankan
     result.textContent = "❌ Terjadi kesalahan: " + err.message;
   }
 });
