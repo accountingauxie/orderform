@@ -4,50 +4,90 @@
   <meta charset="UTF-8">
   <title>Order Form</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
-    h2 { color: #2b5da4; text-align: center; }
-    form { display: flex; flex-direction: column; gap: 10px; }
-    label { font-weight: bold; }
-    input, select, textarea, button {
-      padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    h2 {
+      color: #2b5da4;
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, textarea, button {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
     button {
-      background-color: #2b5da4; color: white; border: none; cursor: pointer;
+      background-color: #2b5da4;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    button:hover { background-color: #23497f; }
-    #result { text-align: center; margin-top: 15px; font-weight: bold; }
+    button:hover {
+      background-color: #23497f;
+    }
+    #result {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h2>Form Pemesanan</h2>
   <form id="orderForm">
+
+    <!-- Customer -->
     <label>Customer:</label>
-    <select name="customer" id="customer" required></select>
+    <input list="customerList" name="customer" id="customer" required>
+    <datalist id="customerList"></datalist>
 
+    <!-- Product -->
     <label>Product:</label>
-    <select name="product" id="product" required></select>
+    <input list="productList" name="product" id="product" required>
+    <datalist id="productList"></datalist>
 
+    <!-- Thickness -->
     <label>Thickness:</label>
-    <select name="thickness" id="thickness" required></select>
+    <input list="thicknessList" name="thickness" id="thickness" required>
+    <datalist id="thicknessList"></datalist>
 
+    <!-- Colour -->
     <label>Colour:</label>
-    <select name="colour" id="colour" required></select>
+    <input list="colourList" name="colour" id="colour" required>
+    <datalist id="colourList"></datalist>
 
+    <!-- Meter -->
     <label>Meter:</label>
     <input type="number" step="0.01" name="meter" id="meter" required>
 
+    <!-- Quantity -->
     <label>Quantity:</label>
     <input type="number" step="1" name="quantity" id="quantity" required>
 
+    <!-- Unit Price -->
     <label>Unit Price:</label>
     <input type="number" step="0.01" name="unitPrice" id="unitPrice" readonly>
 
+    <!-- Price per Quantity -->
     <label>Price per Quantity:</label>
     <input type="number" step="0.01" name="pricePerQty" id="pricePerQty" readonly>
 
+    <!-- Total Price -->
     <label>Total Price:</label>
     <input type="number" step="0.01" name="totalPrice" id="totalPrice" readonly>
 
+    <!-- Notes -->
     <label>Catatan tambahan:</label>
     <textarea name="catatan" rows="3"></textarea>
 
@@ -57,11 +97,14 @@
   <p id="result"></p>
 
   <script>
-    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
-    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec';
+    // === CONFIG ===
+    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec'; // web app utama (simpan order)
+    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec'; // web app database (validasi + harga)
+
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
 
+    // === LOAD DROPDOWN DATA ===
     async function loadDropdowns() {
       try {
         const res = await fetch(`${databaseURL}?action=getData`);
@@ -87,13 +130,17 @@
       });
     }
 
+    // === LOOKUP UNIT PRICE ===
     async function updatePrice() {
       const product = document.getElementById('product').value;
       const thickness = document.getElementById('thickness').value;
       const colour = document.getElementById('colour').value;
+
       if (product && thickness && colour) {
         try {
-          const res = await fetch(`${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`);
+          const res = await fetch(
+            `${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`
+          );
           const price = await res.text();
           document.getElementById('unitPrice').value = price || 0;
           calculateTotal();
@@ -104,6 +151,7 @@
       }
     }
 
+    // === CALCULATE TOTAL ===
     function calculateTotal() {
       const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
       const meter = parseFloat(document.getElementById('meter').value) || 0;
@@ -114,12 +162,14 @@
       document.getElementById('totalPrice').value = totalPrice.toFixed(2);
     }
 
-    document.getElementById('product').addEventListener('change', updatePrice);
-    document.getElementById('thickness').addEventListener('change', updatePrice);
-    document.getElementById('colour').addEventListener('change', updatePrice);
+    // === EVENT LISTENERS ===
+    document.getElementById('product').addEventListener('input', updatePrice);
+    document.getElementById('thickness').addEventListener('input', updatePrice);
+    document.getElementById('colour').addEventListener('input', updatePrice);
     document.getElementById('meter').addEventListener('input', calculateTotal);
     document.getElementById('quantity').addEventListener('input', calculateTotal);
 
+    // === SUBMIT FORM ===
     form.addEventListener('submit', e => {
       e.preventDefault();
       result.textContent = "⏳ Mengirim...";
@@ -132,5 +182,8 @@
         .catch(err => result.textContent = "❌ Terjadi kesalahan: " + err.message);
     });
 
+    // === INIT ===
     loadDropdowns();
   </script>
+</body>
+</html>
