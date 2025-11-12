@@ -102,7 +102,7 @@
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <script>
-const baseURL = 'https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec'; // Ganti ID kamu
+const baseURL = 'https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec';
 
 const form = document.getElementById('orderForm');
 const result = document.getElementById('result');
@@ -143,6 +143,77 @@ async function loadDropdowns() {
     result.textContent = "❌ Gagal memuat dropdown. Periksa URL base atau Apps Script.";
   }
 }
+
+// === LOOKUP UNIT PRICE ===
+async function updatePrice() {
+  const product = document.getElementById('product').value.trim();
+  const thickness = document.getElementById('thickness').value.trim();
+  const colour = document.getElementById('colour').value.trim();
+  if (!product || !thickness || !colour) return;
+
+  try {
+    const url = `${baseURL}?action=getprice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`;
+    console.log("🔍 Lookup URL:", url);
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const priceText = (await res.text()).trim();
+    console.log("💰 Lookup result (raw):", priceText);
+
+    const price = parseFloat(priceText.replace(/[^\d.-]/g, ''));
+    if (!isNaN(price) && price > 0) {
+      document.getElementById('unitPrice').value = price.toFixed(2);
+      calculateTotal();
+    } else {
+      document.getElementById('unitPrice').value = '';
+      console.warn("⚠️ Harga tidak ditemukan untuk kombinasi:", product, thickness, colour);
+    }
+
+  } catch (err) {
+    console.error("❌ Error saat lookup harga:", err);
+    document.getElementById('unitPrice').value = '';
+  }
+}
+
+// === CALCULATE TOTAL ===
+function calculateTotal() {
+  const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
+  const meter = parseFloat(document.getElementById('meter').value) || 0;
+  const qty = parseFloat(document.getElementById('quantity').value) || 0;
+
+  const pricePerQty = unitPrice * meter;
+  const totalPrice = pricePerQty * qty;
+
+  document.getElementById('pricePerQty').value = pricePerQty.toFixed(2);
+  document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+}
+
+// === EVENT LISTENERS ===
+document.getElementById('product').addEventListener('change', updatePrice);
+document.getElementById('thickness').addEventListener('change', updatePrice);
+document.getElementById('colour').addEventListener('change', updatePrice);
+document.getElementById('meter').addEventListener('input', calculateTotal);
+document.getElementById('quantity').addEventListener('input', calculateTotal);
+
+// === SUBMIT FORM ===
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  result.textContent = "⏳ Mengirim...";
+
+  try {
+    const res = await fetch(baseURL, { method: 'POST', body: new FormData(form) });
+    if (!res.ok) throw new Error('Gagal kirim ke server');
+    result.textContent = "✅ Order berhasil dikirim!";
+    form.reset();
+    await loadDropdowns();
+  } catch (err) {
+    console.error(err);
+    result.textContent = "❌ Terjadi kesalahan: " + err.message;
+  }
+});
+
+// === INIT ===
 loadDropdowns();
 </script>
 </body>
