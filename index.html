@@ -57,19 +57,28 @@
   <p id="result"></p>
 
   <script>
-    const backendURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec';
+    // === CONFIG ===
+    const formSubmitURL = 'https://script.google.com/macros/s/AKfycbwwcS77GD4HfajFjgAc1a0UA-C9MZ_b3A2o_UepfTvMTxFIOlvx6CaYsX5W8Rlyyg7U/exec'; // untuk kirim order
+    const databaseURL  = 'https://script.google.com/macros/s/AKfycbzEfnHL4GtM50ozi64jpOtHK65uUOoG-JSmyUdAQeBiryG_Dk_jTXiQSwEpealp6xVo6A/exec'; // untuk ambil dropdown & harga
+
     const form = document.getElementById('orderForm');
     const result = document.getElementById('result');
 
-    // === Load Dropdown Data ===
+    // === LOAD DROPDOWN DATA ===
     async function loadDropdowns() {
-      const res = await fetch(`${backendURL}?action=getData`);
-      const data = await res.json();
+      try {
+        const res = await fetch(`${databaseURL}?action=getData`);
+        if (!res.ok) throw new Error("Gagal ambil data dari database");
+        const data = await res.json();
 
-      fillSelect('customer', data.customers);
-      fillSelect('product', data.products);
-      fillSelect('thickness', data.thicknesses);
-      fillSelect('colour', data.colours);
+        fillSelect('customer', data.customers);
+        fillSelect('product', data.products);
+        fillSelect('thickness', data.thicknesses);
+        fillSelect('colour', data.colours);
+      } catch (err) {
+        console.error(err);
+        result.textContent = "❌ Gagal memuat data dropdown!";
+      }
     }
 
     function fillSelect(id, options) {
@@ -82,21 +91,26 @@
       });
     }
 
-    // === Lookup Unit Price ===
+    // === LOOKUP UNIT PRICE ===
     async function updatePrice() {
       const product = document.getElementById('product').value;
       const thickness = document.getElementById('thickness').value;
       const colour = document.getElementById('colour').value;
 
       if (product && thickness && colour) {
-        const res = await fetch(`${backendURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`);
-        const price = await res.text();
-        document.getElementById('unitPrice').value = price || 0;
-        calculateTotal();
+        try {
+          const res = await fetch(`${databaseURL}?action=getPrice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`);
+          const price = await res.text();
+          document.getElementById('unitPrice').value = price || 0;
+          calculateTotal();
+        } catch (err) {
+          console.error(err);
+          document.getElementById('unitPrice').value = 0;
+        }
       }
     }
 
-    // === Hitung Harga ===
+    // === CALCULATE TOTAL ===
     function calculateTotal() {
       const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
       const meter = parseFloat(document.getElementById('meter').value) || 0;
@@ -109,18 +123,18 @@
       document.getElementById('totalPrice').value = totalPrice.toFixed(2);
     }
 
-    // === Event Listeners ===
+    // === EVENT LISTENERS ===
     document.getElementById('product').addEventListener('change', updatePrice);
     document.getElementById('thickness').addEventListener('change', updatePrice);
     document.getElementById('colour').addEventListener('change', updatePrice);
     document.getElementById('meter').addEventListener('input', calculateTotal);
     document.getElementById('quantity').addEventListener('input', calculateTotal);
 
-    // === Submit Data ===
+    // === SUBMIT FORM ===
     form.addEventListener('submit', e => {
       e.preventDefault();
       result.textContent = "⏳ Mengirim...";
-      fetch(backendURL, { method: 'POST', body: new FormData(form)})
+      fetch(formSubmitURL, { method: 'POST', body: new FormData(form)})
         .then(r => {
           if (!r.ok) throw new Error('Gagal kirim ke server');
           result.textContent = "✅ Order berhasil dikirim!";
