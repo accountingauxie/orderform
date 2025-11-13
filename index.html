@@ -5,217 +5,286 @@
   <title>Order Form</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
+      max-width: 900px;
       margin: 40px auto;
     }
     h2 {
       color: #2b5da4;
       text-align: center;
     }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    label {
-      font-weight: bold;
-      margin-top: 5px;
-    }
-    input, textarea, select, button {
-      padding: 10px;
-      border-radius: 6px;
+    th, td {
       border: 1px solid #ccc;
-      font-size: 14px;
+      padding: 8px;
+      text-align: left;
     }
-    button {
-      background-color: #2b5da4;
+    th {
+      background: #f3f3f3;
+    }
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #addLine {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    #addLine:hover {
+      background: #1e7e34;
+    }
+    button[type="submit"] {
+      background: #2b5da4;
+      padding: 10px 15px;
+      border-radius: 5px;
       color: white;
       border: none;
       cursor: pointer;
-      margin-top: 10px;
     }
-    button:hover {
-      background-color: #23497f;
+    .summary-box {
+      margin-top: 20px;
+      width: 300px;
+      margin-left: auto;
     }
-    #result {
-      text-align: center;
-      margin-bottom: 15px;
+    .summary-box table {
+      width: 100%;
+      border: none;
+    }
+    .summary-box td {
+      padding: 6px;
+      font-size: 14px;
+    }
+    .summary-label {
+      text-align: right;
+    }
+    .summary-total {
       font-weight: bold;
+      font-size: 15px;
     }
   </style>
 </head>
 
 <body>
-  <h2>Form Pemesanan</h2>
-  <p id="result"></p>
 
-  <form id="orderForm">
-    <label>Customer:</label>
-    <select name="customer" id="customer" required></select>
+<h2>Form Pemesanan</h2>
+<p id="result"></p>
 
-    <label>Product:</label>
-    <select name="product" id="product" required></select>
+<form id="orderForm">
+  <label>Date</label>
+  <input type="date" id="date" name="date" required>
 
-    <label>Thickness:</label>
-    <select name="thickness" id="thickness" required></select>
+  <label>Customer</label>
+  <select name="customer" id="customer" required></select>
 
-    <label>Colour:</label>
-    <select name="colour" id="colour" required></select>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Product</th>
+        <th>Meter</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Price/Qty</th>
+        <th>Total Price</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
 
-    <label>Meter:</label>
-    <input type="number" step="0.01" name="meter" id="meter" required>
+    <tbody id="orderBody"></tbody>
+  </table>
 
-    <label>Quantity:</label>
-    <input type="number" step="1" name="quantity" id="quantity" required>
+  <button type="button" id="addLine">+ Tambah Baris</button>
 
-    <label>Unit Price:</label>
-    <input type="number" step="0.01" name="unitPrice" id="unitPrice" readonly>
+  <div class="summary-box">
+    <table>
+      <tr>
+        <td class="summary-label">Sub Total</td>
+        <td><input type="number" id="subTotal" name="subTotal" readonly></td>
+      </tr>
+      <tr>
+        <td class="summary-label">PPN 11%</td>
+        <td><input type="number" id="ppn" name="ppn" readonly></td>
+      </tr>
+      <tr>
+        <td class="summary-label summary-total">Grand Total</td>
+        <td><input type="number" id="grandTotal" name="grandTotal" readonly></td>
+      </tr>
+    </table>
+  </div>
 
-    <label>Price per Quantity:</label>
-    <input type="number" step="0.01" name="pricePerQty" id="pricePerQty" readonly>
+  <label>Catatan tambahan:</label>
+  <textarea name="catatan" rows="3"></textarea>
 
-    <label>Total Price:</label>
-    <input type="number" step="0.01" name="totalPrice" id="totalPrice" readonly>
+  <button type="submit">Kirim Order</button>
+</form>
 
-    <label>Catatan tambahan:</label>
-    <textarea name="catatan" rows="3"></textarea>
 
-    <button type="submit">Kirim Order</button>
-  </form>
-
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <script>
-const baseURL = 'https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec';
+const baseURL =
+ "https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec";
 
-const form = document.getElementById('orderForm');
-const result = document.getElementById('result');
+let choiceCustomer;
+let productDropdowns = [];
+let productList = [];
 
-let choiceCustomer, choiceProduct, choiceThickness, choiceColour;
+const orderBody = document.getElementById("orderBody");
+const result = document.getElementById("result");
 
-// === Load Dropdown ===
+// Set default date
+document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+// ==================== LOAD DATA ====================
 async function loadDropdowns() {
-  result.textContent = "⏳ Loading data...";
-  try {
-    const res = await fetch(`${baseURL}?action=getdata`, { cache: "no-store" });
-    const data = await res.json();
-    console.log("✅ Data loaded:", data);
+  const res = await fetch(`${baseURL}?action=getdata`);
+  const data = await res.json();
+  productList = data.products;
 
-    if (!data.customers || !data.products) throw new Error("Data kosong");
+  choiceCustomer = new Choices("#customer", { shouldSort: false });
+  choiceCustomer.setChoices(
+    data.customers.map(v => ({ value: v, label: v })),
+    "value", "label", true
+  );
 
-    const choiceOptions = {
-      searchEnabled: true,
-      shouldSort: false,
-      searchResultLimit: 20,
-      fuseOptions: { includeScore: false, threshold: 0.0, distance: 1 }
-    };
-
-    if (!choiceCustomer) choiceCustomer = new Choices('#customer', choiceOptions);
-    if (!choiceProduct) choiceProduct = new Choices('#product', choiceOptions);
-    if (!choiceThickness) choiceThickness = new Choices('#thickness', choiceOptions);
-    if (!choiceColour) choiceColour = new Choices('#colour', choiceOptions);
-
-    // Clear old data
-    choiceCustomer.clearChoices();
-    choiceProduct.clearChoices();
-    choiceThickness.clearChoices();
-    choiceColour.clearChoices();
-
-    // Fill with new data
-    choiceCustomer.setChoices(data.customers.map(v => ({ value: v, label: v })), 'value', 'label', true);
-    choiceProduct.setChoices(data.products.map(v => ({ value: v, label: v })), 'value', 'label', true);
-    choiceThickness.setChoices(data.thicknesses.map(v => ({ value: v, label: v })), 'value', 'label', true);
-    choiceColour.setChoices(data.colours.map(v => ({ value: v, label: v })), 'value', 'label', true);
-
-    result.textContent = "";
-  } catch (err) {
-    console.error("❌ Dropdown error:", err);
-    result.textContent = "❌ Gagal memuat dropdown. Periksa URL base atau Apps Script.";
-  }
+  // Default 3 rows
+  addLine(); addLine(); addLine();
 }
 
-// === Lookup Harga ===
-async function updatePrice() {
-  const product = document.getElementById('product').value.trim();
-  const thickness = document.getElementById('thickness').value.trim();
-  const colour = document.getElementById('colour').value.trim();
-  if (!product || !thickness || !colour) return;
+// ==================== ADD LINE ====================
+function addLine() {
+  const rowIndex = orderBody.children.length + 1;
 
-  try {
-    const url = `${baseURL}?action=getprice&product=${encodeURIComponent(product)}&thickness=${encodeURIComponent(thickness)}&colour=${encodeURIComponent(colour)}`;
-    console.log("🔍 Lookup URL:", url);
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="lineNo">${rowIndex}</td>
+    <td><select class="product-select" name="product_${rowIndex}"></select></td>
+    <td><input type="number" step="0.01" class="meter" name="meter_${rowIndex}"></td>
+    <td><input type="number" step="1" class="qty" name="qty_${rowIndex}"></td>
+    <td><input type="number" readonly class="unitPrice" name="unit_${rowIndex}"></td>
+    <td><input type="number" readonly class="pricePerQty" name="ppq_${rowIndex}"></td>
+    <td><input type="number" readonly class="totalPrice" name="total_${rowIndex}"></td>
+    <td><button type="button" class="delete-btn">❌</button></td>
+  `;
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  orderBody.appendChild(tr);
 
-    const priceText = (await res.text()).trim();
-    const price = parseFloat(priceText.replace(/[^\d.-]/g, ''));
-    if (!isNaN(price) && price > 0) {
-      document.getElementById('unitPrice').value = price.toFixed(2);
-      calculateTotal();
-    } else {
-      document.getElementById('unitPrice').value = '';
-    }
+  // Attach dropdown
+  const select = tr.querySelector(".product-select");
+  const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
+  productDropdowns.push(choice);
+  choice.setChoices(productList.map(v => ({ value: v, label: v })), "value", "label", true);
 
-  } catch (err) {
-    console.error("❌ Error harga:", err);
-    document.getElementById('unitPrice').value = '';
-  }
+  // Event listeners
+  select.addEventListener("change", () => updatePrice(tr));
+  tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
+  tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
+  tr.querySelector(".delete-btn").addEventListener("click", () => deleteRow(tr));
 }
 
-// === Hitung Total ===
-function calculateTotal() {
-  const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
-  const meter = parseFloat(document.getElementById('meter').value) || 0;
-  const qty = parseFloat(document.getElementById('quantity').value) || 0;
-
-  const pricePerQty = unitPrice * meter;
-  const totalPrice = pricePerQty * qty;
-
-  document.getElementById('pricePerQty').value = pricePerQty.toFixed(2);
-  document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+// ==================== DELETE ROW ====================
+function deleteRow(tr) {
+  tr.remove();
+  updateLineNumbers();
+  calculateSummary();
 }
 
-// === Event Listeners ===
-document.getElementById('product').addEventListener('change', updatePrice);
-document.getElementById('thickness').addEventListener('change', updatePrice);
-document.getElementById('colour').addEventListener('change', updatePrice);
-document.getElementById('meter').addEventListener('input', calculateTotal);
-document.getElementById('quantity').addEventListener('input', calculateTotal);
+// ==================== UPDATE LINE NUMBERS ====================
+function updateLineNumbers() {
+  [...orderBody.children].forEach((row, idx) => {
+    row.querySelector(".lineNo").textContent = idx + 1;
+  });
+}
 
-// === Submit ===
-form.addEventListener('submit', async e => {
+// ==================== SORTABLE DRAG ====================
+Sortable.create(orderBody, {
+  handle: ".lineNo",
+  animation: 150,
+  onEnd: updateLineNumbers
+});
+
+// ==================== LOOKUP PRICE ====================
+async function updatePrice(tr) {
+  const product = tr.querySelector(".product-select").value;
+  const unitInput = tr.querySelector(".unitPrice");
+
+  const res = await fetch(`${baseURL}?action=getprice&product=${encodeURIComponent(product)}`);
+  const price = parseFloat((await res.text()).replace(/[^\d.-]/g, ""));
+
+  unitInput.value = isNaN(price) ? "" : price.toFixed(2);
+  calculateRow(tr);
+}
+
+// ==================== CALCULATE ROW ====================
+function calculateRow(tr) {
+  const meter = parseFloat(tr.querySelector(".meter").value) || 0;
+  const qty = parseFloat(tr.querySelector(".qty").value) || 0;
+  const unit = parseFloat(tr.querySelector(".unitPrice").value) || 0;
+
+  const ppq = meter * unit;
+  const total = ppq * qty;
+
+  tr.querySelector(".pricePerQty").value = ppq.toFixed(2);
+  tr.querySelector(".totalPrice").value = total.toFixed(2);
+
+  calculateSummary();
+}
+
+// ==================== SUMMARY ====================
+function calculateSummary() {
+  let subtotal = 0;
+  document.querySelectorAll(".totalPrice").forEach(input => {
+    subtotal += parseFloat(input.value) || 0;
+  });
+
+  const ppn = subtotal * 0.11;
+  const grand = subtotal + ppn;
+
+  document.getElementById("subTotal").value = subtotal.toFixed(2);
+  document.getElementById("ppn").value = ppn.toFixed(2);
+  document.getElementById("grandTotal").value = grand.toFixed(2);
+}
+
+// ==================== SUBMIT ====================
+document.getElementById("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
-  result.textContent = "⏳ Mengirim...";
+  result.textContent = "⏳ Sending...";
 
-  try {
-    const res = await fetch(baseURL, { method: 'POST', body: new FormData(form) });
-    const text = await res.text();
+  const res = await fetch(baseURL, {
+    method: "POST",
+    body: new FormData(orderForm)
+  });
 
-    if (!res.ok || !text.includes('✅')) throw new Error(text);
+  const txt = await res.text();
 
+  if (txt.includes("✅")) {
     result.textContent = "✅ Order berhasil dikirim!";
-    form.reset();
-    document.getElementById('unitPrice').value = '';
-    document.getElementById('pricePerQty').value = '';
-    document.getElementById('totalPrice').value = '';
-
-    choiceCustomer.removeActiveItems();
-    choiceProduct.removeActiveItems();
-    choiceThickness.removeActiveItems();
-    choiceColour.removeActiveItems();
-
-  } catch (err) {
-    console.error(err);
-    result.textContent = "❌ Terjadi kesalahan: " + err.message;
+  } else {
+    result.textContent = "❌ Error: " + txt;
   }
 });
 
-// === Init ===
+// INIT
 loadDropdowns();
+document.getElementById("addLine").addEventListener("click", addLine);
 </script>
+
 </body>
 </html>
