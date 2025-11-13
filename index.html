@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Order Form</title>
+  <title>Order Form (Xero Style + Rupiah)</title>
 
+  <!-- Choices + Sortable -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
@@ -13,90 +14,80 @@
       max-width: 900px;
       margin: 40px auto;
     }
-    h2 {
-      color: #2b5da4;
-      text-align: center;
-    }
+    h2 { color: #2b5da4; text-align: center; }
 
-    /* Customer inline layout */
+    /* Customer row */
     .customer-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
-    .customer-row label {
-      font-weight: bold;
-      white-space: nowrap;
-    }
+    .customer-row label { font-weight: bold; }
 
-    table {
+    /* Xero Table Style */
+    .xero-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 15px;
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
+    .xero-table th {
+      background: #f7f7f7;
+      color: #555;
+      font-weight: 600;
+      border-bottom: 2px solid #e5e5e5;
+      padding: 10px;
     }
-    th {
-      background: #f3f3f3;
+    .xero-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #ececec;
     }
 
-    /* Resize columns */
-    th.col-product, td.col-product {
-      width: 280px;
-    }
-    th.col-meter, td.col-meter {
-      width: 80px;
-    }
-    th.col-qty, td.col-qty {
-      width: 70px;
-    }
-    th.col-unit, td.col-unit {
-      width: 110px;
-    }
-    th.col-ppq, td.col-ppq {
-      width: 110px;
-    }
-    th.col-total, td.col-total {
-      width: 110px;
-    }
-    th.col-delete, td.col-delete {
-      width: 60px;
-      text-align: center;
+    .col-drag { width: 22px; font-size: 18px; cursor: grab; }
+    .col-item { width: 180px; }
+    .col-desc { width: 300px; }
+    .col-qty { width: 70px; }
+    .col-price { width: 110px; text-align: right; }
+    .col-amount { width: 130px; text-align: right; }
+    .col-delete { width: 40px; text-align: center; }
+
+    .xero-table input, .xero-table select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #d2d2d2;
+      border-radius: 4px;
+      font-size: 13px;
+      box-sizing: border-box;
+      text-align: right;
     }
 
     .delete-btn {
-      background: #dc3545;
-      color: white;
+      background: none;
       border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
+      font-size: 18px;
+      color: #c00;
       cursor: pointer;
     }
+
     #addLine {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      cursor: pointer;
-      border-radius: 5px;
       margin-top: 10px;
+      background: #e7f1ff;
+      border: 1px solid #c7dcff;
+      padding: 8px 14px;
+      border-radius: 4px;
+      color: #2b5da4;
+      font-weight: 600;
+      cursor: pointer;
     }
-    #addLine:hover {
-      background: #1e7e34;
-    }
+
     button[type="submit"] {
+      margin-top: 20px;
       background: #2b5da4;
-      padding: 10px 15px;
+      padding: 10px 20px;
+      border: none;
       border-radius: 5px;
       color: white;
-      border: none;
       cursor: pointer;
-      margin-top: 15px;
     }
 
     .summary-box {
@@ -104,20 +95,9 @@
       width: 300px;
       margin-left: auto;
     }
-    .summary-box table {
-      width: 100%;
-      border: none;
-    }
-    .summary-box td {
-      padding: 6px;
-      font-size: 14px;
-    }
-    .summary-label {
-      text-align: right;
-    }
-    .summary-total {
-      font-weight: bold;
-    }
+    .summary-box table { width: 100%; }
+    .summary-label { text-align: right; }
+    .summary-total { font-weight: bold; font-size: 16px; }
   </style>
 </head>
 
@@ -127,52 +107,49 @@
 <p id="result"></p>
 
 <form id="orderForm">
-  
   <label>Date</label>
-  <input type="date" id="date" name="date" required>
+  <input type="date" id="date" required>
 
   <div class="customer-row">
     <label>Customer</label>
-    <select name="customer" id="customer" required></select>
+    <select id="customer" name="customer" required></select>
   </div>
 
-  <table id="orderTable">
+  <table class="xero-table">
     <thead>
       <tr>
-        <th>No</th>
-        <th class="col-product">Product</th>
-        <th class="col-meter">Meter</th>
+        <th class="col-drag"></th>
+        <th class="col-item">Item</th>
+        <th class="col-desc">Description</th>
         <th class="col-qty">Qty</th>
-        <th class="col-unit">Unit Price</th>
-        <th class="col-ppq">Price/Qty</th>
-        <th class="col-total">Total Price</th>
-        <th class="col-delete">Delete</th>
+        <th class="col-price">Price</th>
+        <th class="col-amount">Amount</th>
+        <th class="col-delete"></th>
       </tr>
     </thead>
-
     <tbody id="orderBody"></tbody>
   </table>
 
-  <button type="button" id="addLine">+ Tambah Baris</button>
+  <button type="button" id="addLine">+ Add row</button>
 
   <div class="summary-box">
     <table>
       <tr>
         <td class="summary-label">Sub Total</td>
-        <td><input type="number" id="subTotal" name="subTotal" readonly></td>
+        <td><input type="text" id="subTotal" readonly data-value="0"></td>
       </tr>
       <tr>
         <td class="summary-label">PPN 11%</td>
-        <td><input type="number" id="ppn" name="ppn" readonly></td>
+        <td><input type="text" id="ppn" readonly data-value="0"></td>
       </tr>
       <tr>
         <td class="summary-label summary-total">Grand Total</td>
-        <td><input type="number" id="grandTotal" name="grandTotal" readonly></td>
+        <td><input type="text" id="grandTotal" readonly data-value="0"></td>
       </tr>
     </table>
   </div>
 
-  <label>Catatan tambahan:</label>
+  <label>Catatan tambahan</label>
   <textarea name="catatan" rows="3"></textarea>
 
   <button type="submit">Kirim Order</button>
@@ -182,155 +159,160 @@
 
 <script>
 const baseURL =
- "https://script.google.com/macros/s/AKfycbw4089ihlGGnN2BIug38tZZZshFh5W-UmUbLj2TEWl2B8xCjzlwG1RuPwn4G-keND7QFQ/exec";
+ "https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec";
 
-let choiceCustomer;
-let productDropdowns = [];
 let productList = [];
+let productDropdowns = [];
 
-const orderBody = document.getElementById("orderBody");
-const result = document.getElementById("result");
-
-// Default date
 document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
-// LOAD DATA ===================================
-async function loadDropdowns() {
-  const res = await fetch(`${baseURL}?action=getdata`);
-  const data = await res.json();
-  productList = data.products;
-
-  choiceCustomer = new Choices("#customer", { shouldSort: false });
-  choiceCustomer.setChoices(
-    data.customers.map(v => ({ value: v, label: v })),
-    "value", "label", true
-  );
-
-  addLine(); addLine(); addLine(); // Default 3 rows
+// === FORMAT RUPIAH ===
+function formatRupiah(num) {
+  if (!num || isNaN(num)) return "Rp 0";
+  return "Rp " + Number(num).toLocaleString("id-ID");
 }
 
-// ADD LINE ===================================
+// LOAD DROPDOWNS ======================
+async function loadDropdowns() {
+  const res = await fetch(baseURL + "?action=getdata");
+  const data = await res.json();
+
+  productList = data.products;
+
+  const choiceCustomer = new Choices("#customer", { shouldSort: false });
+  choiceCustomer.setChoices(
+    data.customers.map(v => ({value:v,label:v})),
+    "value","label",true
+  );
+
+  addLine(); addLine(); addLine();
+}
+
+// ADD ROW =============================
 function addLine() {
-  const rowIndex = orderBody.children.length + 1;
+  const idx = document.querySelectorAll("#orderBody tr").length + 1;
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td class="lineNo">${rowIndex}</td>
-    <td class="col-product"><select class="product-select" name="product_${rowIndex}"></select></td>
-    <td class="col-meter"><input type="number" step="0.01" class="meter" name="meter_${rowIndex}"></td>
-    <td class="col-qty"><input type="number" step="1" class="qty" name="qty_${rowIndex}"></td>
-    <td class="col-unit"><input type="number" readonly class="unitPrice" name="unit_${rowIndex}"></td>
-    <td class="col-ppq"><input type="number" readonly class="pricePerQty" name="ppq_${rowIndex}"></td>
-    <td class="col-total"><input type="number" readonly class="totalPrice" name="total_${rowIndex}"></td>
-    <td class="col-delete"><button type="button" class="delete-btn">❌</button></td>
+    <td class="col-drag">⋮⋮</td>
+
+    <td class="col-item">
+      <select class="product-select" name="product_${idx}"></select>
+    </td>
+
+    <td class="col-desc">
+      <input type="text" name="desc_${idx}">
+    </td>
+
+    <td class="col-qty">
+      <input type="number" step="1" class="qty" name="qty_${idx}">
+    </td>
+
+    <td class="col-price">
+      <input type="text" readonly class="unitPrice" name="unit_${idx}" data-value="">
+    </td>
+
+    <td class="col-amount">
+      <input type="text" readonly class="totalPrice" name="total_${idx}" data-value="">
+    </td>
+
+    <td class="col-delete">
+      <button type="button" class="delete-btn">🗑</button>
+    </td>
   `;
 
   orderBody.appendChild(tr);
 
   // Product dropdown
   const select = tr.querySelector(".product-select");
-  const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
+  const choice = new Choices(select, { searchEnabled:true, shouldSort:false });
   productDropdowns.push(choice);
-  choice.setChoices(productList.map(v => ({ value: v, label: v })), "value", "label", true);
+  choice.setChoices(productList.map(v => ({value:v,label:v})), "value","label",true);
 
   select.addEventListener("change", () => updatePrice(tr));
-  tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
   tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
-  tr.querySelector(".delete-btn").addEventListener("click", () => deleteRow(tr));
+  tr.querySelector(".delete-btn").addEventListener("click", () => tr.remove());
 }
 
-// DELETE ROW ===================================
-function deleteRow(tr) {
-  tr.remove();
-  updateLineNumbers();
-  calculateSummary();
-}
-
-// UPDATE LINE NUMBERS ===================================
-function updateLineNumbers() {
-  [...orderBody.children].forEach((row, idx) => {
-    row.querySelector(".lineNo").textContent = idx + 1;
-  });
-}
-
-// SORTABLE ===================================
-Sortable.create(orderBody, {
-  handle: ".lineNo",
-  animation: 150,
-  onEnd: updateLineNumbers
-});
-
-// PRICE LOOKUP ===================================
+// LOOKUP PRICE ===========================
 async function updatePrice(tr) {
   const product = tr.querySelector(".product-select").value;
   const unitInput = tr.querySelector(".unitPrice");
 
-  const res = await fetch(`${baseURL}?action=getprice&product=${encodeURIComponent(product)}`);
-  const price = parseFloat((await res.text()).replace(/[^\d.-]/g, ""));
+  const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
+  const priceRaw = parseFloat(await res.text()) || 0;
 
-  unitInput.value = isNaN(price) ? "" : price.toFixed(2);
+  unitInput.setAttribute("data-value", priceRaw);
+  unitInput.value = formatRupiah(priceRaw);
+
   calculateRow(tr);
 }
 
-// CALCULATE ROW ===================================
+// CALCULATE ROW ===========================
 function calculateRow(tr) {
-  const meter = parseFloat(tr.querySelector(".meter").value) || 0;
   const qty = parseFloat(tr.querySelector(".qty").value) || 0;
-  const unit = parseFloat(tr.querySelector(".unitPrice").value) || 0;
+  const unit = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
 
-  const ppq = meter * unit;
-  const total = ppq * qty;
+  const total = qty * unit;
 
-  tr.querySelector(".pricePerQty").value = ppq.toFixed(2);
-  tr.querySelector(".totalPrice").value = total.toFixed(2);
+  const totalInput = tr.querySelector(".totalPrice");
+  totalInput.setAttribute("data-value", total);
+  totalInput.value = formatRupiah(total);
 
   calculateSummary();
 }
 
-// SUMMARY ===================================
+// SUMMARY ================================
 function calculateSummary() {
   let subtotal = 0;
-  document.querySelectorAll(".totalPrice").forEach(input => {
-    subtotal += parseFloat(input.value) || 0;
+  document.querySelectorAll(".totalPrice").forEach(el => {
+    subtotal += parseFloat(el.getAttribute("data-value")) || 0;
   });
 
   const ppn = subtotal * 0.11;
   const grand = subtotal + ppn;
 
-  document.getElementById("subTotal").value = subtotal.toFixed(2);
-  document.getElementById("ppn").value = ppn.toFixed(2);
-  document.getElementById("grandTotal").value = grand.toFixed(2);
+  document.getElementById("subTotal").setAttribute("data-value", subtotal);
+  document.getElementById("ppn").setAttribute("data-value", ppn);
+  document.getElementById("grandTotal").setAttribute("data-value", grand);
+
+  document.getElementById("subTotal").value = formatRupiah(subtotal);
+  document.getElementById("ppn").value = formatRupiah(ppn);
+  document.getElementById("grandTotal").value = formatRupiah(grand);
 }
 
-// SUBMIT ===================================
+// SUBMIT =================================
 document.getElementById("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
-  result.textContent = "⏳ Sending...";
+
+  // Convert formatted values to raw numbers before sending
+  document.querySelectorAll("[data-value]").forEach(el => {
+    el.value = el.getAttribute("data-value");
+  });
 
   const res = await fetch(baseURL, {
     method: "POST",
     body: new FormData(orderForm)
   });
 
-  const txt = await res.text();
+  const text = await res.text();
+  result.textContent = text.includes("✅")
+    ? "✅ Order tersimpan!"
+    : "❌ Error: " + text;
+});
 
-  if (txt.includes("✅")) {
-    result.textContent = "✅ Order berhasil dikirim!";
-  } else {
-    result.textContent = "❌ Error: " + txt;
-  }
+// Disable Enter
+document.getElementById("orderForm").addEventListener("keydown", e => {
+  if (e.key === "Enter") e.preventDefault();
 });
 
 // INIT
 loadDropdowns();
-document.getElementById("addLine").addEventListener("click", addLine);
 
-// DISABLE ENTER TO SUBMIT
-document.getElementById("orderForm").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    return false;
-  }
+// Drag-sort
+Sortable.create(orderBody, {
+  handle: ".col-drag",
+  animation: 150
 });
 </script>
 
