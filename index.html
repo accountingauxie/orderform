@@ -17,6 +17,20 @@
       color: #2b5da4;
       text-align: center;
     }
+
+    /* Customer inline layout */
+    .customer-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .customer-row label {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -30,6 +44,31 @@
     th {
       background: #f3f3f3;
     }
+
+    /* Resize columns */
+    th.col-product, td.col-product {
+      width: 280px;
+    }
+    th.col-meter, td.col-meter {
+      width: 80px;
+    }
+    th.col-qty, td.col-qty {
+      width: 70px;
+    }
+    th.col-unit, td.col-unit {
+      width: 110px;
+    }
+    th.col-ppq, td.col-ppq {
+      width: 110px;
+    }
+    th.col-total, td.col-total {
+      width: 110px;
+    }
+    th.col-delete, td.col-delete {
+      width: 60px;
+      text-align: center;
+    }
+
     .delete-btn {
       background: #dc3545;
       color: white;
@@ -57,7 +96,9 @@
       color: white;
       border: none;
       cursor: pointer;
+      margin-top: 15px;
     }
+
     .summary-box {
       margin-top: 20px;
       width: 300px;
@@ -76,7 +117,6 @@
     }
     .summary-total {
       font-weight: bold;
-      font-size: 15px;
     }
   </style>
 </head>
@@ -87,23 +127,26 @@
 <p id="result"></p>
 
 <form id="orderForm">
+  
   <label>Date</label>
   <input type="date" id="date" name="date" required>
 
-  <label>Customer</label>
-  <select name="customer" id="customer" required></select>
+  <div class="customer-row">
+    <label>Customer</label>
+    <select name="customer" id="customer" required></select>
+  </div>
 
   <table id="orderTable">
     <thead>
       <tr>
         <th>No</th>
-        <th>Product</th>
-        <th>Meter</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Price/Qty</th>
-        <th>Total Price</th>
-        <th>Delete</th>
+        <th class="col-product">Product</th>
+        <th class="col-meter">Meter</th>
+        <th class="col-qty">Qty</th>
+        <th class="col-unit">Unit Price</th>
+        <th class="col-ppq">Price/Qty</th>
+        <th class="col-total">Total Price</th>
+        <th class="col-delete">Delete</th>
       </tr>
     </thead>
 
@@ -135,12 +178,11 @@
   <button type="submit">Kirim Order</button>
 </form>
 
-
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <script>
 const baseURL =
- "https://script.google.com/macros/s/AKfycbxb7ZrEd4D0DJG5JEqV0U6FepmRlquL2MeMCL-uwY1_CrmcxAqt7rXo8bwdB4JIc5oO/exec";
+ "https://script.google.com/macros/s/AKfycbw4089ihlGGnN2BIug38tZZZshFh5W-UmUbLj2TEWl2B8xCjzlwG1RuPwn4G-keND7QFQ/exec";
 
 let choiceCustomer;
 let productDropdowns = [];
@@ -149,10 +191,10 @@ let productList = [];
 const orderBody = document.getElementById("orderBody");
 const result = document.getElementById("result");
 
-// Set default date
+// Default date
 document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
-// ==================== LOAD DATA ====================
+// LOAD DATA ===================================
 async function loadDropdowns() {
   const res = await fetch(`${baseURL}?action=getdata`);
   const data = await res.json();
@@ -164,63 +206,61 @@ async function loadDropdowns() {
     "value", "label", true
   );
 
-  // Default 3 rows
-  addLine(); addLine(); addLine();
+  addLine(); addLine(); addLine(); // Default 3 rows
 }
 
-// ==================== ADD LINE ====================
+// ADD LINE ===================================
 function addLine() {
   const rowIndex = orderBody.children.length + 1;
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td class="lineNo">${rowIndex}</td>
-    <td><select class="product-select" name="product_${rowIndex}"></select></td>
-    <td><input type="number" step="0.01" class="meter" name="meter_${rowIndex}"></td>
-    <td><input type="number" step="1" class="qty" name="qty_${rowIndex}"></td>
-    <td><input type="number" readonly class="unitPrice" name="unit_${rowIndex}"></td>
-    <td><input type="number" readonly class="pricePerQty" name="ppq_${rowIndex}"></td>
-    <td><input type="number" readonly class="totalPrice" name="total_${rowIndex}"></td>
-    <td><button type="button" class="delete-btn">❌</button></td>
+    <td class="col-product"><select class="product-select" name="product_${rowIndex}"></select></td>
+    <td class="col-meter"><input type="number" step="0.01" class="meter" name="meter_${rowIndex}"></td>
+    <td class="col-qty"><input type="number" step="1" class="qty" name="qty_${rowIndex}"></td>
+    <td class="col-unit"><input type="number" readonly class="unitPrice" name="unit_${rowIndex}"></td>
+    <td class="col-ppq"><input type="number" readonly class="pricePerQty" name="ppq_${rowIndex}"></td>
+    <td class="col-total"><input type="number" readonly class="totalPrice" name="total_${rowIndex}"></td>
+    <td class="col-delete"><button type="button" class="delete-btn">❌</button></td>
   `;
 
   orderBody.appendChild(tr);
 
-  // Attach dropdown
+  // Product dropdown
   const select = tr.querySelector(".product-select");
   const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
   productDropdowns.push(choice);
   choice.setChoices(productList.map(v => ({ value: v, label: v })), "value", "label", true);
 
-  // Event listeners
   select.addEventListener("change", () => updatePrice(tr));
   tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
   tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
   tr.querySelector(".delete-btn").addEventListener("click", () => deleteRow(tr));
 }
 
-// ==================== DELETE ROW ====================
+// DELETE ROW ===================================
 function deleteRow(tr) {
   tr.remove();
   updateLineNumbers();
   calculateSummary();
 }
 
-// ==================== UPDATE LINE NUMBERS ====================
+// UPDATE LINE NUMBERS ===================================
 function updateLineNumbers() {
   [...orderBody.children].forEach((row, idx) => {
     row.querySelector(".lineNo").textContent = idx + 1;
   });
 }
 
-// ==================== SORTABLE DRAG ====================
+// SORTABLE ===================================
 Sortable.create(orderBody, {
   handle: ".lineNo",
   animation: 150,
   onEnd: updateLineNumbers
 });
 
-// ==================== LOOKUP PRICE ====================
+// PRICE LOOKUP ===================================
 async function updatePrice(tr) {
   const product = tr.querySelector(".product-select").value;
   const unitInput = tr.querySelector(".unitPrice");
@@ -232,7 +272,7 @@ async function updatePrice(tr) {
   calculateRow(tr);
 }
 
-// ==================== CALCULATE ROW ====================
+// CALCULATE ROW ===================================
 function calculateRow(tr) {
   const meter = parseFloat(tr.querySelector(".meter").value) || 0;
   const qty = parseFloat(tr.querySelector(".qty").value) || 0;
@@ -247,7 +287,7 @@ function calculateRow(tr) {
   calculateSummary();
 }
 
-// ==================== SUMMARY ====================
+// SUMMARY ===================================
 function calculateSummary() {
   let subtotal = 0;
   document.querySelectorAll(".totalPrice").forEach(input => {
@@ -262,7 +302,7 @@ function calculateSummary() {
   document.getElementById("grandTotal").value = grand.toFixed(2);
 }
 
-// ==================== SUBMIT ====================
+// SUBMIT ===================================
 document.getElementById("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
   result.textContent = "⏳ Sending...";
@@ -284,6 +324,14 @@ document.getElementById("orderForm").addEventListener("submit", async e => {
 // INIT
 loadDropdowns();
 document.getElementById("addLine").addEventListener("click", addLine);
+
+// DISABLE ENTER TO SUBMIT
+document.getElementById("orderForm").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    return false;
+  }
+});
 </script>
 
 </body>
