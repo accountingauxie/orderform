@@ -8,9 +8,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-/* ================================
+
+/* =========================================
    GLOBAL FORM LAYOUT
-================================ */
+========================================= */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -22,10 +23,12 @@ body {
 h2 {
   color: #2b5da4;
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
-/* Inputs */
+/* =========================================
+   INPUTS
+========================================= */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
@@ -41,34 +44,31 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   box-sizing: border-box;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: opacity(60%);
+/* FIX: Choices dropdown text fully center aligned */
+.choices__inner {
+  display: flex !important;
+  align-items: center !important;
 }
 
-/* ================================
-   TOP SECTION
-================================ */
+/* FIX: Date label spacing */
+.top-row div label {
+  margin-bottom: 12px !important;
+  font-weight: bold;
+}
+
+/* =========================================
+   TOP ROW (DATE & CUSTOMER)
+========================================= */
 .top-row {
   display: flex;
   gap: 50px;
   margin-bottom: 40px;
 }
-
 .top-row div { flex: 1; }
 
-.top-row label {
-  font-weight: bold;
-  margin-bottom: 8px;
-  display: inline-block;
-}
-
-/* ================================
-   TABLE (Xero Style)
-================================ */
-.table-wrapper {
-  overflow-x: auto;
-}
+/* =========================================
+   TABLE (XERO STYLE)
+========================================= */
 
 .xero-table {
   width: 100%;
@@ -81,8 +81,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 14px 16px;
   border-top: 1px solid #e5e5ea;
   border-bottom: 1px solid #e5e5ea;
-  font-weight: 600;
   white-space: nowrap;
+  font-weight: 600;
 }
 
 .xero-table td {
@@ -90,26 +90,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-top: 1px solid #e5e5ea;
   border-bottom: 1px solid #e5e5ea;
   background: white;
-  vertical-align: middle !important; /* MIDDLE ALIGN FIX */
+  vertical-align: middle !important;
 }
 
-/* Cell spacing (divider) */
+/* Column divider */
 .xero-table td + td,
 .xero-table th + th {
   border-left: 1px solid #f0f0f0;
 }
 
-/* Drag column */
+/* Drag handle */
 .col-drag {
   cursor: grab;
-  text-align: center;
   width: 18px !important;
-  padding: 0 !important;
   font-size: 16px;
+  text-align: center;
   opacity: 0.5;
+  padding: 0 !important;
 }
 
-/* Delete button */
+/* Delete row button */
 .delete-btn {
   background: none;
   border: none;
@@ -118,13 +118,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* Inputs inside table */
+/* Inner inputs auto-fit */
 .xero-table input {
   width: 100%;
-  box-sizing: border-box;
 }
 
-/* Add row button */
+/* ADD ROW button */
 #addLine {
   margin-top: 12px;
   background: #e7f1ff;
@@ -132,18 +131,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 10px 16px;
   border-radius: 4px;
   color: #2b5da4;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 600;
 }
 
-/* ================================
-   SUMMARY AREA
-================================ */
+/* =========================================
+   SUMMARY (RIGHT SIDE TOTALS)
+========================================= */
+
+/* FIX BLUE ALIGNMENT: EXACT MATCH WITH TOTAL COLUMN WIDTH */
 .summary-box {
-  width: 170px; /* MATCH TOTAL COLUMN */
+  width: 170px;              /* SAME WIDTH as TOTAL column */
   float: right;
   margin-top: 25px;
-  margin-right: 12px; /* Perfect alignment */
+  margin-right: 4px !important; /* pixel-perfect alignment */
 }
 
 .summary-box table {
@@ -154,23 +155,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-align: left;
   padding-right: 10px;
 }
-
 .summary-box td:last-child {
   text-align: right;
 }
 
-/* ================================
-   FOOTER (NOTES + SUBMIT)
-================================ */
+/* =========================================
+   FOOTER NOTES + SUBMIT BUTTON
+========================================= */
 .footer-area {
   margin-top: 55px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 40px;
 }
 
-.footer-left { width: 55%; }
+.footer-left {
+  width: 55%;
+}
 
 textarea {
   width: 100%;
@@ -182,54 +183,41 @@ textarea {
   font-size: 15px;
 }
 
-/* Right footer (button aligned with TOTAL column) */
+/* FIX GREEN — Submit button same width as TOTAL and under summary */
 .footer-right {
-  width: 170px !important; /* SAME width as total */
+  width: 170px !important; /* SAME WIDTH as summary box */
   text-align: right;
 }
 
-button[type="submit"] {
-  width: 100%;               /* FULL WIDTH (MATCH TOTAL COLUMN) */
+#submitBtn {
+  width: 100% !important;
   background: #2b5da4;
   border: none;
   padding: 12px 22px;
-  color: white;
   border-radius: 6px;
+  color: white;
   cursor: pointer;
-  font-size: 15px;
   font-weight: 600;
-  margin-top: 20px;          /* SPACE FROM TEXTAREA */
+  font-size: 15px;
+  margin-top: 20px !important;
 }
 
-button[type="submit"]:hover {
+#submitBtn:hover {
   background: #1f4988;
 }
 
-/* Modal */
-#modal-bg {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:2000;
-}
-
-/* ================================
-   RESPONSIVE
-================================ */
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
 @media (max-width: 768px) {
   
   body { padding: 0 10px; }
-
-  .top-row {
-    flex-direction: column;
-    gap: 12px;
-  }
+  .top-row { flex-direction: column; }
 
   .summary-box {
     float: none;
     width: 100%;
-    margin-top: 35px;
+    margin-right: 0 !important;
   }
 
   .footer-area {
@@ -238,12 +226,12 @@ button[type="submit"]:hover {
 
   .footer-left,
   .footer-right {
-    width: 100%;
-    text-align: left;
+    width: 100% !important;
+    text-align: left !important;
   }
 
-  button[type="submit"] {
-    width: 100%;
+  #submitBtn {
+    width: 100% !important;
   }
 }
 
@@ -252,6 +240,7 @@ button[type="submit"]:hover {
   @page { size: landscape; }
   #addLine, button, textarea { display: none !important; }
 }
+
   </style>
 </head>
 
@@ -262,6 +251,7 @@ button[type="submit"]:hover {
 
 <form id="orderForm">
 
+  <!-- TOP (DATE + CUSTOMER) -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -304,7 +294,6 @@ button[type="submit"]:hover {
 
   <!-- FOOTER -->
   <div class="footer-area">
-
     <div class="footer-left">
       <label>Catatan tambahan</label>
       <textarea name="catatan"></textarea>
@@ -313,7 +302,6 @@ button[type="submit"]:hover {
     <div class="footer-right">
       <button type="submit" id="submitBtn">Kirim Order</button>
     </div>
-
   </div>
 
 </form>
