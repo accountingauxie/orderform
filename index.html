@@ -1,17 +1,18 @@
+
+Anda bilang:
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <title>Form Pemesanan (Xero Style)</title>
 
-  <!-- Choices.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-
-/* ============================================
-   GLOBAL PAGE LAYOUT
-============================================ */
+/* =========================
+   GLOBAL FORM LAYOUT
+========================= */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -23,91 +24,90 @@ body {
 h2 {
   color: #2b5da4;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
-/* ============================================
-   INPUT + SELECT
-============================================ */
+/* =========================
+   INPUTS
+========================= */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
+}
+
+input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+  height: 42px !important;
+  min-height: 42px !important;
+  border-radius: 6px !important;
+  border: 1px solid #d3d7dc !important;
+  padding: 0 12px !important;
+  background: white;
   box-sizing: border-box;
 }
 
-input[type="date"],
-input[type="number"],
-input[type="text"],
-.choices__inner {
-  height: 42px;
-  min-height: 42px;
-  border-radius: 6px;
-  border: 1px solid #d3d7dc;
-  padding: 0 12px;
+/* DATE FIX */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: opacity(60%);
 }
 
-/* prevent minus */
-input[type="number"] {
-  min: 0;
-}
-
-/* ============================================
+/* =========================
    TOP ROW
-============================================ */
+========================= */
 .top-row {
   display: flex;
-  justify-content: space-between;
-  gap: 40px;
-  margin-bottom: 25px;
+  gap: 50px;
+  margin-bottom: 20px;
 }
-.top-row div {
-  flex: 1;
-}
-.top-row label {
-  font-weight: bold;
+.top-row div { flex: 1; }
+.top-row label { font-weight: bold; }
+
+/* =========================
+   TABLE (XERO STYLE)
+========================= */
+.table-wrapper {
+  overflow-x: auto; /* RESPONSIVE MOBILE */
 }
 
-/* ============================================
-   TABLE
-============================================ */
 .xero-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 6px;
+  border-collapse: separate !important;
+  border-spacing: 0 6px;    /* SPACING antar row */
 }
 
 .xero-table th {
   background: #f7f7f7;
-  font-weight: 600;
-  text-align: center;
-  padding: 12px;
-  border-top: 1px solid #e4e7ea;
+  padding: 14px 16px;
   border-bottom: 1px solid #e4e7ea;
+  border-top: 1px solid #e4e7ea;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .xero-table td {
-  background: white;
+  padding: 14px 16px;
   border-top: 1px solid #e4e7ea;
   border-bottom: 1px solid #e4e7ea;
-  padding: 12px;
-  vertical-align: middle;
+  background: white;
 }
 
-.xero-table td input,
-.xero-table td select,
-.xero-table td .choices {
-  width: 100%;
+/* kolom antar cell punya jarak visual */
+.xero-table td + td,
+.xero-table th + th {
+  border-left: 1px solid #f0f0f0;
 }
 
-/* drag handle */
+/* DRAG COLUMN */
 .col-drag {
-  width: 20px;
-  text-align: center;
   cursor: grab;
+  text-align: center;
+  width: 18px !important;
+  padding: 0 !important;
+  font-size: 16px;
   opacity: 0.5;
 }
 
-/* delete icon */
+/* DELETE BUTTON */
 .delete-btn {
   background: none;
   border: none;
@@ -116,9 +116,13 @@ input[type="number"] {
   cursor: pointer;
 }
 
-/* ============================================
-   ADD ROW
-============================================ */
+/* Column inputs */
+.xero-table input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ADD ROW BUTTON */
 #addLine {
   margin-top: 12px;
   background: #e7f1ff;
@@ -130,93 +134,118 @@ input[type="number"] {
   cursor: pointer;
 }
 
-/* ============================================
+/* =========================
    SUMMARY BOX
-============================================ */
+========================= */
 .summary-box {
   width: 420px;
   float: right;
   margin-top: 25px;
 }
 
-.summary-box table {
-  width: 100%;
-}
-
-.summary-box td:first-child {
-  padding-right: 10px;
-  font-weight: 500;
-}
-
-/* inputs */
 .summary-box input {
-  height: 34px;
+  width: 100%;
+  height: 32px;
+  padding: 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  padding: 4px 8px;
 }
 
-/* SUBMIT BUTTON */
-#submitBtn {
-  margin-top: 20px;
-  float: right;
-  background: #2b5da4;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-}
-#submitBtn:hover {
-  background: #1f4988;
-}
-
-/* ============================================
-   FOOTER NOTES
-============================================ */
+/* =========================
+   FOOTER (NOTES + BUTTON)
+========================= */
 .footer-area {
-  clear: both;
-  margin-top: 60px;
+  margin-top: 55px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
 }
+
+.footer-left { width: 55%; }
 
 textarea {
   width: 100%;
   min-height: 120px;
+  padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  padding: 12px;
+  resize: vertical;
   font-size: 15px;
 }
 
-/* ============================================
-   CHOICES.JS FIX SAFE
-   (NO DAMAGE, NO HEIGHT EXPLOSION)
-============================================ */
-.choices__inner {
-  display: flex;
-  align-items: center;
+.footer-right {
+  width: 40%;
+  text-align: right;
 }
 
-.choices__list--single {
-  display: flex;
-  align-items: center;
-  height: 40px;
+button[type="submit"] {
+  background: #2b5da4;
+  border: none;
+  padding: 12px 22px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.choices__list--dropdown {
-  max-height: 250px;
-  overflow-y: auto;
+button[type="submit"]:hover {
+  background: #1f4988;
 }
 
-/* setiap item */
-.choices__list--dropdown .choices__item {
-  height: 38px;
-  line-height: 38px;
-  display: flex;
-  align-items: center;
-  padding-left: 12px;
+/* =========================
+   MODAL
+========================= */
+#modal-bg {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:2000;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  
+  body {
+    padding: 0 10px;
+  }
+
+  .top-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summary-box {
+    float: none;
+    width: 100%;
+    margin-top: 35px;
+  }
+
+  .footer-area {
+    flex-direction: column;
+  }
+
+  .footer-left,
+  .footer-right {
+    width: 100%;
+    text-align: left;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+  }
+}
+
+/* PRINT */
+@media print {
+  @page { size: landscape; }
+  #addLine,
+  button,
+  textarea { display: none !important; }
 }
 
   </style>
@@ -225,10 +254,10 @@ textarea {
 <body>
 
 <h2>Form Pemesanan</h2>
+<p id="result"></p>
 
 <form id="orderForm">
 
-  <!-- TOP -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -245,14 +274,14 @@ textarea {
   <table class="xero-table">
     <thead>
       <tr>
-        <th></th>
-        <th>Item</th>
-        <th>Meter</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Price/Qty</th>
-        <th>Total</th>
-        <th></th>
+        <th style="width:25px;"></th> <!-- drag -->
+        <th style="min-width:260px; width:32%;">Item</th>
+        <th style="min-width:90px; width:10%;">Meter</th>
+        <th style="min-width:80px; width:8%;">Qty</th>
+        <th style="min-width:120px; width:15%;">Unit Price</th>
+        <th style="min-width:120px; width:15%;">Price/Qty</th>
+        <th style="min-width:140px; width:18%;">Total</th>
+        <th style="width:40px;"></th>
       </tr>
     </thead>
     <tbody id="orderBody"></tbody>
@@ -263,52 +292,37 @@ textarea {
   <!-- SUMMARY -->
   <div class="summary-box">
     <table>
-      <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
+      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
+      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
+      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
     </table>
-
-    <button type="submit" id="submitBtn">Kirim Order</button>
   </div>
 
-  <!-- NOTES -->
+  <!-- FOOTER -->
   <div class="footer-area">
-    <label>Catatan tambahan</label>
-    <textarea name="catatan"></textarea>
+
+    <div class="footer-left">
+      <label>Catatan tambahan</label>
+      <textarea name="catatan"></textarea>
+    </div>
+
+    <div class="footer-right">
+      <button type="submit" id="submitBtn">Kirim Order</button>
+    </div>
+
   </div>
 
 </form>
 
-<!-- MODAL -->
-<div id="modal-bg" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:9999;
-">
-  <div style="
-    width:300px;
-    background:white;
-    padding:20px;
-    margin:150px auto;
-    border-radius:8px;
-  ">
+<!-- MODAL ADD CUSTOMER -->
+<div id="modal-bg">
+  <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer..." style="width:100%; margin-bottom:15px;">
-    <button id="saveCustomerBtn" style="
-      width:100%;
-      background:#2b5da4;
-      color:white;
-      padding:10px;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-    ">Simpan</button>
+    <input id="newCustomerName" placeholder="Nama customer..." />
+    <button id="saveCustomerBtn">Simpan</button>
   </div>
 </div>
 
-<!-- SCRIPTS -->
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
 
