@@ -11,8 +11,10 @@
   <style>
   body {
     font-family: Arial, sans-serif;
-    max-width: 3000px;      /* ⬅ LEBARKAN */
-    margin: 40px auto;
+    max-width: 1200px;      /* ⬅ LEBAR YANG MASUK AKAL & BISA CENTER */
+    width: 100%;
+    margin: 40px auto;      /* ⬅ CENTER */
+    padding: 0 20px;        /* ⬅ Biar gak mepet pinggir */
   }
 
   h2 { 
@@ -20,7 +22,6 @@
     text-align: center; 
   }
 
-  /* Make inputs not squeezed */
   input, select, textarea {
     font-size: 14px;
   }
@@ -46,7 +47,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 25px;
-    table-layout: fixed;   /* ⬅ MEMBUAT LEBAR SESUAI proporsi */
+    table-layout: fixed;
   }
 
   .xero-table th {
@@ -83,14 +84,12 @@
   th:nth-child(7) { width: 180px; }    /* Total */
   th:nth-child(8) { width: 40px; }     /* delete */
 
-  /* DRAG ICON */
   .col-drag {
     cursor: grab;
     font-size: 18px;
     text-align: center;
   }
 
-  /* DELETE BUTTON */
   .delete-btn {
     background: none;
     border: none;
@@ -99,7 +98,6 @@
     cursor: pointer;
   }
 
-  /* ADD ROW */
   #addLine {
     margin-top: 12px;
     background: #e7f1ff;
@@ -111,7 +109,6 @@
     cursor: pointer;
   }
 
-  /* SUMMARY BOX — ALIGN RIGHT */
   .summary-box {
     margin-top: 30px;
     width: 350px;
@@ -163,12 +160,12 @@
     <thead>
       <tr>
         <th class="col-drag"></th>
-        <th style="width:220px">Item</th>
-        <th style="width:120px">Meter</th>
-        <th style="width:80px">Qty</th>
-        <th style="width:150px">Unit Price</th>
-        <th style="width:150px">Price/Qty</th>
-        <th style="width:150px">Total</th>
+        <th>Item</th>
+        <th>Meter</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Price/Qty</th>
+        <th>Total</th>
         <th class="col-delete"></th>
       </tr>
     </thead>
