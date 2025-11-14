@@ -5,6 +5,10 @@ window.onload = function () {
 
   let productList = [];
 
+  const orderForm = document.getElementById("orderForm");
+  const orderBody = document.getElementById("orderBody");
+  const addLineBtn = document.getElementById("addLine");
+
   // SET DEFAULT DATE
   const dateField = document.getElementById("date");
   dateField.value = new Date().toISOString().split("T")[0];
@@ -40,8 +44,7 @@ window.onload = function () {
   // ADD ROW
   // =============================
   function addLine() {
-    const tbody = document.getElementById("orderBody");
-    const idx = tbody.children.length + 1;
+    const idx = orderBody.children.length + 1;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -58,7 +61,7 @@ window.onload = function () {
       <td><button type="button" class="delete-btn">🗑</button></td>
     `;
 
-    tbody.appendChild(tr);
+    orderBody.appendChild(tr);
 
     // Apply Choices.js to product dropdown
     const select = tr.querySelector(".product-select");
@@ -81,12 +84,17 @@ window.onload = function () {
     });
   }
 
+  // ✅ FIX PENTING: klik tombol + Add row
+  addLineBtn.addEventListener("click", addLine);
+
   // =============================
   // GET PRICE FROM SERVER
   // =============================
   async function updatePrice(tr) {
     const product = tr.querySelector(".product-select").value;
     const unitInput = tr.querySelector(".unitPrice");
+
+    if (!product) return;
 
     const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
     const price = parseFloat(await res.text()) || 0;
@@ -138,7 +146,7 @@ window.onload = function () {
   // =============================
   // SUBMIT FORM
   // =============================
-  document.getElementById("orderForm").addEventListener("submit", async e => {
+  orderForm.addEventListener("submit", async e => {
     e.preventDefault();
 
     const resultEl = document.getElementById("result");
@@ -159,21 +167,24 @@ window.onload = function () {
     if (txt.includes("✅")) {
       resultEl.textContent = "✅ Order berhasil dikirim!";
       orderForm.reset();
-      document.getElementById("orderBody").innerHTML = "";
+      orderBody.innerHTML = "";
+      dateField.value = new Date().toISOString().split("T")[0];
       addLine(); addLine(); addLine();
+      calculateSummary();
     } else {
       resultEl.textContent = "❌ Error: " + txt;
     }
   });
 
   // DISABLE ENTER
-  document.getElementById("orderForm").addEventListener("keydown", e => {
+  orderForm.addEventListener("keydown", e => {
     if (e.key === "Enter") e.preventDefault();
   });
 
   // INIT
   loadDropdowns();
 
+  // ✅ FIX: pakai orderBody yang sudah didefinisikan
   Sortable.create(orderBody, {
     handle: ".col-drag",
     animation: 150
