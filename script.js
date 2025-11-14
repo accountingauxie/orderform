@@ -1,3 +1,4 @@
+console.log("SCRIPT LOADED!");
 window.onload = function () {
 
   const baseURL =
