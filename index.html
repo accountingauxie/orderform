@@ -33,18 +33,31 @@ input, select, textarea {
   font-family: inherit;
 }
 
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
-  height: 42px !important;
-  min-height: 42px !important;
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  height: 42px;
+  line-height: 42px;
+  border-radius: 6px;
+  border: 1px solid #d3d7dc;
+  padding: 0 12px;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* Choices container mengikuti tinggi input */
+.choices__inner {
+  min-height: 42px;
   border-radius: 6px !important;
   border: 1px solid #d3d7dc !important;
   padding: 0 12px !important;
-  background: white !important;
-  box-sizing: border-box !important;
+  display: flex;
+  align-items: center;
 }
 
+/* prevent minus */
 input[type="number"] {
-  min: 0 !important;
+  min: 0;
 }
 
 /* DATE FIX */
@@ -69,13 +82,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 ========================= */
 .xero-table {
   width: 100%;
-  border-collapse: separate !important;
+  border-collapse: separate;
   border-spacing: 0 6px;
 }
 
 .xero-table th {
   background: #f7f7f7;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border-bottom: 1px solid #e4e7ea;
   border-top: 1px solid #e4e7ea;
   font-weight: 600;
@@ -84,26 +97,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .xero-table td {
-  padding: 14px 16px;
+  padding: 8px 12px;
   border-top: 1px solid #e4e7ea;
   border-bottom: 1px solid #e4e7ea;
   background: white;
-  vertical-align: middle !important;
+  vertical-align: middle;
 }
 
 .xero-table td input,
-.xero-table td select {
+.xero-table td select,
+.xero-table td .choices {
   width: 100%;
-  height: 42px;
-  vertical-align: middle !important;
 }
 
 /* DRAG COLUMN */
 .col-drag {
   cursor: grab;
   text-align: center;
-  width: 18px !important;
-  padding: 0 !important;
+  width: 18px;
+  padding: 0;
   font-size: 16px;
   opacity: 0.5;
 }
@@ -138,27 +150,35 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-top: 25px;
 }
 
+.summary-box table {
+  width: 100%;
+}
+
+.summary-box td:first-child {
+  padding-right: 10px;
+}
+
 .summary-box input {
   width: 100%;
   height: 32px;
-  padding: 6px;
+  padding: 4px 8px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 /* SUBMIT BUTTON BELOW GRAND TOTAL */
 #submitBtn {
-  margin-top: 20px !important;
-  float: right !important;
-  display: block !important;
-  padding: 12px 22px;
+  margin-top: 16px;
+  float: right;
   background: #2b5da4;
-  color: white;
   border: none;
+  padding: 10px 20px;
+  color: white;
   border-radius: 6px;
+  cursor: pointer;
   font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
 }
 #submitBtn:hover {
   background: #1f4988;
@@ -168,6 +188,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    FOOTER NOTES
 ========================= */
 .footer-area {
+  clear: both;
   margin-top: 55px;
 }
 
@@ -208,34 +229,6 @@ textarea {
   @page { size: landscape; }
   #addLine, button, textarea { display: none !important; }
 }
-
-/* ====================================================
-   🔥🔥🔥 FINAL OVERRIDE — FIX CHOICES.JS ALIGNMENT 🔥🔥🔥
-==================================================== */
-
-/* CUSTOMER FIELD */
-#customer + .choices .choices__inner {
-  display: flex !important;
-  align-items: center !important;
-  height: 42px !important;
-}
-
-/* PRODUCT SELECT (ITEM) */
-.product-select + .choices .choices__inner {
-  display: flex !important;
-  align-items: center !important;
-  height: 42px !important;
-}
-
-/* OPTIONS INSIDE */
-.choices__list--dropdown .choices__item,
-.choices__list--dropdown,
-.choices__list--single {
-  line-height: 40px !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
   </style>
 </head>
 
@@ -263,12 +256,12 @@ textarea {
     <thead>
       <tr>
         <th style="width:25px;"></th>
-        <th style="min-width:260px;">Item</th>
-        <th style="min-width:90px;">Meter</th>
-        <th style="min-width:80px;">Qty</th>
-        <th style="min-width:120px;">Unit Price</th>
-        <th style="min-width:120px;">Price/Qty</th>
-        <th style="min-width:140px;">Total</th>
+        <th style="min-width:260px; width:32%;">Item</th>
+        <th style="min-width:90px; width:10%;">Meter</th>
+        <th style="min-width:80px; width:8%;">Qty</th>
+        <th style="min-width:120px; width:15%;">Unit Price</th>
+        <th style="min-width:120px; width:15%;">Price/Qty</th>
+        <th style="min-width:140px; width:18%;">Total</th>
         <th style="width:40px;"></th>
       </tr>
     </thead>
@@ -277,18 +270,15 @@ textarea {
 
   <button type="button" id="addLine">+ Add row</button>
 
-  <!-- SUMMARY -->
+  <!-- SUMMARY + SUBMIT -->
   <div class="summary-box">
     <table>
       <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
       <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
       <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
     </table>
-
     <button type="submit" id="submitBtn">Kirim Order</button>
   </div>
-
-  <div style="clear:both"></div>
 
   <div class="footer-area">
       <label>Catatan tambahan</label>
@@ -307,16 +297,6 @@ textarea {
 </div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-
-<!-- prevent negative in ALL number fields -->
-<script>
-document.addEventListener("input", function(e){
-  if (e.target.type === "number" && e.target.value < 0) {
-      e.target.value = 0;
-  }
-});
-</script>
-
 <script src="./script.js"></script>
 
 </body>
