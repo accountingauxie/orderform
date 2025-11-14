@@ -7,10 +7,8 @@
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-<style>
-
-/* ===================== GLOBAL ======================= */
-
+  <style>
+/* ================= GLOBAL ================= */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -35,7 +33,10 @@ input, select, textarea {
   font-family: inherit;
 }
 
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+input[type="text"],
+input[type="number"],
+input[type="date"],
+.choices__inner {
   height: 42px !important;
   border-radius: 6px;
   border: 1px solid #d3d7dc;
@@ -43,14 +44,13 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   box-sizing: border-box;
 }
 
-/* Choices center text */
+/* Choices text center */
 .choices__inner {
   display: flex !important;
   align-items: center !important;
 }
 
-/* ===================== TOP ROW ======================= */
-
+/* ============== TOP ROW ============== */
 .top-row {
   display: flex;
   gap: 60px;
@@ -61,10 +61,9 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   flex: 1;
 }
 
-/* ===================== TABLE ======================= */
-
+/* ============== TABLE ============== */
 .table-wrapper {
-  position: relative;
+  width: 100%;
 }
 
 .xero-table {
@@ -96,7 +95,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 
 /* DRAG */
 .col-drag {
-  width: 30px !important;
+  width: 30px;
   cursor: grab;
   opacity: 0.5;
   text-align: center;
@@ -111,7 +110,23 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   cursor: pointer;
 }
 
-/* ADD ROW */
+/* Kolom lebar: hanya atur yang perlu */
+.xero-table th:nth-child(3),
+.xero-table td:nth-child(3) {   /* Meter */
+  width: 80px;
+}
+
+.xero-table th:nth-child(4),
+.xero-table td:nth-child(4) {   /* Qty */
+  width: 70px;
+}
+
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) {   /* delete */
+  width: 40px;
+}
+
+/* Add row */
 #addLine {
   margin-top: 10px;
   padding: 10px 16px;
@@ -122,72 +137,14 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   font-weight: 600;
 }
 
-/* ======================================================
-   COLUMN WIDTH FIX — ITEM ANTI KEPOTONG
-====================================================== */
-
-/* 1 = DRAG */
-.xero-table th:nth-child(1),
-.xero-table td:nth-child(1) {
-  width: 30px !important;
+/* ============== SUMMARY & BUTTON (DI BAWAH TABEL) ============== */
+.summary-row {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
-
-/* 2 = ITEM — PRIORITAS UTAMA */
-.xero-table th:nth-child(2),
-.xero-table td:nth-child(2) {
-  width: 40% !important;
-  min-width: 360px !important;
-}
-
-/* 3 = METER — kecil */
-.xero-table th:nth-child(3),
-.xero-table td:nth-child(3) {
-  width: 80px !important;
-  min-width: 70px !important;
-  max-width: 90px !important;
-}
-
-/* 4 = QTY — kecil */
-.xero-table th:nth-child(4),
-.xero-table td:nth-child(4) {
-  width: 70px !important;
-  min-width: 60px !important;
-  max-width: 80px !important;
-}
-
-/* 5 = UNIT PRICE */
-.xero-table th:nth-child(5),
-.xero-table td:nth-child(5) {
-  width: 140px !important;
-  min-width: 120px !important;
-}
-
-/* 6 = PRICE/ QTY */
-.xero-table th:nth-child(6),
-.xero-table td:nth-child(6) {
-  width: 140px !important;
-  min-width: 120px !important;
-}
-
-/* 7 = TOTAL */
-.xero-table th:nth-child(7),
-.xero-table td:nth-child(7) {
-  width: 160px !important;
-  min-width: 140px !important;
-}
-
-/* 8 = DELETE */
-.xero-table th:nth-child(8),
-.xero-table td:nth-child(8) {
-  width: 40px !important;
-}
-
-/* ===================== SUMMARY ======================= */
 
 .summary-box {
-  position: absolute;
-  right: 0;
-  bottom: -70px;
   width: 230px;
 }
 
@@ -206,11 +163,13 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   padding: 0 10px;
 }
 
-/* SUBMIT BUTTON */
+.actions-row {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 #submitBtn {
-  position: absolute;
-  right: 0;
-  bottom: -130px;
   width: 230px;
   padding: 12px;
   background: #2b5da4;
@@ -225,22 +184,20 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   background: #1f4c89;
 }
 
-/* ===================== NOTES ======================= */
-
+/* ============== NOTES ============== */
 .notes-section {
-  margin-top: 180px;
+  margin-top: 40px;
 }
 
 textarea {
   width: 100%;
   min-height: 140px;
-  padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  padding: 12px;
 }
 
-/* ===================== MODAL ======================= */
-
+/* ============== MODAL ============== */
 #modal-bg {
   display: none;
   position: fixed;
@@ -255,11 +212,12 @@ textarea {
   background: #fff;
   border-radius: 8px;
   position: absolute;
-  left: 50%; top: 50%;
+  left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
 }
 
-</style>
+  </style>
 </head>
 
 <body>
@@ -268,6 +226,7 @@ textarea {
 
 <form id="orderForm">
 
+  <!-- TOP -->
   <div class="top-row">
     <div>
       <label>Date</label>
@@ -279,6 +238,7 @@ textarea {
     </div>
   </div>
 
+  <!-- TABLE -->
   <div class="table-wrapper">
 
     <table class="xero-table">
@@ -299,18 +259,25 @@ textarea {
 
     <button id="addLine" type="button">+ Add row</button>
 
-    <div class="summary-box">
-      <table>
-        <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
-        <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
-        <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
-      </table>
+    <!-- SUMMARY DI BAWAH TABEL -->
+    <div class="summary-row">
+      <div class="summary-box">
+        <table>
+          <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
+          <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
+          <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
+        </table>
+      </div>
     </div>
 
-    <button id="submitBtn" type="submit">Kirim Order</button>
+    <!-- BUTTON DI BAWAH SUMMARY -->
+    <div class="actions-row">
+      <button id="submitBtn" type="submit">Kirim Order</button>
+    </div>
 
   </div>
 
+  <!-- CATATAN -->
   <div class="notes-section">
     <label>Catatan tambahan</label>
     <textarea name="catatan"></textarea>
@@ -318,11 +285,11 @@ textarea {
 
 </form>
 
-<!-- MODAL -->
+<!-- MODAL CUSTOMER -->
 <div id="modal-bg">
   <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer...">
+    <input id="newCustomerName" placeholder="Nama customer..." />
     <button id="saveCustomerBtn">Simpan</button>
   </div>
 </div>
