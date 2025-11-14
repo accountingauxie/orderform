@@ -9,7 +9,8 @@
 
 <style>
 
-/* GLOBAL --------------------------- */
+/* ===================== GLOBAL ======================= */
+
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -31,6 +32,7 @@ label {
 
 input, select, textarea {
   font-size: 14px;
+  font-family: inherit;
 }
 
 input[type="text"], input[type="number"], input[type="date"], .choices__inner {
@@ -46,7 +48,8 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   align-items: center !important;
 }
 
-/* TOP ROW --------------------------- */
+/* ===================== TOP ROW ======================= */
+
 .top-row {
   display: flex;
   gap: 60px;
@@ -57,9 +60,10 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   flex: 1;
 }
 
-/* TABLE --------------------------- */
+/* ===================== TABLE ======================= */
+
 .table-wrapper {
-  position: relative; /* <-- Penting untuk absolute summary */
+  position: relative; /* SUMMARY BOX anchor */
 }
 
 .xero-table {
@@ -73,6 +77,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   padding: 14px;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
+  text-align: left;
 }
 
 .xero-table td {
@@ -80,6 +85,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   background: #fff;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+  vertical-align: middle;
 }
 
 .xero-table td + td,
@@ -87,6 +93,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   border-left: 1px solid #f0f0f0;
 }
 
+/* DRAG */
 .col-drag {
   width: 18px;
   cursor: grab;
@@ -94,6 +101,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   text-align: center;
 }
 
+/* DELETE BUTTON */
 .delete-btn {
   background: none;
   border: none;
@@ -102,7 +110,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   cursor: pointer;
 }
 
-/* ADD ROW */
+/* ADD ROW BUTTON */
 #addLine {
   margin-top: 10px;
   padding: 10px 16px;
@@ -110,16 +118,69 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   border: 1px solid #c7dcff;
   border-radius: 4px;
   color: #2b5da4;
-  font-weight: bold;
+  font-weight: 600;
 }
 
-/* SUMMARY BOX --------------------------- */
-/* THE MAGIC PART: FIX POSITION IN TABLE AREA */
+/* ======================================================
+   COLUMN WIDTH CONTROL (EASY TO EDIT)
+====================================================== */
+
+/* 1 = DRAG */
+.xero-table th:nth-child(1),
+.xero-table td:nth-child(1) {
+    width: 30px !important;
+}
+
+/* 2 = ITEM → EDIT INI kalau mau lebih lebar */
+.xero-table th:nth-child(2),
+.xero-table td:nth-child(2) {
+    width: 360px !important;   /* <— kamu ubah di sini */
+}
+
+/* 3 = METER */
+.xero-table th:nth-child(3),
+.xero-table td:nth-child(3) {
+    width: 120px !important;
+}
+
+/* 4 = QTY */
+.xero-table th:nth-child(4),
+.xero-table td:nth-child(4) {
+    width: 100px !important;
+}
+
+/* 5 = UNIT PRICE */
+.xero-table th:nth-child(5),
+.xero-table td:nth-child(5) {
+    width: 150px !important;
+}
+
+/* 6 = PRICE/ QTY */
+.xero-table th:nth-child(6),
+.xero-table td:nth-child(6) {
+    width: 150px !important;
+}
+
+/* 7 = TOTAL */
+.xero-table th:nth-child(7),
+.xero-table td:nth-child(7) {
+    width: 160px !important;
+}
+
+/* 8 = DELETE */
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) {
+    width: 40px !important;
+}
+
+/* ===================== SUMMARY ======================= */
+/* STICK TO TABLE RIGHT (like screenshot) */
+
 .summary-box {
   position: absolute;
   right: 0;
-  bottom: -70px; /* pas di bawah tabel */
-  width: 220px;
+  bottom: -70px; /* distance under table */
+  width: 230px;
 }
 
 .summary-box table {
@@ -129,6 +190,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 .summary-box td:first-child {
   text-align: left;
 }
+
 .summary-box td:last-child {
   text-align: right;
 }
@@ -141,12 +203,12 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   padding: 0 10px;
 }
 
-/* BUTTON BELOW SUMMARY */
+/* SUBMIT BUTTON BELOW SUMMARY */
 #submitBtn {
   position: absolute;
   right: 0;
-  bottom: -130px;  /* tepat di bawah summary */
-  width: 220px;
+  bottom: -130px;
+  width: 230px;
   padding: 12px;
   background: #2b5da4;
   border: none;
@@ -160,9 +222,10 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   background: #1f4c89;
 }
 
-/* NOTES SECTION --------------------------- */
+/* ===================== NOTES SECTION ======================= */
+
 .notes-section {
-  margin-top: 180px; /* memberi ruang untuk summary + button */
+  margin-top: 180px; /* give room for summary & button */
 }
 
 textarea {
@@ -173,24 +236,25 @@ textarea {
   padding: 12px;
 }
 
-/* MODAL --------------------------- */
+/* ===================== MODAL ======================= */
+
 #modal-bg {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  z-index:9999;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 9999;
 }
 
 #modal-box {
-  background:white;
-  padding:20px;
-  width:350px;
-  border-radius:8px;
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
+  background: white;
+  padding: 20px;
+  width: 350px;
+  border-radius: 8px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 </style>
@@ -202,7 +266,7 @@ textarea {
 
 <form id="orderForm">
 
-  <!-- TOP -->
+  <!-- TOP AREA -->
   <div class="top-row">
     <div>
       <label>Date</label>
@@ -215,20 +279,20 @@ textarea {
     </div>
   </div>
 
-  <!-- TABLE + SUMMARY (RIGHT FIXED) -->
+  <!-- TABLE AREA + SUMMARY STICK -->
   <div class="table-wrapper">
 
     <table class="xero-table">
       <thead>
         <tr>
-          <th style="width:25px"></th>
+          <th></th>
           <th>Item</th>
           <th>Meter</th>
           <th>Qty</th>
           <th>Unit Price</th>
           <th>Price/Qty</th>
           <th>Total</th>
-          <th style="width:40px"></th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="orderBody"></tbody>
@@ -236,7 +300,7 @@ textarea {
 
     <button id="addLine" type="button">+ Add row</button>
 
-    <!-- SUMMARY FIXED IN TABLE AREA -->
+    <!-- SUMMARY BOX (right aligned) -->
     <div class="summary-box">
       <table>
         <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
@@ -245,24 +309,24 @@ textarea {
       </table>
     </div>
 
-    <!-- BUTTON FIXED BELOW SUMMARY -->
+    <!-- BUTTON BELOW SUMMARY -->
     <button id="submitBtn" type="submit">Kirim Order</button>
 
   </div>
 
-  <!-- NOTES BELOW EVERYTHING -->
+  <!-- NOTES SECTION -->
   <div class="notes-section">
     <label>Catatan tambahan</label>
-    <textarea></textarea>
+    <textarea name="catatan"></textarea>
   </div>
 
 </form>
 
-<!-- MODAL -->
+<!-- MODAL CUSTOMER -->
 <div id="modal-bg">
   <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName">
+    <input id="newCustomerName" placeholder="Nama customer...">
     <button id="saveCustomerBtn">Simpan</button>
   </div>
 </div>
