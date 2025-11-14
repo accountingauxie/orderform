@@ -1,275 +1,237 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Form Pemesanan (Xero Style)</title>
+/* =========================
+   GLOBAL FORM LAYOUT
+========================= */
+body {
+  font-family: Arial, sans-serif;
+  max-width: 1400px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 40px;
+}
 
-  <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+h2 {
+  color: #2b5da4;
+  text-align: center;
+  margin-bottom: 25px;
+}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1400px;
-      width: 100%;
-      margin: 40px auto;
-      padding: 0 40px;
-    }
+/* =========================
+   INPUTS
+========================= */
+input, select, textarea {
+  font-size: 14px;
+  font-family: inherit;
+}
 
-    h2 {
-      color: #2b5da4;
-      text-align: center;
-      margin-bottom: 25px;
-    }
+input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+  height: 42px !important;
+  min-height: 42px !important;
+  border-radius: 6px !important;
+  border: 1px solid #d3d7dc !important;
+  padding: 0 12px !important;
+  background: white;
+  box-sizing: border-box;
+}
 
-    /* INPUTS */
-    input, select, textarea {
-      font-size: 14px;
-      font-family: inherit;
-    }
+/* DATE FIX */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: opacity(60%);
+}
 
-    input[type="text"], input[type="number"], input[type="date"], .choices__inner {
-      height: 42px !important;
-      min-height: 42px !important;
-      border-radius: 6px !important;
-      border: 1px solid #d5d9de !important;
-      padding: 0 12px !important;
-      background: white;
-      box-sizing: border-box;
-    }
+/* =========================
+   TOP ROW
+========================= */
+.top-row {
+  display: flex;
+  gap: 50px;
+  margin-bottom: 20px;
+}
+.top-row div { flex: 1; }
+.top-row label { font-weight: bold; }
 
-    /* DATE FIX */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      cursor: pointer;
-      filter: opacity(60%);
-    }
+/* =========================
+   TABLE (XERO STYLE)
+========================= */
+.table-wrapper {
+  overflow-x: auto; /* RESPONSIVE MOBILE */
+}
 
-    /* TOP LAYOUT */
-    .top-row {
-      display: flex;
-      gap: 50px;
-      margin-bottom: 20px;
-    }
-    .top-row div { flex: 1; }
-    .top-row label { font-weight: bold; }
+.xero-table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 6px;    /* SPACING antar row */
+}
 
-    /* TABLE FIX – NO OVERLAP */
-    .xero-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: auto; /* FIX OVERLAP */
-      margin-top: 15px;
-    }
+.xero-table th {
+  background: #f7f7f7;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e4e7ea;
+  border-top: 1px solid #e4e7ea;
+  font-weight: 600;
+  white-space: nowrap;
+}
 
-    .xero-table th {
-      background: #f7f7f7;
-      padding: 14px 16px;
-      border-bottom: 2px solid #e5e5e5;
-      font-weight: 600;
-      white-space: nowrap;
-    }
+.xero-table td {
+  padding: 14px 16px;
+  border-top: 1px solid #e4e7ea;
+  border-bottom: 1px solid #e4e7ea;
+  background: white;
+}
 
-    .xero-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid #ececec;
-      vertical-align: middle;
-    }
+/* kolom antar cell punya jarak visual */
+.xero-table td + td,
+.xero-table th + th {
+  border-left: 1px solid #f0f0f0;
+}
 
-    /* FIX DRAG COLUMN (kecil, tidak ganggu layout) */
-    .col-drag {
-      cursor: grab;
-      text-align: center;
-      width: 18px !important;
-      padding: 0 !important;
-      font-size: 16px;
-      opacity: 0.7;
-    }
+/* DRAG COLUMN */
+.col-drag {
+  cursor: grab;
+  text-align: center;
+  width: 18px !important;
+  padding: 0 !important;
+  font-size: 16px;
+  opacity: 0.5;
+}
 
-    /* DELETE BUTTON */
-    .delete-btn {
-      background: none;
-      border: none;
-      color: red;
-      font-size: 20px;
-      cursor: pointer;
-    }
+/* DELETE BUTTON */
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 20px;
+  cursor: pointer;
+}
 
-    /* Row Input Auto Fit */
-    .xero-table input {
-      width: 100%;
-      box-sizing: border-box;
-    }
+/* Column inputs */
+.xero-table input {
+  width: 100%;
+  box-sizing: border-box;
+}
 
-    /* ADD ROW BUTTON */
-    #addLine {
-      margin-top: 12px;
-      background: #e7f1ff;
-      border: 1px solid #c7dcff;
-      padding: 10px 16px;
-      border-radius: 4px;
-      color: #2b5da4;
-      font-weight: 600;
-      cursor: pointer;
-    }
+/* ADD ROW BUTTON */
+#addLine {
+  margin-top: 12px;
+  background: #e7f1ff;
+  border: 1px solid #c7dcff;
+  padding: 10px 16px;
+  border-radius: 4px;
+  color: #2b5da4;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    /* SUMMARY BOX */
-    .summary-box {
-      width: 420px;
-      float: right;
-      margin-top: 25px;
-    }
+/* =========================
+   SUMMARY BOX
+========================= */
+.summary-box {
+  width: 420px;
+  float: right;
+  margin-top: 25px;
+}
 
-    .summary-box input {
-      width: 100%;
-      height: 32px;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
+.summary-box input {
+  width: 100%;
+  height: 32px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
 
-    /* FOOTER */
-    .footer-area {
-      margin-top: 55px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 40px;
-    }
+/* =========================
+   FOOTER (NOTES + BUTTON)
+========================= */
+.footer-area {
+  margin-top: 55px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
 
-    .footer-left { width: 55%; }
+.footer-left { width: 55%; }
 
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      font-size: 15px;
-    }
+textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 15px;
+}
 
-    .footer-right {
-      width: 40%;
-      text-align: right;
-    }
+.footer-right {
+  width: 40%;
+  text-align: right;
+}
 
-    button[type="submit"] {
-      background: #2b5da4;
-      border: none;
-      padding: 12px 22px;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-    }
+button[type="submit"] {
+  background: #2b5da4;
+  border: none;
+  padding: 12px 22px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+}
 
-    button[type="submit"]:hover {
-      background: #1f4988;
-    }
+button[type="submit"]:hover {
+  background: #1f4988;
+}
 
-    /* MODAL */
-    #modal-bg {
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.45);
-      z-index:2000;
-    }
+/* =========================
+   MODAL
+========================= */
+#modal-bg {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:2000;
+}
 
-    #modal-box {
-      background:white;
-      width:350px;
-      padding:20px;
-      border-radius:8px;
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%, -50%);
-    }
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  
+  body {
+    padding: 0 10px;
+  }
 
-    /* PRINT LANDSCAPE */
-    @media print {
-      @page { size: landscape; }
-      #addLine, button, textarea { display: none !important; }
-    }
-  </style>
-</head>
+  .top-row {
+    flex-direction: column;
+    gap: 12px;
+  }
 
-<body>
+  .summary-box {
+    float: none;
+    width: 100%;
+    margin-top: 35px;
+  }
 
-<h2>Form Pemesanan</h2>
-<p id="result"></p>
+  .footer-area {
+    flex-direction: column;
+  }
 
-<form id="orderForm">
+  .footer-left,
+  .footer-right {
+    width: 100%;
+    text-align: left;
+  }
 
-  <div class="top-row">
-    <div>
-      <label>Date</label><br>
-      <input type="date" id="date" name="date" required>
-    </div>
+  button[type="submit"] {
+    width: 100%;
+  }
+}
 
-    <div>
-      <label>Customer</label><br>
-      <select id="customer" name="customer" required></select>
-    </div>
-  </div>
-
-  <!-- TABLE -->
-  <table class="xero-table">
-    <thead>
-      <tr>
-        <th style="width:25px;"></th> <!-- drag -->
-        <th style="min-width:260px; width:32%;">Item</th>
-        <th style="min-width:90px; width:10%;">Meter</th>
-        <th style="min-width:80px; width:8%;">Qty</th>
-        <th style="min-width:120px; width:15%;">Unit Price</th>
-        <th style="min-width:120px; width:15%;">Price/Qty</th>
-        <th style="min-width:140px; width:18%;">Total</th>
-        <th style="width:40px;"></th>
-      </tr>
-    </thead>
-    <tbody id="orderBody"></tbody>
-  </table>
-
-  <button type="button" id="addLine">+ Add row</button>
-
-  <!-- SUMMARY -->
-  <div class="summary-box">
-    <table>
-      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
-    </table>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer-area">
-
-    <div class="footer-left">
-      <label>Catatan tambahan</label>
-      <textarea name="catatan"></textarea>
-    </div>
-
-    <div class="footer-right">
-      <button type="submit" id="submitBtn">Kirim Order</button>
-    </div>
-
-  </div>
-
-</form>
-
-<!-- MODAL ADD CUSTOMER -->
-<div id="modal-bg">
-  <div id="modal-box">
-    <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer..." />
-    <button id="saveCustomerBtn">Simpan</button>
-  </div>
-</div>
-
-<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="./script.js"></script>
-
-</body>
-</html>
+/* PRINT */
+@media print {
+  @page { size: landscape; }
+  #addLine,
+  button,
+  textarea { display: none !important; }
+}
