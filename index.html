@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan (Xero Style)</title>
 
+  <!-- Choices.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-/* =========================
-   GLOBAL FORM LAYOUT
-========================= */
+
+/* ============================================
+   GLOBAL PAGE LAYOUT
+============================================ */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -22,37 +23,27 @@ body {
 h2 {
   color: #2b5da4;
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
-/* =========================
-   INPUTS
-========================= */
+/* ============================================
+   INPUT + SELECT
+============================================ */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="date"] {
-  height: 42px;
-  line-height: 42px;
-  border-radius: 6px;
-  border: 1px solid #d3d7dc;
-  padding: 0 12px;
-  background: white;
   box-sizing: border-box;
 }
 
-/* Choices container mengikuti tinggi input */
+input[type="date"],
+input[type="number"],
+input[type="text"],
 .choices__inner {
+  height: 42px;
   min-height: 42px;
-  border-radius: 6px !important;
-  border: 1px solid #d3d7dc !important;
-  padding: 0 12px !important;
-  display: flex;
-  align-items: center;
+  border-radius: 6px;
+  border: 1px solid #d3d7dc;
+  padding: 0 12px;
 }
 
 /* prevent minus */
@@ -60,26 +51,25 @@ input[type="number"] {
   min: 0;
 }
 
-/* DATE FIX */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: opacity(60%);
-}
-
-/* =========================
+/* ============================================
    TOP ROW
-========================= */
+============================================ */
 .top-row {
   display: flex;
-  gap: 50px;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 25px;
 }
-.top-row div { flex: 1; }
-.top-row label { font-weight: bold; }
+.top-row div {
+  flex: 1;
+}
+.top-row label {
+  font-weight: bold;
+}
 
-/* =========================
-   TABLE (XERO STYLE)
-========================= */
+/* ============================================
+   TABLE
+============================================ */
 .xero-table {
   width: 100%;
   border-collapse: separate;
@@ -88,19 +78,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .xero-table th {
   background: #f7f7f7;
-  padding: 10px 12px;
-  border-bottom: 1px solid #e4e7ea;
-  border-top: 1px solid #e4e7ea;
   font-weight: 600;
-  white-space: nowrap;
   text-align: center;
+  padding: 12px;
+  border-top: 1px solid #e4e7ea;
+  border-bottom: 1px solid #e4e7ea;
 }
 
 .xero-table td {
-  padding: 8px 12px;
+  background: white;
   border-top: 1px solid #e4e7ea;
   border-bottom: 1px solid #e4e7ea;
-  background: white;
+  padding: 12px;
   vertical-align: middle;
 }
 
@@ -110,17 +99,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: 100%;
 }
 
-/* DRAG COLUMN */
+/* drag handle */
 .col-drag {
-  cursor: grab;
+  width: 20px;
   text-align: center;
-  width: 18px;
-  padding: 0;
-  font-size: 16px;
+  cursor: grab;
   opacity: 0.5;
 }
 
-/* DELETE BUTTON */
+/* delete icon */
 .delete-btn {
   background: none;
   border: none;
@@ -129,7 +116,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* ADD ROW BUTTON */
+/* ============================================
+   ADD ROW
+============================================ */
 #addLine {
   margin-top: 12px;
   background: #e7f1ff;
@@ -141,9 +130,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* =========================
+/* ============================================
    SUMMARY BOX
-========================= */
+============================================ */
 .summary-box {
   width: 420px;
   float: right;
@@ -156,89 +145,90 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .summary-box td:first-child {
   padding-right: 10px;
+  font-weight: 500;
 }
 
+/* inputs */
 .summary-box input {
-  width: 100%;
-  height: 32px;
-  padding: 4px 8px;
+  height: 34px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  box-sizing: border-box;
+  padding: 4px 8px;
 }
 
-/* SUBMIT BUTTON BELOW GRAND TOTAL */
+/* SUBMIT BUTTON */
 #submitBtn {
-  margin-top: 16px;
+  margin-top: 20px;
   float: right;
   background: #2b5da4;
+  color: white;
   border: none;
   padding: 10px 20px;
-  color: white;
   border-radius: 6px;
-  cursor: pointer;
   font-size: 15px;
   font-weight: 600;
+  cursor: pointer;
 }
 #submitBtn:hover {
   background: #1f4988;
 }
 
-/* =========================
+/* ============================================
    FOOTER NOTES
-========================= */
+============================================ */
 .footer-area {
   clear: both;
-  margin-top: 55px;
+  margin-top: 60px;
 }
 
 textarea {
   width: 100%;
   min-height: 120px;
-  padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  resize: vertical;
+  padding: 12px;
   font-size: 15px;
 }
 
-/* =========================
-   MODAL
-========================= */
-#modal-bg {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:2000;
+/* ============================================
+   CHOICES.JS FIX SAFE
+   (NO DAMAGE, NO HEIGHT EXPLOSION)
+============================================ */
+.choices__inner {
+  display: flex;
+  align-items: center;
 }
 
-/* =========================
-   MOBILE
-========================= */
-@media (max-width: 768px) {
-  body { padding: 0 10px; }
-  .top-row { flex-direction: column; gap: 12px; }
-  .summary-box { width: 100%; float:none; margin-top: 35px; }
+.choices__list--single {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
-/* =========================
-   PRINT
-========================= */
-@media print {
-  @page { size: landscape; }
-  #addLine, button, textarea { display: none !important; }
+.choices__list--dropdown {
+  max-height: 250px;
+  overflow-y: auto;
 }
+
+/* setiap item */
+.choices__list--dropdown .choices__item {
+  height: 38px;
+  line-height: 38px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+}
+
   </style>
 </head>
 
 <body>
 
 <h2>Form Pemesanan</h2>
-<p id="result"></p>
 
 <form id="orderForm">
 
+  <!-- TOP -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -255,14 +245,14 @@ textarea {
   <table class="xero-table">
     <thead>
       <tr>
-        <th style="width:25px;"></th>
-        <th style="min-width:260px; width:32%;">Item</th>
-        <th style="min-width:90px; width:10%;">Meter</th>
-        <th style="min-width:80px; width:8%;">Qty</th>
-        <th style="min-width:120px; width:15%;">Unit Price</th>
-        <th style="min-width:120px; width:15%;">Price/Qty</th>
-        <th style="min-width:140px; width:18%;">Total</th>
-        <th style="width:40px;"></th>
+        <th></th>
+        <th>Item</th>
+        <th>Meter</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Price/Qty</th>
+        <th>Total</th>
+        <th></th>
       </tr>
     </thead>
     <tbody id="orderBody"></tbody>
@@ -270,32 +260,55 @@ textarea {
 
   <button type="button" id="addLine">+ Add row</button>
 
-  <!-- SUMMARY + SUBMIT -->
+  <!-- SUMMARY -->
   <div class="summary-box">
     <table>
-      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
+      <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
+      <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
+      <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
     </table>
+
     <button type="submit" id="submitBtn">Kirim Order</button>
   </div>
 
+  <!-- NOTES -->
   <div class="footer-area">
-      <label>Catatan tambahan</label>
-      <textarea name="catatan"></textarea>
+    <label>Catatan tambahan</label>
+    <textarea name="catatan"></textarea>
   </div>
 
 </form>
 
-<!-- MODAL ADD CUSTOMER -->
-<div id="modal-bg">
-  <div id="modal-box">
+<!-- MODAL -->
+<div id="modal-bg" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:9999;
+">
+  <div style="
+    width:300px;
+    background:white;
+    padding:20px;
+    margin:150px auto;
+    border-radius:8px;
+  ">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer..." />
-    <button id="saveCustomerBtn">Simpan</button>
+    <input id="newCustomerName" placeholder="Nama customer..." style="width:100%; margin-bottom:15px;">
+    <button id="saveCustomerBtn" style="
+      width:100%;
+      background:#2b5da4;
+      color:white;
+      padding:10px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    ">Simpan</button>
   </div>
 </div>
 
+<!-- SCRIPTS -->
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
 
