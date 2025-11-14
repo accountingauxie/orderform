@@ -40,6 +40,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   border-radius: 6px;
   border: 1px solid #d3d7dc;
   padding: 0 12px;
+  box-sizing: border-box;
 }
 
 /* Choices center text */
@@ -63,7 +64,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 /* ===================== TABLE ======================= */
 
 .table-wrapper {
-  position: relative; /* SUMMARY BOX anchor */
+  position: relative;
 }
 
 .xero-table {
@@ -95,13 +96,13 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 
 /* DRAG */
 .col-drag {
-  width: 18px;
+  width: 30px !important;
   cursor: grab;
   opacity: 0.5;
   text-align: center;
 }
 
-/* DELETE BUTTON */
+/* DELETE */
 .delete-btn {
   background: none;
   border: none;
@@ -110,7 +111,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   cursor: pointer;
 }
 
-/* ADD ROW BUTTON */
+/* ADD ROW */
 #addLine {
   margin-top: 10px;
   padding: 10px 16px;
@@ -122,79 +123,80 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 }
 
 /* ======================================================
-   COLUMN WIDTH CONTROL (EASY TO EDIT)
+   COLUMN WIDTH FIX — ITEM ANTI KEPOTONG
 ====================================================== */
 
 /* 1 = DRAG */
 .xero-table th:nth-child(1),
 .xero-table td:nth-child(1) {
-    width: 30px !important;
+  width: 30px !important;
 }
 
-/* 2 = ITEM (SOLUSI ANTI KEPOTONG) */
+/* 2 = ITEM — PRIORITAS UTAMA */
 .xero-table th:nth-child(2),
 .xero-table td:nth-child(2) {
-    width: 32% !important;
-    min-width: 300px !important;
+  width: 40% !important;
+  min-width: 360px !important;
 }
 
-/* 3 = METER */
+/* 3 = METER — kecil */
 .xero-table th:nth-child(3),
 .xero-table td:nth-child(3) {
-    width: 5% !important;
+  width: 80px !important;
+  min-width: 70px !important;
+  max-width: 90px !important;
 }
 
-/* 4 = QTY */
+/* 4 = QTY — kecil */
 .xero-table th:nth-child(4),
 .xero-table td:nth-child(4) {
-    width: 8% !important;
+  width: 70px !important;
+  min-width: 60px !important;
+  max-width: 80px !important;
 }
 
 /* 5 = UNIT PRICE */
 .xero-table th:nth-child(5),
 .xero-table td:nth-child(5) {
-    width: 16% !important;
+  width: 140px !important;
+  min-width: 120px !important;
 }
 
-/* 6 = PRICE/QTY */
+/* 6 = PRICE/ QTY */
 .xero-table th:nth-child(6),
 .xero-table td:nth-child(6) {
-    width: 16% !important;
+  width: 140px !important;
+  min-width: 120px !important;
 }
 
 /* 7 = TOTAL */
 .xero-table th:nth-child(7),
 .xero-table td:nth-child(7) {
-    width: 18% !important;
+  width: 160px !important;
+  min-width: 140px !important;
 }
 
 /* 8 = DELETE */
 .xero-table th:nth-child(8),
 .xero-table td:nth-child(8) {
-    width: 40px !important;
+  width: 40px !important;
 }
 
 /* ===================== SUMMARY ======================= */
-/* STICK TO TABLE RIGHT (like screenshot) */
 
 .summary-box {
   position: absolute;
   right: 0;
-  bottom: 70px; /* distance under table */
-  width: 160px;
+  bottom: -70px;
+  width: 230px;
 }
 
 .summary-box table {
   width: 100%;
 }
 
-.summary-box td:first-child {
-  text-align: left;
-}
-
-.summary-box td:last-child {
-  text-align: right;
-}
+.summary-box td:first-child { text-align: left; }
+.summary-box td:last-child { text-align: right; }
 
 .summary-box input {
   width: 100%;
@@ -204,12 +206,12 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   padding: 0 10px;
 }
 
-/* SUBMIT BUTTON BELOW SUMMARY */
+/* SUBMIT BUTTON */
 #submitBtn {
   position: absolute;
   right: 0;
   bottom: -130px;
-  width: 160px;
+  width: 230px;
   padding: 12px;
   background: #2b5da4;
   border: none;
@@ -223,18 +225,18 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   background: #1f4c89;
 }
 
-/* ===================== NOTES SECTION ======================= */
+/* ===================== NOTES ======================= */
 
 .notes-section {
-  margin-top: 180px; /* give room for summary & button */
+  margin-top: 180px;
 }
 
 textarea {
   width: 100%;
   min-height: 140px;
+  padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  padding: 12px;
 }
 
 /* ===================== MODAL ======================= */
@@ -248,13 +250,12 @@ textarea {
 }
 
 #modal-box {
-  background: white;
-  padding: 20px;
   width: 350px;
+  padding: 20px;
+  background: #fff;
   border-radius: 8px;
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: 50%; top: 50%;
   transform: translate(-50%, -50%);
 }
 
@@ -267,20 +268,17 @@ textarea {
 
 <form id="orderForm">
 
-  <!-- TOP AREA -->
   <div class="top-row">
     <div>
       <label>Date</label>
       <input type="date" id="date" required>
     </div>
-
     <div>
       <label>Customer</label>
       <select id="customer" required></select>
     </div>
   </div>
 
-  <!-- TABLE AREA + SUMMARY STICK -->
   <div class="table-wrapper">
 
     <table class="xero-table">
@@ -301,7 +299,6 @@ textarea {
 
     <button id="addLine" type="button">+ Add row</button>
 
-    <!-- SUMMARY BOX (right aligned) -->
     <div class="summary-box">
       <table>
         <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
@@ -310,12 +307,10 @@ textarea {
       </table>
     </div>
 
-    <!-- BUTTON BELOW SUMMARY -->
     <button id="submitBtn" type="submit">Kirim Order</button>
 
   </div>
 
-  <!-- NOTES SECTION -->
   <div class="notes-section">
     <label>Catatan tambahan</label>
     <textarea name="catatan"></textarea>
@@ -323,7 +318,7 @@ textarea {
 
 </form>
 
-<!-- MODAL CUSTOMER -->
+<!-- MODAL -->
 <div id="modal-bg">
   <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
