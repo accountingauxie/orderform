@@ -9,85 +9,136 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 960px;
-      margin: 40px auto;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 1400px;      /* ⬅ LEBARKAN */
+    margin: 40px auto;
+  }
 
-    h2 { color: #2b5da4; text-align: center; }
+  h2 { 
+    color: #2b5da4; 
+    text-align: center; 
+  }
 
-    .top-row { display: flex; align-items: center; gap: 20px; }
+  /* Make inputs not squeezed */
+  input, select, textarea {
+    font-size: 14px;
+  }
 
-    .xero-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+  /* TOP SECTION — FULL WIDTH CUSTOMER */
+  .top-row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+  }
 
-    .xero-table th {
-      background: #f7f7f7;
-      border-bottom: 2px solid #e5e5e5;
-      padding: 10px;
-      font-weight: 600;
-      color: #444;
-    }
+  .top-row div {
+    flex: 1;
+  }
 
-    .xero-table td {
-      padding: 10px;
-      border-bottom: 1px solid #ececec;
-    }
+  .top-row label {
+    font-weight: bold;
+  }
 
-    .xero-table input, .xero-table select {
-      width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 13px;
-      box-sizing: border-box;
-    }
+  /* TABLE XERO STYLE + FULL WIDTH */
+  .xero-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    table-layout: fixed;   /* ⬅ MEMBUAT LEBAR SESUAI proporsi */
+  }
 
-    .col-drag { width: 30px; cursor: grab; font-size: 18px; }
-    .col-delete { width: 40px; text-align: center; }
+  .xero-table th {
+    background: #f7f7f7;
+    border-bottom: 2px solid #e5e5e5;
+    padding: 12px;
+    font-weight: 600;
+    color: #444;
+    text-align: left;
+  }
 
-    .delete-btn {
-      background: none;
-      border: none;
-      color: red;
-      font-size: 18px;
-      cursor: pointer;
-    }
+  .xero-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ececec;
+  }
 
-    #addLine {
-      margin-top: 10px;
-      background: #e7f1ff;
-      border: 1px solid #c7dcff;
-      padding: 8px 14px;
-      border-radius: 4px;
-      color: #2b5da4;
-      font-weight: 600;
-      cursor: pointer;
-    }
+  .xero-table input, 
+  .xero-table select {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
 
-    .summary-box {
-      margin-top: 20px;
-      width: 300px;
-      margin-left: auto;
-    }
+  /* COLUMN WIDTHS — WIDER LOOK */
+  th:nth-child(1) { width: 40px; }     /* drag */
+  th:nth-child(2) { width: 320px; }    /* Item */
+  th:nth-child(3) { width: 140px; }    /* Meter */
+  th:nth-child(4) { width: 110px; }    /* Qty */
+  th:nth-child(5) { width: 160px; }    /* Unit Price */
+  th:nth-child(6) { width: 160px; }    /* Price/Qty */
+  th:nth-child(7) { width: 180px; }    /* Total */
+  th:nth-child(8) { width: 40px; }     /* delete */
 
-    .summary-label { text-align: right; padding-right: 10px; }
-    .summary-total { font-weight: bold; font-size: 16px; }
+  /* DRAG ICON */
+  .col-drag {
+    cursor: grab;
+    font-size: 18px;
+    text-align: center;
+  }
 
-    button[type="submit"] {
-      margin-top: 20px;
-      background: #2b5da4;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+  /* DELETE BUTTON */
+  .delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* ADD ROW */
+  #addLine {
+    margin-top: 12px;
+    background: #e7f1ff;
+    border: 1px solid #c7dcff;
+    padding: 10px 16px;
+    border-radius: 4px;
+    color: #2b5da4;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* SUMMARY BOX — ALIGN RIGHT */
+  .summary-box {
+    margin-top: 30px;
+    width: 350px;
+    margin-left: auto;
+  }
+
+  .summary-label {
+    text-align: right;
+    padding-right: 10px;
+  }
+
+  .summary-total {
+    font-weight: bold;
+    font-size: 17px;
+  }
+
+  button[type="submit"] {
+    margin-top: 20px;
+    background: #2b5da4;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+</style>
 </head>
 
 <body>
