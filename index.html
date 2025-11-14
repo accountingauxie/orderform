@@ -2,16 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Pemesanan Sukses Jaya</title>
+  <title>Form Pemesanan</title>
 
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
 
-/* =============================
-   GLOBAL FORM LAYOUT
-============================= */
+/* ===================== GLOBAL ======================= */
+
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -19,19 +18,42 @@ body {
   padding: 0 40px;
 }
 
-/* Title */
 h2 {
   text-align: center;
+  margin-bottom: 35px;
   color: #2b5da4;
-  margin-bottom: 30px;
 }
 
-/* =============================
-   TOP SECTION
-============================= */
+label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+input, select, textarea {
+  font-size: 14px;
+  font-family: inherit;
+}
+
+input[type="text"], input[type="number"], input[type="date"],
+.choices__inner {
+  height: 42px !important;
+  border-radius: 6px !important;
+  border: 1px solid #d3d7dc !important;
+  padding: 0 12px !important;
+}
+
+/* Center-align choices text */
+.choices__inner {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ============== TOP ROW ============== */
+
 .top-row {
   display: flex;
-  gap: 50px;
+  gap: 60px;
   margin-bottom: 40px;
 }
 
@@ -39,53 +61,26 @@ h2 {
   flex: 1;
 }
 
-.top-row label {
-  font-weight: bold;
-  margin-bottom: 10px;
-  display: inline-block;
-}
+/* ============== TABLE ============== */
 
-/* Inputs */
-input, select, textarea {
-  font-size: 14px;
-  font-family: inherit;
-}
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
-  height: 42px !important;
-  border-radius: 6px;
-  border: 1px solid #d3d7dc;
-  padding: 0 12px;
-  box-sizing: border-box;
-}
-
-/* Make choices dropdown text centered */
-.choices__inner {
-  display: flex !important;
-  align-items: center !important;
-}
-
-/* =============================
-   TABLE
-============================= */
 .xero-table {
   width: 100%;
-  border-collapse: separate !important;
+  border-collapse: separate;
   border-spacing: 0 6px;
 }
 
 .xero-table th {
   background: #f7f7f7;
   padding: 14px;
-  border-top: 1px solid #e2e3e7;
-  border-bottom: 1px solid #e2e3e7;
-  white-space: nowrap;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 .xero-table td {
-  background: #ffffff;
   padding: 14px;
-  border-top: 1px solid #e2e3e7;
-  border-bottom: 1px solid #e2e3e7;
+  background: white;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
   vertical-align: middle;
 }
 
@@ -95,11 +90,10 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 }
 
 .col-drag {
-  width: 18px !important;
-  text-align: center;
+  width: 18px;
   cursor: grab;
   opacity: 0.5;
-  padding: 0 !important;
+  text-align: center;
 }
 
 .delete-btn {
@@ -110,35 +104,49 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   cursor: pointer;
 }
 
-.xero-table input {
-  width: 100%;
-}
-
-/* Add row button */
 #addLine {
-  margin-top: 10px;
+  margin-top: 12px;
+  padding: 10px 16px;
   background: #e7f1ff;
   border: 1px solid #c7dcff;
-  padding: 10px 16px;
   border-radius: 4px;
   color: #2b5da4;
-  cursor: pointer;
+  font-weight: 600;
 }
 
-/* =============================
-   SUMMARY RIGHT SIDE (NEW STRUCTURE)
-============================= */
+/* ======================================================
+   MAIN 2-COLUMN LAYOUT: LEFT (notes) & RIGHT (summary)
+====================================================== */
 
-.summary-container {
-  margin-top: 20px;
+.main-bottom {
+  margin-top: 40px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 50px;
 }
 
-.summary-box {
-  width: 170px;
-  margin-right: 10px;
+/* LEFT SIDE (NOTES) */
+
+.left-notes {
+  flex: 1; /* lebar lebih besar */
 }
+
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+/* RIGHT SIDE = SUMMARY + BUTTON */
+
+.right-summary {
+  width: 230px; /* FIX, supaya sejajar dengan TOTAL column */
+}
+
+/* Summary box */
 
 .summary-box table {
   width: 100%;
@@ -151,50 +159,36 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   text-align: right;
 }
 
-/* =============================
-   BOTTOM FOOTER
-============================= */
-
-.footer-area {
-  margin-top: 40px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.footer-left {
-  width: 55%;
-}
-
-textarea {
+.summary-box input {
   width: 100%;
-  min-height: 120px;
-  padding: 12px;
+  height: 38px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  padding: 0 10px;
 }
 
-/* Submit button aligned with TOTAL column */
-.footer-right {
-  width: 170px;
-}
+/* Button */
 
 #submitBtn {
   width: 100%;
   padding: 12px;
+  margin-top: 25px;
+  border-radius: 6px;
+  border: none;
   background: #2b5da4;
   color: white;
-  border: none;
-  border-radius: 6px;
   font-weight: bold;
-  margin-top: 20px;
+  cursor: pointer;
 }
 
-/* =============================
-   MODAL FIX
-============================= */
+#submitBtn:hover {
+  background: #1f4c89;
+}
+
+/* ============== MODAL ============== */
 
 #modal-bg {
-  display:none; /* FIX: hide modal */
+  display: none;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.4);
@@ -203,37 +197,13 @@ textarea {
 
 #modal-box {
   background: white;
-  width: 350px;
   padding: 20px;
+  width: 350px;
   border-radius: 8px;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-/* =============================
-   RESPONSIVE
-============================= */
-@media (max-width: 768px) {
-  body { padding: 0 10px; }
-
-  .top-row {
-    flex-direction: column;
-  }
-
-  .footer-area {
-    flex-direction: column;
-  }
-
-  .footer-right,
-  .footer-left {
-    width: 100%;
-  }
-
-  #submitBtn {
-    width: 100%;
-  }
 }
 
   </style>
@@ -245,7 +215,7 @@ textarea {
 
 <form id="orderForm">
 
-  <!-- TOP AREA -->
+  <!-- TOP ROW -->
   <div class="top-row">
     <div>
       <label>Date</label>
@@ -261,14 +231,14 @@ textarea {
   <table class="xero-table">
     <thead>
       <tr>
-        <th style="width:25px;"></th>
-        <th style="min-width:260px;">Item</th>
-        <th style="min-width:90px;">Meter</th>
-        <th style="min-width:80px;">Qty</th>
-        <th style="min-width:120px;">Unit Price</th>
-        <th style="min-width:120px;">Price/Qty</th>
-        <th style="min-width:140px;">Total</th>
-        <th style="width:40px;"></th>
+        <th style="width:25px"></th>
+        <th style="width:32%">Item</th>
+        <th style="width:10%">Meter</th>
+        <th style="width:8%">Qty</th>
+        <th style="width:15%">Unit Price</th>
+        <th style="width:15%">Price/Qty</th>
+        <th style="width:15%">Total</th>
+        <th style="width:40px"></th>
       </tr>
     </thead>
     <tbody id="orderBody"></tbody>
@@ -276,27 +246,31 @@ textarea {
 
   <button type="button" id="addLine">+ Add row</button>
 
-  <!-- SUMMARY (Proper alignment) -->
-  <div class="summary-container">
-    <div class="summary-box">
-      <table>
-        <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-        <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-        <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
-      </table>
-    </div>
-  </div>
+  <!-- ======================================================
+       2-COLUMN LAYOUT BOTTOM (LEFT NOTES + RIGHT SUMMARY)
+  ====================================================== -->
+  <div class="main-bottom">
 
-  <!-- FOOTER NOTES + BUTTON -->
-  <div class="footer-area">
-    <div class="footer-left">
+    <!-- LEFT (NOTES) -->
+    <div class="left-notes">
       <label>Catatan tambahan</label>
-      <textarea name="catatan"></textarea>
+      <textarea></textarea>
     </div>
 
-    <div class="footer-right">
-      <button type="submit" id="submitBtn">Kirim Order</button>
+    <!-- RIGHT (SUMMARY + BUTTON) -->
+    <div class="right-summary">
+      
+      <div class="summary-box">
+        <table>
+          <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
+          <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
+          <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
+        </table>
+      </div>
+
+      <button id="submitBtn" type="submit">Kirim Order</button>
     </div>
+
   </div>
 
 </form>
