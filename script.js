@@ -1,13 +1,18 @@
 window.onload = function () {
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbxVLp7NlU-giwsUvES8Lkq2wSeckGausQmG1xclkahzZwjk-qAjt3xwAPgCXBH2jZptww/exec"; // ← GANTI
+    const baseURL = "https://script.google.com/macros/s/AKfycbxVLp7NlU-giwsUvES8Lkq2wSeckGausQmG1xclkahzZwjk-qAjt3xwAPgCXBH2jZptww/exec";
     let productList = [];
     let choiceCustomer;
+
+    // ✅ AMAN: ambil elemen dengan jelas, jangan andalkan global ID
+    const orderForm = document.getElementById("orderForm");
+    const orderBody = document.getElementById("orderBody");
 
     const modalBG = document.getElementById("modal-bg");
     const newCustomerInput = document.getElementById("newCustomerName");
     const saveCustomerBtn = document.getElementById("saveCustomerBtn");
 
+    // set default tanggal hari ini
     document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
     function formatRupiah(num) {
@@ -23,7 +28,7 @@ window.onload = function () {
         const res = await fetch(baseURL + "?action=getdata");
         const data = await res.json();
 
-        productList = data.products;
+        productList = data.products || [];
 
         /* CUSTOMER DROPDOWN */
         choiceCustomer = new Choices("#customer", {
@@ -34,7 +39,7 @@ window.onload = function () {
 
         choiceCustomer.setChoices(
             [
-                ...data.customers.map(v => ({ value: v, label: v })),
+                ...(data.customers || []).map(v => ({ value: v, label: v })),
                 { value: "__add__", label: "➕ Add New Customer" }
             ],
             "value",
@@ -73,8 +78,7 @@ window.onload = function () {
        ========================== */
     function addLine() {
 
-        const tbody = document.getElementById("orderBody");
-        const idx = tbody.children.length + 1;
+        const idx = orderBody.children.length + 1;
 
         const tr = document.createElement("tr");
 
@@ -85,8 +89,8 @@ window.onload = function () {
                 <select class="product-select" name="product_${idx}"></select>
             </td>
 
-            <td><input type="number" step="0.01" class="meter"></td>
-            <td><input type="number" step="1" class="qty"></td>
+            <td><input type="number" step="0.01" min="0" class="meter"></td>
+            <td><input type="number" step="1" min="0" class="qty"></td>
 
             <td><input type="text" readonly class="unitPrice" data-value=""></td>
             <td><input type="text" readonly class="ppq" data-value=""></td>
@@ -95,11 +99,11 @@ window.onload = function () {
             <td><button type="button" class="delete-btn">🗑</button></td>
         `;
 
-        tbody.appendChild(tr);
+        orderBody.appendChild(tr);
 
         /* Product dropdown */
         const select = tr.querySelector(".product-select");
-        const choice = new Choices(select, { searchEnabled: true });
+        const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
 
         choice.setChoices(
             productList.map(v => ({ value: v, label: v })),
@@ -140,8 +144,16 @@ window.onload = function () {
        CALCULATE PER ROW
        ========================== */
     function calculateRow(tr) {
-        const meter = parseFloat(tr.querySelector(".meter").value) || 0;
-        const qty = parseFloat(tr.querySelector(".qty").value) || 0;
+        const meterInput = tr.querySelector(".meter");
+        const qtyInput = tr.querySelector(".qty");
+
+        let meter = parseFloat(meterInput.value) || 0;
+        let qty = parseFloat(qtyInput.value) || 0;
+
+        // ✅ JAGA SUPAYA TIDAK MINUS
+        if (meter < 0) { meter = 0; meterInput.value = 0; }
+        if (qty < 0) { qty = 0; qtyInput.value = 0; }
+
         const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
 
         const ppq = meter * price;
@@ -182,33 +194,44 @@ window.onload = function () {
     /* ==========================
        SUBMIT FORM
        ========================== */
-    document.getElementById("orderForm").addEventListener("submit", async e => {
+    orderForm.addEventListener("submit", async e => {
         e.preventDefault();
+
+        // validasi basic HTML5
+        if (!orderForm.checkValidity()) {
+            orderForm.reportValidity();
+            return;
+        }
 
         const btn = document.getElementById("submitBtn");
         btn.disabled = true;
         btn.innerText = "Sending...";
 
-        /* inject raw number value */
+        // inject raw number value
         document.querySelectorAll("[data-value]").forEach(el => {
             el.value = el.getAttribute("data-value");
         });
 
-        const res = await fetch(baseURL, {
-            method: "POST",
-            body: new FormData(orderForm)
-        });
+        try {
+            const res = await fetch(baseURL, {
+                method: "POST",
+                body: new FormData(orderForm)
+            });
 
-        const txt = await res.text();
-        alert(txt);
+            const txt = await res.text();
+            alert(txt);
 
-        // Reset form
-        document.getElementById("orderForm").reset();
-        document.getElementById("orderBody").innerHTML = "";
-        addLine();
-        addLine();
-        addLine();
-        calculateSummary();
+            // Reset form
+            orderForm.reset();
+            orderBody.innerHTML = "";
+            addLine();
+            addLine();
+            addLine();
+            calculateSummary();
+        } catch (err) {
+            alert("Gagal mengirim order. Coba lagi.");
+            console.error(err);
+        }
 
         btn.disabled = false;
         btn.innerText = "Kirim Order";
