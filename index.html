@@ -9,67 +9,64 @@
 
   <style>
 
-/* =========================================
+/* =============================
    GLOBAL FORM LAYOUT
-========================================= */
+============================= */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
-  width: 100%;
   margin: 40px auto;
   padding: 0 40px;
 }
 
+/* Title */
 h2 {
-  color: #2b5da4;
   text-align: center;
+  color: #2b5da4;
   margin-bottom: 30px;
 }
 
-/* =========================================
-   INPUTS
-========================================= */
-input, select, textarea {
-  font-size: 14px;
-  font-family: inherit;
-}
-
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
-  height: 42px !important;
-  min-height: 42px !important;
-  border-radius: 6px !important;
-  border: 1px solid #d3d7dc !important;
-  padding: 0 12px !important;
-  background: white;
-  box-sizing: border-box;
-}
-
-/* FIX: Choices dropdown text fully center aligned */
-.choices__inner {
-  display: flex !important;
-  align-items: center !important;
-}
-
-/* FIX: Date label spacing */
-.top-row div label {
-  margin-bottom: 12px !important;
-  font-weight: bold;
-}
-
-/* =========================================
-   TOP ROW (DATE & CUSTOMER)
-========================================= */
+/* =============================
+   TOP SECTION
+============================= */
 .top-row {
   display: flex;
   gap: 50px;
   margin-bottom: 40px;
 }
-.top-row div { flex: 1; }
 
-/* =========================================
-   TABLE (XERO STYLE)
-========================================= */
+.top-row div {
+  flex: 1;
+}
 
+.top-row label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+/* Inputs */
+input, select, textarea {
+  font-size: 14px;
+  font-family: inherit;
+}
+input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+  height: 42px !important;
+  border-radius: 6px;
+  border: 1px solid #d3d7dc;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* Make choices dropdown text centered */
+.choices__inner {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* =============================
+   TABLE
+============================= */
 .xero-table {
   width: 100%;
   border-collapse: separate !important;
@@ -78,38 +75,33 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 
 .xero-table th {
   background: #f7f7f7;
-  padding: 14px 16px;
-  border-top: 1px solid #e5e5ea;
-  border-bottom: 1px solid #e5e5ea;
+  padding: 14px;
+  border-top: 1px solid #e2e3e7;
+  border-bottom: 1px solid #e2e3e7;
   white-space: nowrap;
-  font-weight: 600;
 }
 
 .xero-table td {
-  padding: 14px 16px;
-  border-top: 1px solid #e5e5ea;
-  border-bottom: 1px solid #e5e5ea;
-  background: white;
-  vertical-align: middle !important;
+  background: #ffffff;
+  padding: 14px;
+  border-top: 1px solid #e2e3e7;
+  border-bottom: 1px solid #e2e3e7;
+  vertical-align: middle;
 }
 
-/* Column divider */
 .xero-table td + td,
 .xero-table th + th {
   border-left: 1px solid #f0f0f0;
 }
 
-/* Drag handle */
 .col-drag {
-  cursor: grab;
   width: 18px !important;
-  font-size: 16px;
   text-align: center;
+  cursor: grab;
   opacity: 0.5;
   padding: 0 !important;
 }
 
-/* Delete row button */
 .delete-btn {
   background: none;
   border: none;
@@ -118,33 +110,34 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   cursor: pointer;
 }
 
-/* Inner inputs auto-fit */
 .xero-table input {
   width: 100%;
 }
 
-/* ADD ROW button */
+/* Add row button */
 #addLine {
-  margin-top: 12px;
+  margin-top: 10px;
   background: #e7f1ff;
   border: 1px solid #c7dcff;
   padding: 10px 16px;
   border-radius: 4px;
   color: #2b5da4;
   cursor: pointer;
-  font-weight: 600;
 }
 
-/* =========================================
-   SUMMARY (RIGHT SIDE TOTALS)
-========================================= */
+/* =============================
+   SUMMARY RIGHT SIDE (NEW STRUCTURE)
+============================= */
 
-/* FIX BLUE ALIGNMENT: EXACT MATCH WITH TOTAL COLUMN WIDTH */
+.summary-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .summary-box {
-  width: 170px;              /* SAME WIDTH as TOTAL column */
-  float: right;
-  margin-top: 25px;
-  margin-right: 4px !important; /* pixel-perfect alignment */
+  width: 170px;
+  margin-right: 10px;
 }
 
 .summary-box table {
@@ -153,20 +146,19 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
 
 .summary-box td:first-child {
   text-align: left;
-  padding-right: 10px;
 }
 .summary-box td:last-child {
   text-align: right;
 }
 
-/* =========================================
-   FOOTER NOTES + SUBMIT BUTTON
-========================================= */
+/* =============================
+   BOTTOM FOOTER
+============================= */
+
 .footer-area {
-  margin-top: 55px;
+  margin-top: 40px;
   display: flex;
   justify-content: space-between;
-  gap: 40px;
 }
 
 .footer-left {
@@ -179,66 +171,69 @@ textarea {
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  resize: vertical;
-  font-size: 15px;
 }
 
-/* FIX GREEN — Submit button same width as TOTAL and under summary */
+/* Submit button aligned with TOTAL column */
 .footer-right {
-  width: 170px !important; /* SAME WIDTH as summary box */
-  text-align: right;
+  width: 170px;
 }
 
 #submitBtn {
-  width: 100% !important;
+  width: 100%;
+  padding: 12px;
   background: #2b5da4;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 6px;
   color: white;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 15px;
-  margin-top: 20px !important;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 20px;
 }
 
-#submitBtn:hover {
-  background: #1f4988;
+/* =============================
+   MODAL FIX
+============================= */
+
+#modal-bg {
+  display:none; /* FIX: hide modal */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 9999;
 }
 
-/* =========================================
-   MOBILE RESPONSIVE
-========================================= */
+#modal-box {
+  background: white;
+  width: 350px;
+  padding: 20px;
+  border-radius: 8px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
 @media (max-width: 768px) {
-  
   body { padding: 0 10px; }
-  .top-row { flex-direction: column; }
 
-  .summary-box {
-    float: none;
-    width: 100%;
-    margin-right: 0 !important;
+  .top-row {
+    flex-direction: column;
   }
 
   .footer-area {
     flex-direction: column;
   }
 
-  .footer-left,
-  .footer-right {
-    width: 100% !important;
-    text-align: left !important;
+  .footer-right,
+  .footer-left {
+    width: 100%;
   }
 
   #submitBtn {
-    width: 100% !important;
+    width: 100%;
   }
-}
-
-/* PRINT */
-@media print {
-  @page { size: landscape; }
-  #addLine, button, textarea { display: none !important; }
 }
 
   </style>
@@ -247,20 +242,18 @@ textarea {
 <body>
 
 <h2>Form Pemesanan</h2>
-<p id="result"></p>
 
 <form id="orderForm">
 
-  <!-- TOP (DATE + CUSTOMER) -->
+  <!-- TOP AREA -->
   <div class="top-row">
     <div>
-      <label>Date</label><br>
-      <input type="date" id="date" name="date" required>
+      <label>Date</label>
+      <input type="date" id="date" required>
     </div>
-
     <div>
-      <label>Customer</label><br>
-      <select id="customer" name="customer" required></select>
+      <label>Customer</label>
+      <select id="customer" required></select>
     </div>
   </div>
 
@@ -269,12 +262,12 @@ textarea {
     <thead>
       <tr>
         <th style="width:25px;"></th>
-        <th style="min-width:260px; width:32%;">Item</th>
-        <th style="min-width:90px; width:10%;">Meter</th>
-        <th style="min-width:80px; width:8%;">Qty</th>
-        <th style="min-width:120px; width:15%;">Unit Price</th>
-        <th style="min-width:120px; width:15%;">Price/Qty</th>
-        <th style="min-width:140px; width:18%;">Total</th>
+        <th style="min-width:260px;">Item</th>
+        <th style="min-width:90px;">Meter</th>
+        <th style="min-width:80px;">Qty</th>
+        <th style="min-width:120px;">Unit Price</th>
+        <th style="min-width:120px;">Price/Qty</th>
+        <th style="min-width:140px;">Total</th>
         <th style="width:40px;"></th>
       </tr>
     </thead>
@@ -283,16 +276,18 @@ textarea {
 
   <button type="button" id="addLine">+ Add row</button>
 
-  <!-- SUMMARY -->
-  <div class="summary-box">
-    <table>
-      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
-    </table>
+  <!-- SUMMARY (Proper alignment) -->
+  <div class="summary-container">
+    <div class="summary-box">
+      <table>
+        <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
+        <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
+        <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
+      </table>
+    </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER NOTES + BUTTON -->
   <div class="footer-area">
     <div class="footer-left">
       <label>Catatan tambahan</label>
