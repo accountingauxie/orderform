@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan (Xero Style)</title>
 
+  <!-- Library -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
@@ -59,11 +60,9 @@
     align-items: center;
     gap: 40px;
   }
-
   .top-row div {
     flex: 1;
   }
-
   .top-row label {
     font-weight: bold;
   }
@@ -127,78 +126,100 @@
     border-radius: 4px;
   }
 
-  /* === XERO MODERN — DROPDOWN === */
-  .choices {
-      width: 100% !important;
-  }
+  /* === XERO MODERN DROPDOWN === */
+  .choices { width: 100% !important; }
 
   .choices__inner {
-      display: flex !important;
-      align-items: center !important;
-      background: white !important;
+    display: flex !important;
+    align-items: center !important;
+    background: white !important;
   }
 
-  /* Dropdown text */
   .choices .choices__list--single .choices__item {
-      line-height: 42px !important;
+    line-height: 42px !important;
   }
 
-  /* Small arrow */
+  /* Small clean arrow */
   .choices[data-type*="select-one"]::after {
-      width: 6px !important;
-      height: 6px !important;
-      border-width: 5px 4px 0 4px !important;
-      border-color: #666 transparent transparent transparent !important;
-      right: 12px !important;
-      top: 50% !important;
-      margin-top: -3px !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-width: 5px 4px 0 4px !important;
+    border-color: #666 transparent transparent transparent !important;
+    right: 12px !important;
+    top: 50% !important;
+    margin-top: -3px !important;
   }
 
   .choices[data-type*="select-one"].is-open::after {
-      border-width: 0 4px 5px 4px !important;
-      border-color: transparent transparent #666 transparent !important;
+    border-width: 0 4px 5px 4px !important;
+    border-color: transparent transparent #666 transparent !important;
   }
 
-  /* Modal Add Customer */
+  /* === MODAL XERO STYLE === */
   #modal-bg {
-    display:none;
-    position:fixed;
-    left:0; top:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.45);
-    z-index:2000;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
+    z-index: 2000;
   }
 
   #modal-box {
-    background:white;
-    width:350px;
-    padding:20px;
-    border-radius:8px;
-    position:absolute;
-    left:50%; top:50%;
-    transform:translate(-50%,-50%);
+    background: white;
+    width: 380px;
+    padding: 22px;
+    border-radius: 10px;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  }
+
+  #modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #1f4471;
   }
 
   #modal-box input {
-    width:100%;
-    height:40px;
-    margin-top:10px;
-    padding:8px;
-    border-radius:6px;
-    border:1px solid #ccc;
+    width: 100%;
+    height: 42px;
+    margin-top: 10px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
   }
 
   #modal-box button {
-    margin-top:12px;
-    width:100%;
-    height:40px;
-    background:#2b5da4;
-    border:none;
-    border-radius:6px;
-    color:white;
-    cursor:pointer;
+    margin-top: 15px;
+    width: 100%;
+    height: 42px;
+    background: #2b5da4;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
   }
 
+  /* === TOAST NOTIFICATION === */
+  #toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2b5da4;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity .35s ease;
+    z-index: 3000;
+  }
+  #toast.error { background: #d9534f; }
   </style>
 </head>
 
@@ -208,6 +229,7 @@
 <p id="result"></p>
 
 <form id="orderForm">
+
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -240,9 +262,9 @@
 
   <div class="summary-box">
     <table>
-      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
+      <tr><td>Sub Total</td><td><input type="text" id="subTotal" name="subTotal" readonly></td></tr>
+      <tr><td>PPN 11%</td><td><input type="text" id="ppn" name="ppn" readonly></td></tr>
+      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" name="grandTotal" readonly></td></tr>
     </table>
   </div>
 
@@ -250,16 +272,20 @@
   <textarea name="catatan" rows="3"></textarea><br>
 
   <button type="submit">Kirim Order</button>
+
 </form>
 
 <!-- Modal Add Customer -->
 <div id="modal-bg">
   <div id="modal-box">
-    <h3>Tambah Customer Baru</h3>
+    <div id="modal-title">Tambah Customer Baru</div>
     <input id="newCustomerName" placeholder="Nama customer..." />
     <button id="saveCustomerBtn">Simpan</button>
   </div>
 </div>
+
+<!-- Toast -->
+<div id="toast"></div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
