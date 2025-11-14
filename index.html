@@ -22,7 +22,7 @@
       margin-bottom: 25px;
     }
 
-    /* Input Styling */
+    /* INPUTS */
     input, select, textarea {
       font-size: 14px;
       font-family: inherit;
@@ -31,60 +31,61 @@
     input[type="text"], input[type="number"], input[type="date"], .choices__inner {
       height: 42px !important;
       min-height: 42px !important;
-      line-height: 42px !important;
       border-radius: 6px !important;
       border: 1px solid #d5d9de !important;
       padding: 0 12px !important;
-      box-sizing: border-box;
       background: white;
+      box-sizing: border-box;
     }
 
+    /* DATE FIX */
     input[type="date"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
       filter: opacity(60%);
     }
 
+    /* TOP LAYOUT */
     .top-row {
       display: flex;
       gap: 50px;
       margin-bottom: 20px;
     }
+    .top-row div { flex: 1; }
+    .top-row label { font-weight: bold; }
 
-    .top-row div {
-      flex: 1;
-    }
-
-    .top-row label {
-      font-weight: bold;
-    }
-
-    /* Table Styling */
+    /* TABLE FIX – NO OVERLAP */
     .xero-table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
+      table-layout: auto; /* FIX OVERLAP */
       margin-top: 15px;
     }
 
     .xero-table th {
       background: #f7f7f7;
-      padding: 14px 16px !important;
+      padding: 14px 16px;
       border-bottom: 2px solid #e5e5e5;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .xero-table td {
-      padding: 14px 16px !important;
+      padding: 14px 16px;
       border-bottom: 1px solid #ececec;
+      vertical-align: middle;
     }
 
+    /* FIX DRAG COLUMN (kecil, tidak ganggu layout) */
     .col-drag {
       cursor: grab;
       text-align: center;
-      width: 35px;
-      font-size: 18px;
+      width: 18px !important;
+      padding: 0 !important;
+      font-size: 16px;
+      opacity: 0.7;
     }
 
+    /* DELETE BUTTON */
     .delete-btn {
       background: none;
       border: none;
@@ -93,6 +94,13 @@
       cursor: pointer;
     }
 
+    /* Row Input Auto Fit */
+    .xero-table input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* ADD ROW BUTTON */
     #addLine {
       margin-top: 12px;
       background: #e7f1ff;
@@ -104,7 +112,7 @@
       cursor: pointer;
     }
 
-    /* Summary Box */
+    /* SUMMARY BOX */
     .summary-box {
       width: 420px;
       float: right;
@@ -119,7 +127,7 @@
       border: 1px solid #ccc;
     }
 
-    /* Footer Notes + Button */
+    /* FOOTER */
     .footer-area {
       margin-top: 55px;
       display: flex;
@@ -128,9 +136,7 @@
       gap: 40px;
     }
 
-    .footer-left {
-      width: 55%;
-    }
+    .footer-left { width: 55%; }
 
     textarea {
       width: 100%;
@@ -162,7 +168,7 @@
       background: #1f4988;
     }
 
-    /* Modal Add Customer */
+    /* MODAL */
     #modal-bg {
       display:none;
       position:fixed;
@@ -182,34 +188,10 @@
       transform:translate(-50%, -50%);
     }
 
-    #modal-box input {
-      width:100%;
-      height:40px;
-      margin-top:10px;
-      padding:8px;
-      border-radius:6px;
-      border:1px solid #ccc;
-    }
-
-    #modal-box button {
-      margin-top:12px;
-      width:100%;
-      height:40px;
-      background:#2b5da4;
-      border:none;
-      border-radius:6px;
-      color:white;
-      cursor:pointer;
-      font-weight: bold;
-    }
-
-    /* Landscape Print */
+    /* PRINT LANDSCAPE */
     @media print {
       @page { size: landscape; }
-
-      #addLine, button, textarea {
-        display: none !important;
-      }
+      #addLine, button, textarea { display: none !important; }
     }
   </style>
 </head>
@@ -237,14 +219,14 @@
   <table class="xero-table">
     <thead>
       <tr>
-        <th></th>
-        <th style="width:340px;">Item</th>
-        <th style="width:100px;">Meter</th>
-        <th style="width:100px;">Qty</th>
-        <th style="width:150px;">Unit Price</th>
-        <th style="width:150px;">Price/Qty</th>
-        <th style="width:170px;">Total</th>
-        <th></th>
+        <th style="width:25px;"></th> <!-- drag -->
+        <th style="min-width:260px; width:32%;">Item</th>
+        <th style="min-width:90px; width:10%;">Meter</th>
+        <th style="min-width:80px; width:8%;">Qty</th>
+        <th style="min-width:120px; width:15%;">Unit Price</th>
+        <th style="min-width:120px; width:15%;">Price/Qty</th>
+        <th style="min-width:140px; width:18%;">Total</th>
+        <th style="width:40px;"></th>
       </tr>
     </thead>
     <tbody id="orderBody"></tbody>
@@ -277,7 +259,7 @@
 
 </form>
 
-<!-- Modal Add Customer -->
+<!-- MODAL ADD CUSTOMER -->
 <div id="modal-bg">
   <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
