@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan (Xero Style)</title>
 
-  <!-- UI libraries -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
@@ -22,18 +21,43 @@
     text-align: center; 
   }
 
-  /* Global form font */
+  /* === GLOBAL INPUT STYLING === */
   input, select, textarea {
     font-size: 14px;
     font-family: inherit;
   }
 
-  /* TOP SECTION */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  .choices__inner {
+    height: 42px !important;
+    min-height: 42px !important;
+    line-height: 42px !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    border: 1px solid #d5d9de !important;
+    padding: 0 12px !important;
+    box-sizing: border-box;
+  }
+
+  /* FIX Chrome date input */
+  input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: opacity(60%);
+  }
+
+  /* TOP ROW */
   .top-row {
     display: flex;
     align-items: center;
     gap: 40px;
-    width: 100%;
   }
 
   .top-row div {
@@ -42,15 +66,6 @@
 
   .top-row label {
     font-weight: bold;
-  }
-
-  /* === DATE INPUT XERO STYLE === */
-  input[type="date"] {
-    height: 42px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #d5d9de;
-    box-sizing: border-box;
   }
 
   /* TABLE */
@@ -67,40 +82,15 @@
     padding: 12px;
     font-weight: 600;
     color: #444;
-    text-align: left;
   }
 
   .xero-table td {
-    padding: 10px;
+    padding: 12px;
     border-bottom: 1px solid #ececec;
   }
 
-  /* Input di dalam tabel */
-  .xero-table input, 
-  .xero-table select {
-    width: 100%;
-    height: 42px;
-    padding: 8px 12px;
-    border: 1px solid #d5d9de;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
-    box-sizing: border-box;
-  }
-
-  /* COLUMN WIDTHS */
-  th:nth-child(1) { width: 40px; }
-  th:nth-child(2) { width: 320px; }
-  th:nth-child(3) { width: 140px; }
-  th:nth-child(4) { width: 110px; }
-  th:nth-child(5) { width: 160px; }
-  th:nth-child(6) { width: 160px; }
-  th:nth-child(7) { width: 180px; }
-  th:nth-child(8) { width: 40px; }
-
   .col-drag {
     cursor: grab;
-    font-size: 18px;
     text-align: center;
   }
 
@@ -123,121 +113,90 @@
     cursor: pointer;
   }
 
+  /* SUMMARY */
   .summary-box {
     margin-top: 30px;
     width: 350px;
     margin-left: auto;
   }
 
-  .summary-box input[type="text"] {
+  .summary-box input {
     height: 32px;
-    padding: 6px 8px;
-    border-radius: 4px;
+    padding: 6px;
     border: 1px solid #d5d9de;
-    box-sizing: border-box;
-  }
-
-  .summary-label {
-    text-align: right;
-    padding-right: 10px;
-  }
-
-  .summary-total {
-    font-weight: bold;
-    font-size: 17px;
-  }
-
-  textarea {
     border-radius: 4px;
-    border: 1px solid #d5d9de;
-    padding: 8px 10px;
-    box-sizing: border-box;
   }
 
-  button[type="submit"] {
-    margin-top: 20px;
-    background: #2b5da4;
-    padding: 12px 26px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  /* ===========================================================
-     🔵 XERO MODERN STYLE — Choices.js Dropdown 
-     =========================================================== */
+  /* === XERO MODERN — DROPDOWN === */
   .choices {
       width: 100% !important;
   }
 
   .choices__inner {
-      min-height: 42px !important;
-      height: 42px !important;
-      padding: 8px 12px !important;
-
-      border: 1px solid #d5d9de !important;
-      border-radius: 6px !important;
-      background: #ffffff !important;
-
-      display: flex;
-      align-items: center;
-
-      transition: all 0.18s ease-in-out;
-      box-sizing: border-box;
+      display: flex !important;
+      align-items: center !important;
+      background: white !important;
   }
 
-  .choices__list--single {
-      padding: 4px 0 !important;
-      font-size: 14px !important;
-      color: #333 !important;
+  /* Dropdown text */
+  .choices .choices__list--single .choices__item {
+      line-height: 42px !important;
   }
 
-  .choices__placeholder {
-      opacity: 0.55 !important;
-      color: #666 !important;
-  }
-
-  .choices.is-focused .choices__inner,
-  .choices.is-open .choices__inner {
-      border-color: #4c9aff !important;
-      box-shadow: 0 0 0 3px rgba(76, 154, 255, 0.25) !important;
-  }
-
-  .choices__list--dropdown {
-      border-radius: 6px !important;
-      border: 1px solid #d3d7dd !important;
-      margin-top: 4px !important;
-      padding: 4px 0 !important;
-      background: #ffffff !important;
-      box-shadow: 0px 3px 8px rgba(0,0,0,0.06) !important;
-  }
-
-  .choices__list--dropdown .choices__item {
-      padding: 10px 12px !important;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.12s;
-  }
-
-  .choices__list--dropdown .choices__item:hover {
-      background: #f0f6ff !important;
-  }
-
-  .choices__list--dropdown .choices__item.is-selected {
-      background: #e6f0ff !Important;
-      font-weight: 600;
-  }
-
-  /* Arrow dropdown – biar tidak kepotong */
+  /* Small arrow */
   .choices[data-type*="select-one"]::after {
+      width: 6px !important;
+      height: 6px !important;
+      border-width: 5px 4px 0 4px !important;
       border-color: #666 transparent transparent transparent !important;
-      margin-top: -2.5px !important;
+      right: 12px !important;
+      top: 50% !important;
+      margin-top: -3px !important;
   }
 
   .choices[data-type*="select-one"].is-open::after {
+      border-width: 0 4px 5px 4px !important;
       border-color: transparent transparent #666 transparent !important;
+  }
+
+  /* Modal Add Customer */
+  #modal-bg {
+    display:none;
+    position:fixed;
+    left:0; top:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.45);
+    z-index:2000;
+  }
+
+  #modal-box {
+    background:white;
+    width:350px;
+    padding:20px;
+    border-radius:8px;
+    position:absolute;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  #modal-box input {
+    width:100%;
+    height:40px;
+    margin-top:10px;
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
+  }
+
+  #modal-box button {
+    margin-top:12px;
+    width:100%;
+    height:40px;
+    background:#2b5da4;
+    border:none;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
   }
 
   </style>
@@ -255,7 +214,7 @@
       <input type="date" id="date" name="date" required>
     </div>
 
-    <div style="flex:1">
+    <div>
       <label>Customer</label><br>
       <select id="customer" name="customer" required></select>
     </div>
@@ -264,14 +223,14 @@
   <table class="xero-table">
     <thead>
       <tr>
-        <th class="col-drag"></th>
+        <th></th>
         <th>Item</th>
         <th>Meter</th>
         <th>Qty</th>
         <th>Unit Price</th>
         <th>Price/Qty</th>
         <th>Total</th>
-        <th class="col-delete"></th>
+        <th></th>
       </tr>
     </thead>
     <tbody id="orderBody"></tbody>
@@ -281,9 +240,9 @@
 
   <div class="summary-box">
     <table>
-      <tr><td class="summary-label">Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td class="summary-label">PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td class="summary-label summary-total">Grand Total</td><td><input type="text" id="grandTotal" readonly></td></tr>
+      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
+      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
+      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
     </table>
   </div>
 
@@ -293,8 +252,17 @@
   <button type="submit">Kirim Order</button>
 </form>
 
+<!-- Modal Add Customer -->
+<div id="modal-bg">
+  <div id="modal-box">
+    <h3>Tambah Customer Baru</h3>
+    <input id="newCustomerName" placeholder="Nama customer..." />
+    <button id="saveCustomerBtn">Simpan</button>
+  </div>
+</div>
+
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="https://accountingauxie.github.io/orderform/script.js"></script>
+<script src="./script.js"></script>
 
 </body>
 </html>
