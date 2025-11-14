@@ -7,10 +7,9 @@
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-  <style>
+<style>
 
-/* ===================== GLOBAL ======================= */
-
+/* GLOBAL --------------------------- */
 body {
   font-family: Arial, sans-serif;
   max-width: 1400px;
@@ -20,8 +19,8 @@ body {
 
 h2 {
   text-align: center;
-  margin-bottom: 35px;
   color: #2b5da4;
+  margin-bottom: 30px;
 }
 
 label {
@@ -32,36 +31,36 @@ label {
 
 input, select, textarea {
   font-size: 14px;
-  font-family: inherit;
 }
 
-input[type="text"], input[type="number"], input[type="date"],
-.choices__inner {
+input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   height: 42px !important;
-  border-radius: 6px !important;
-  border: 1px solid #d3d7dc !important;
-  padding: 0 12px !important;
+  border-radius: 6px;
+  border: 1px solid #d3d7dc;
+  padding: 0 12px;
 }
 
-/* Center-align choices text */
+/* Choices center text */
 .choices__inner {
   display: flex !important;
   align-items: center !important;
 }
 
-/* ============== TOP ROW ============== */
-
+/* TOP ROW --------------------------- */
 .top-row {
   display: flex;
   gap: 60px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .top-row div {
   flex: 1;
 }
 
-/* ============== TABLE ============== */
+/* TABLE --------------------------- */
+.table-wrapper {
+  position: relative; /* <-- Penting untuk absolute summary */
+}
 
 .xero-table {
   width: 100%;
@@ -78,10 +77,9 @@ input[type="text"], input[type="number"], input[type="date"],
 
 .xero-table td {
   padding: 14px;
-  background: white;
-  border-top: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8;
-  vertical-align: middle;
+  background: #fff;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 .xero-table td + td,
@@ -104,49 +102,25 @@ input[type="text"], input[type="number"], input[type="date"],
   cursor: pointer;
 }
 
+/* ADD ROW */
 #addLine {
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 10px 16px;
   background: #e7f1ff;
   border: 1px solid #c7dcff;
   border-radius: 4px;
   color: #2b5da4;
-  font-weight: 600;
+  font-weight: bold;
 }
 
-/* ======================================================
-   MAIN 2-COLUMN LAYOUT: LEFT (notes) & RIGHT (summary)
-====================================================== */
-
-.main-bottom {
-  margin-top: 40px;
-  display: flex;
-  justify-content: space-between;
-  gap: 50px;
+/* SUMMARY BOX --------------------------- */
+/* THE MAGIC PART: FIX POSITION IN TABLE AREA */
+.summary-box {
+  position: absolute;
+  right: 0;
+  bottom: -70px; /* pas di bawah tabel */
+  width: 220px;
 }
-
-/* LEFT SIDE (NOTES) */
-
-.left-notes {
-  flex: 1; /* lebar lebih besar */
-}
-
-textarea {
-  width: 100%;
-  min-height: 140px;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  resize: vertical;
-}
-
-/* RIGHT SIDE = SUMMARY + BUTTON */
-
-.right-summary {
-  width: 230px; /* FIX, supaya sejajar dengan TOTAL column */
-}
-
-/* Summary box */
 
 .summary-box table {
   width: 100%;
@@ -167,15 +141,16 @@ textarea {
   padding: 0 10px;
 }
 
-/* Button */
-
+/* BUTTON BELOW SUMMARY */
 #submitBtn {
-  width: 100%;
+  position: absolute;
+  right: 0;
+  bottom: -130px;  /* tepat di bawah summary */
+  width: 220px;
   padding: 12px;
-  margin-top: 25px;
-  border-radius: 6px;
-  border: none;
   background: #2b5da4;
+  border: none;
+  border-radius: 6px;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -185,28 +160,40 @@ textarea {
   background: #1f4c89;
 }
 
-/* ============== MODAL ============== */
+/* NOTES SECTION --------------------------- */
+.notes-section {
+  margin-top: 180px; /* memberi ruang untuk summary + button */
+}
 
+textarea {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 12px;
+}
+
+/* MODAL --------------------------- */
 #modal-bg {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 9999;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  z-index:9999;
 }
 
 #modal-box {
-  background: white;
-  padding: 20px;
-  width: 350px;
-  border-radius: 8px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  background:white;
+  padding:20px;
+  width:350px;
+  border-radius:8px;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
 }
 
-  </style>
+</style>
 </head>
 
 <body>
@@ -215,62 +202,58 @@ textarea {
 
 <form id="orderForm">
 
-  <!-- TOP ROW -->
+  <!-- TOP -->
   <div class="top-row">
     <div>
       <label>Date</label>
       <input type="date" id="date" required>
     </div>
+
     <div>
       <label>Customer</label>
       <select id="customer" required></select>
     </div>
   </div>
 
-  <!-- TABLE -->
-  <table class="xero-table">
-    <thead>
-      <tr>
-        <th style="width:25px"></th>
-        <th style="width:32%">Item</th>
-        <th style="width:10%">Meter</th>
-        <th style="width:8%">Qty</th>
-        <th style="width:15%">Unit Price</th>
-        <th style="width:15%">Price/Qty</th>
-        <th style="width:15%">Total</th>
-        <th style="width:40px"></th>
-      </tr>
-    </thead>
-    <tbody id="orderBody"></tbody>
-  </table>
+  <!-- TABLE + SUMMARY (RIGHT FIXED) -->
+  <div class="table-wrapper">
 
-  <button type="button" id="addLine">+ Add row</button>
+    <table class="xero-table">
+      <thead>
+        <tr>
+          <th style="width:25px"></th>
+          <th>Item</th>
+          <th>Meter</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Price/Qty</th>
+          <th>Total</th>
+          <th style="width:40px"></th>
+        </tr>
+      </thead>
+      <tbody id="orderBody"></tbody>
+    </table>
 
-  <!-- ======================================================
-       2-COLUMN LAYOUT BOTTOM (LEFT NOTES + RIGHT SUMMARY)
-  ====================================================== -->
-  <div class="main-bottom">
+    <button id="addLine" type="button">+ Add row</button>
 
-    <!-- LEFT (NOTES) -->
-    <div class="left-notes">
-      <label>Catatan tambahan</label>
-      <textarea></textarea>
+    <!-- SUMMARY FIXED IN TABLE AREA -->
+    <div class="summary-box">
+      <table>
+        <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
+        <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
+        <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
+      </table>
     </div>
 
-    <!-- RIGHT (SUMMARY + BUTTON) -->
-    <div class="right-summary">
-      
-      <div class="summary-box">
-        <table>
-          <tr><td>Sub Total</td><td><input id="subTotal" readonly></td></tr>
-          <tr><td>PPN 11%</td><td><input id="ppn" readonly></td></tr>
-          <tr><td><b>Grand Total</b></td><td><input id="grandTotal" readonly></td></tr>
-        </table>
-      </div>
+    <!-- BUTTON FIXED BELOW SUMMARY -->
+    <button id="submitBtn" type="submit">Kirim Order</button>
 
-      <button id="submitBtn" type="submit">Kirim Order</button>
-    </div>
+  </div>
 
+  <!-- NOTES BELOW EVERYTHING -->
+  <div class="notes-section">
+    <label>Catatan tambahan</label>
+    <textarea></textarea>
   </div>
 
 </form>
@@ -279,7 +262,7 @@ textarea {
 <div id="modal-bg">
   <div id="modal-box">
     <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer..." />
+    <input id="newCustomerName">
     <button id="saveCustomerBtn">Simpan</button>
   </div>
 </div>
