@@ -1,7 +1,7 @@
 window.onload = function () {
 
   const baseURL =
-   "YOUR_WEBAPP_URL_HERE";  // ← GANTI
+   "https://script.google.com/macros/s/AKfycbxVLp7NlU-giwsUvES8Lkq2wSeckGausQmG1xclkahzZwjk-qAjt3xwAPgCXBH2jZptww/exec";  // ← WAJIB GANTI
 
   let productList = [];
   let choiceCustomer;
@@ -49,20 +49,25 @@ window.onload = function () {
       const name = newCustomerInput.value.trim();
       if (!name) return;
 
-      await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
+      // KIRIM KE APPS SCRIPT
+      await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
 
+      // TAMBAH KE DROPDOWN
       choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
       choiceCustomer.setChoiceByValue(name);
 
       modalBG.style.display = "none";
     });
 
-    /* Add 3 default rows */
+    // Auto add 3 rows
     addLine();
     addLine();
     addLine();
   }
 
+  /* =====================================
+     ADD LINE
+  ===================================== */
   function addLine() {
     const tbody = document.getElementById("orderBody");
     const idx = tbody.children.length + 1;
@@ -72,12 +77,12 @@ window.onload = function () {
       <td class="col-drag">⋮⋮</td>
 
       <td><select class="product-select" name="product_${idx}"></select></td>
-      <td><input type="number" step="0.01" class="meter"></td>
-      <td><input type="number" step="1" class="qty"></td>
+      <td><input type="number" step="0.01" class="meter" name="meter_${idx}"></td>
+      <td><input type="number" step="1" class="qty" name="qty_${idx}"></td>
 
-      <td><input type="text" readonly class="unitPrice" data-value=""></td>
-      <td><input type="text" readonly class="ppq" data-value=""></td>
-      <td><input type="text" readonly class="totalPrice" data-value=""></td>
+      <td><input type="text" readonly class="unitPrice" name="unit_${idx}" data-value=""></td>
+      <td><input type="text" readonly class="ppq" name="ppq_${idx}" data-value=""></td>
+      <td><input type="text" readonly class="totalPrice" name="total_${idx}" data-value=""></td>
 
       <td><button type="button" class="delete-btn">🗑</button></td>
     `;
@@ -103,6 +108,9 @@ window.onload = function () {
     });
   }
 
+  /* =====================================
+     PRICE LOOKUP
+  ===================================== */
   async function updatePrice(tr) {
     const product = tr.querySelector(".product-select").value;
     if (!product) return;
@@ -116,6 +124,9 @@ window.onload = function () {
     calculateRow(tr);
   }
 
+  /* =====================================
+     CALCULATE ROW
+  ===================================== */
   function calculateRow(tr) {
     const meter = parseFloat(tr.querySelector(".meter").value) || 0;
     const qty = parseFloat(tr.querySelector(".qty").value) || 0;
@@ -133,8 +144,12 @@ window.onload = function () {
     calculateSummary();
   }
 
+  /* =====================================
+     SUMMARY
+  ===================================== */
   function calculateSummary() {
     let subtotal = 0;
+
     document.querySelectorAll(".totalPrice").forEach(el => {
       subtotal += parseFloat(el.getAttribute("data-value")) || 0;
     });
@@ -147,18 +162,29 @@ window.onload = function () {
     document.getElementById("grandTotal").value = formatRupiah(grand);
   }
 
+  /* =====================================
+     ADD LINE BTN
+  ===================================== */
   document.getElementById("addLine").addEventListener("click", addLine);
 
+
+  /* =====================================
+     SUBMIT
+  ===================================== */
   document.getElementById("orderForm").addEventListener("submit", async e => {
     e.preventDefault();
 
+    // RAW number 
     document.querySelectorAll("[data-value]").forEach(el => {
       el.value = el.getAttribute("data-value");
     });
 
-    const res = await fetch(baseURL, { method: "POST", body: new FormData(orderForm) });
-    const txt = await res.text();
+    const res = await fetch(baseURL, {
+      method: "POST",
+      body: new FormData(orderForm)
+    });
 
+    const txt = await res.text();
     alert(txt);
   });
 
