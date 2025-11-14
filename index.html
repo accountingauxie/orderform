@@ -10,14 +10,16 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 1200px;
+      max-width: 1400px;
       width: 100%;
       margin: 40px auto;
-      padding: 0 20px;
+      padding: 0 40px;
     }
+
     h2 {
       color: #2b5da4;
       text-align: center;
+      margin-bottom: 25px;
     }
 
     /* Input Styling */
@@ -25,37 +27,33 @@
       font-size: 14px;
       font-family: inherit;
     }
+
     input[type="text"], input[type="number"], input[type="date"], .choices__inner {
       height: 42px !important;
       min-height: 42px !important;
       line-height: 42px !important;
-      font-size: 14px !important;
       border-radius: 6px !important;
       border: 1px solid #d5d9de !important;
       padding: 0 12px !important;
       box-sizing: border-box;
+      background: white;
     }
 
-    /* Date Fix */
-    input[type="date"] {
-      appearance: none;
-      -webkit-appearance: none;
-      background: #fff;
-    }
     input[type="date"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
       filter: opacity(60%);
     }
 
-    /* Top Row Layout */
     .top-row {
       display: flex;
-      align-items: center;
-      gap: 40px;
+      gap: 50px;
+      margin-bottom: 20px;
     }
+
     .top-row div {
       flex: 1;
     }
+
     .top-row label {
       font-weight: bold;
     }
@@ -64,24 +62,27 @@
     .xero-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 25px;
       table-layout: fixed;
+      margin-top: 15px;
     }
+
     .xero-table th {
       background: #f7f7f7;
+      padding: 14px 16px !important;
       border-bottom: 2px solid #e5e5e5;
-      padding: 12px;
       font-weight: 600;
-      color: #444;
     }
+
     .xero-table td {
-      padding: 12px;
+      padding: 14px 16px !important;
       border-bottom: 1px solid #ececec;
     }
+
     .col-drag {
-      text-align: center;
       cursor: grab;
-      width: 15px;
+      text-align: center;
+      width: 35px;
+      font-size: 18px;
     }
 
     .delete-btn {
@@ -105,43 +106,63 @@
 
     /* Summary Box */
     .summary-box {
-      margin-top: 30px;
-      width: 350px;
-      margin-left: auto;
+      width: 420px;
+      float: right;
+      margin-top: 25px;
     }
+
     .summary-box input {
+      width: 100%;
       height: 32px;
       padding: 6px;
-      border: 1px solid #d5d9de;
       border-radius: 4px;
+      border: 1px solid #ccc;
     }
 
-    /* Choices.js */
-    .choices {
-      width: 100% !important;
-    }
-    .choices__inner {
-      display: flex !important;
-      align-items: center !important;
-      background: white !important;
-    }
-
-    /* Dropdown Arrow */
-    .choices[data-type*="select-one"]::after {
-      width: 6px !important;
-      height: 6px !important;
-      border-width: 5px 4px 0 4px !important;
-      border-color: #666 transparent transparent transparent !important;
-      right: 12px !important;
-      top: 50% !important;
-      margin-top: -3px !important;
-    }
-    .choices[data-type*="select-one"].is-open::after {
-      border-width: 0 4px 5px 4px !important;
-      border-color: transparent transparent #666 transparent !important;
+    /* Footer Notes + Button */
+    .footer-area {
+      margin-top: 55px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
     }
 
-    /* Modal */
+    .footer-left {
+      width: 55%;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-size: 15px;
+    }
+
+    .footer-right {
+      width: 40%;
+      text-align: right;
+    }
+
+    button[type="submit"] {
+      background: #2b5da4;
+      border: none;
+      padding: 12px 22px;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    button[type="submit"]:hover {
+      background: #1f4988;
+    }
+
+    /* Modal Add Customer */
     #modal-bg {
       display:none;
       position:fixed;
@@ -149,6 +170,7 @@
       background:rgba(0,0,0,0.45);
       z-index:2000;
     }
+
     #modal-box {
       background:white;
       width:350px;
@@ -159,6 +181,7 @@
       top:50%;
       transform:translate(-50%, -50%);
     }
+
     #modal-box input {
       width:100%;
       height:40px;
@@ -167,6 +190,7 @@
       border-radius:6px;
       border:1px solid #ccc;
     }
+
     #modal-box button {
       margin-top:12px;
       width:100%;
@@ -176,13 +200,13 @@
       border-radius:6px;
       color:white;
       cursor:pointer;
+      font-weight: bold;
     }
 
-    /* Print Landscape */
+    /* Landscape Print */
     @media print {
-      @page {
-        size: landscape;
-      }
+      @page { size: landscape; }
+
       #addLine, button, textarea {
         display: none !important;
       }
@@ -202,22 +226,24 @@
       <label>Date</label><br>
       <input type="date" id="date" name="date" required>
     </div>
+
     <div>
       <label>Customer</label><br>
       <select id="customer" name="customer" required></select>
     </div>
   </div>
 
+  <!-- TABLE -->
   <table class="xero-table">
     <thead>
       <tr>
         <th></th>
-        <th style="width:280px;">Item</th>
-        <th style="width:80px;">Meter</th>
-        <th style="width:70px;">Qty</th>
-        <th style="width:120px;">Unit Price</th>
-        <th style="width:110px;">Price/Qty</th>
-        <th style="width:130px;">Total</th>
+        <th style="width:340px;">Item</th>
+        <th style="width:100px;">Meter</th>
+        <th style="width:100px;">Qty</th>
+        <th style="width:150px;">Unit Price</th>
+        <th style="width:150px;">Price/Qty</th>
+        <th style="width:170px;">Total</th>
         <th></th>
       </tr>
     </thead>
@@ -226,6 +252,7 @@
 
   <button type="button" id="addLine">+ Add row</button>
 
+  <!-- SUMMARY -->
   <div class="summary-box">
     <table>
       <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
@@ -234,10 +261,19 @@
     </table>
   </div>
 
-  <label>Catatan tambahan</label><br>
-  <textarea name="catatan" rows="3"></textarea><br>
+  <!-- FOOTER -->
+  <div class="footer-area">
 
-  <button type="submit" id="submitBtn">Kirim Order</button>
+    <div class="footer-left">
+      <label>Catatan tambahan</label>
+      <textarea name="catatan"></textarea>
+    </div>
+
+    <div class="footer-right">
+      <button type="submit" id="submitBtn">Kirim Order</button>
+    </div>
+
+  </div>
 
 </form>
 
