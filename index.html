@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Order Form (Xero Style)</title>
+  <meta charset="UTF-8">
+  <title>Form Pemesanan (Xero Style)</title>
 
-  <!-- Choices CSS -->
+  <!-- UI libraries -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-
-  <!-- SortableJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
@@ -16,19 +14,17 @@
       max-width: 960px;
       margin: 40px auto;
     }
+
     h2 { color: #2b5da4; text-align: center; }
 
-    .top-row {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+    .top-row { display: flex; align-items: center; gap: 20px; }
 
     .xero-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
+
     .xero-table th {
       background: #f7f7f7;
       border-bottom: 2px solid #e5e5e5;
@@ -36,6 +32,7 @@
       font-weight: 600;
       color: #444;
     }
+
     .xero-table td {
       padding: 10px;
       border-bottom: 1px solid #ececec;
@@ -78,15 +75,8 @@
       margin-left: auto;
     }
 
-    .summary-label {
-      text-align: right;
-      padding-right: 10px;
-    }
-
-    .summary-total {
-      font-weight: bold;
-      font-size: 16px;
-    }
+    .summary-label { text-align: right; padding-right: 10px; }
+    .summary-total { font-weight: bold; font-size: 16px; }
 
     button[type="submit"] {
       margin-top: 20px;
@@ -112,7 +102,7 @@
       <input type="date" id="date" name="date" required>
     </div>
 
-    <div>
+    <div style="flex:1">
       <label>Customer</label><br>
       <select id="customer" name="customer" required></select>
     </div>
@@ -122,12 +112,12 @@
     <thead>
       <tr>
         <th class="col-drag"></th>
-        <th>Item</th>
-        <th>Meter</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Price/Qty</th>
-        <th>Total</th>
+        <th style="width:220px">Item</th>
+        <th style="width:120px">Meter</th>
+        <th style="width:80px">Qty</th>
+        <th style="width:150px">Unit Price</th>
+        <th style="width:150px">Price/Qty</th>
+        <th style="width:150px">Total</th>
         <th class="col-delete"></th>
       </tr>
     </thead>
@@ -138,18 +128,9 @@
 
   <div class="summary-box">
     <table>
-      <tr>
-        <td class="summary-label">Sub Total</td>
-        <td><input type="text" id="subTotal" readonly data-value="0"></td>
-      </tr>
-      <tr>
-        <td class="summary-label">PPN 11%</td>
-        <td><input type="text" id="ppn" readonly data-value="0"></td>
-      </tr>
-      <tr>
-        <td class="summary-label summary-total">Grand Total</td>
-        <td><input type="text" id="grandTotal" readonly data-value="0"></td>
-      </tr>
+      <tr><td class="summary-label">Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
+      <tr><td class="summary-label">PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
+      <tr><td class="summary-label summary-total">Grand Total</td><td><input type="text" id="grandTotal" readonly></td></tr>
     </table>
   </div>
 
@@ -159,11 +140,10 @@
   <button type="submit">Kirim Order</button>
 </form>
 
-<!-- Choices.js placed last for GitHub Pages compatibility -->
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 
-<!-- OUR SCRIPT FILE -->
-<script src="script.js"></script>
+<!-- FINAL WORKING SCRIPT -->
+<script src="https://accountingauxie.github.io/orderform/script.js"></script>
 
 </body>
 </html>
