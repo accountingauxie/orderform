@@ -4,7 +4,6 @@ window.onload = function () {
     let productList = [];
     let choiceCustomer;
 
-    // ✅ AMAN: ambil elemen dengan jelas, jangan andalkan global ID
     const orderForm = document.getElementById("orderForm");
     const orderBody = document.getElementById("orderBody");
 
@@ -12,7 +11,6 @@ window.onload = function () {
     const newCustomerInput = document.getElementById("newCustomerName");
     const saveCustomerBtn = document.getElementById("saveCustomerBtn");
 
-    // set default tanggal hari ini
     document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
     function formatRupiah(num) {
@@ -22,8 +20,8 @@ window.onload = function () {
     }
 
     /* ==========================
-       LOAD DATA FROM APPSCRIPT
-       ========================== */
+       LOAD DATA
+    ========================== */
     async function loadDropdowns() {
         const res = await fetch(baseURL + "?action=getdata");
         const data = await res.json();
@@ -67,65 +65,64 @@ window.onload = function () {
             modalBG.style.display = "none";
         });
 
-        /* default 3 rows */
+        // default 3 rows
         addLine();
         addLine();
         addLine();
     }
 
     /* ==========================
-       ADD LINE FUNCTION
-       ========================== */
+       ADD LINE
+    ========================== */
     function addLine() {
 
-    const idx = orderBody.children.length + 1;
+        const idx = orderBody.children.length + 1;
 
-    const tr = document.createElement("tr");
+        const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-        <td class="col-drag">⋮⋮</td>
+        tr.innerHTML = `
+            <td class="col-drag">⋮⋮</td>
 
-        <td>
-            <select class="product-select" name="product_${idx}"></select>
-        </td>
+            <td>
+                <select class="product-select" name="product_${idx}"></select>
+            </td>
 
-        <td><input type="number" step="0.01" min="0" class="meter" name="meter_${idx}"></td>
-        <td><input type="number" step="1" min="0" class="qty" name="qty_${idx}"></td>
+            <td><input type="number" step="0.01" min="0" class="meter" name="meter_${idx}"></td>
+            <td><input type="number" step="1" min="0" class="qty" name="qty_${idx}"></td>
 
-        <td><input type="text" readonly class="unitPrice" data-value="" name="unitPrice_${idx}"></td>
-        <td><input type="text" readonly class="ppq" data-value="" name="ppq_${idx}"></td>
-        <td><input type="text" readonly class="totalPrice" data-value="" name="totalPrice_${idx}"></td>
+            <td><input type="text" readonly class="unitPrice" data-value="" name="unitPrice_${idx}"></td>
+            <td><input type="text" readonly class="ppq" data-value="" name="ppq_${idx}"></td>
+            <td><input type="text" readonly class="totalPrice" data-value="" name="totalPrice_${idx}"></td>
 
-        <td><button type="button" class="delete-btn">🗑</button></td>
-    `;
+            <td><button type="button" class="delete-btn">🗑</button></td>
+        `;
 
-    orderBody.appendChild(tr);
+        orderBody.appendChild(tr);
 
-    /* Product dropdown */
-    const select = tr.querySelector(".product-select");
-    const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
+        /* Product dropdown */
+        const select = tr.querySelector(".product-select");
+        const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
 
-    choice.setChoices(
-        productList.map(v => ({ value: v, label: v })),
-        "value",
-        "label",
-        true
-    );
+        choice.setChoices(
+            productList.map(v => ({ value: v, label: v })),
+            "value",
+            "label",
+            true
+        );
 
-    /* EVENT LISTENERS */
-    select.addEventListener("change", () => updatePrice(tr));
-    tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
-    tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
+        select.addEventListener("change", () => updatePrice(tr));
+        tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
 
-    tr.querySelector(".delete-btn").addEventListener("click", () => {
-        tr.remove();
-        calculateSummary();
-    });
-}
+        tr.querySelector(".delete-btn").addEventListener("click", () => {
+            tr.remove();
+            calculateSummary();
+        });
+    }
 
     /* ==========================
-       GET PRICE FROM GSHEET
-       ========================== */
+       GET PRICE
+    ========================== */
     async function updatePrice(tr) {
         const product = tr.querySelector(".product-select").value;
         if (!product) return;
@@ -142,7 +139,7 @@ window.onload = function () {
 
     /* ==========================
        CALCULATE PER ROW
-       ========================== */
+    ========================== */
     function calculateRow(tr) {
         const meterInput = tr.querySelector(".meter");
         const qtyInput = tr.querySelector(".qty");
@@ -150,9 +147,8 @@ window.onload = function () {
         let meter = parseFloat(meterInput.value) || 0;
         let qty = parseFloat(qtyInput.value) || 0;
 
-        // ✅ JAGA SUPAYA TIDAK MINUS
-        if (meter < 0) { meter = 0; meterInput.value = 0; }
-        if (qty < 0) { qty = 0; qtyInput.value = 0; }
+        if (meter < 0) meter = meterInput.value = 0;
+        if (qty < 0) qty = qtyInput.value = 0;
 
         const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
 
@@ -170,7 +166,7 @@ window.onload = function () {
 
     /* ==========================
        CALCULATE SUMMARY
-       ========================== */
+    ========================== */
     function calculateSummary() {
 
         let subtotal = 0;
@@ -187,17 +183,16 @@ window.onload = function () {
     }
 
     /* ==========================
-       ADD LINE BUTTON
-       ========================== */
+       BUTTON ADD LINE
+    ========================== */
     document.getElementById("addLine").addEventListener("click", addLine);
 
     /* ==========================
        SUBMIT FORM
-       ========================== */
+    ========================== */
     orderForm.addEventListener("submit", async e => {
         e.preventDefault();
 
-        // validasi basic HTML5
         if (!orderForm.checkValidity()) {
             orderForm.reportValidity();
             return;
@@ -207,7 +202,6 @@ window.onload = function () {
         btn.disabled = true;
         btn.innerText = "Sending...";
 
-        // inject raw number value
         document.querySelectorAll("[data-value]").forEach(el => {
             el.value = el.getAttribute("data-value");
         });
@@ -221,13 +215,11 @@ window.onload = function () {
             const txt = await res.text();
             alert(txt);
 
-            // Reset form
             orderForm.reset();
             orderBody.innerHTML = "";
-            addLine();
-            addLine();
-            addLine();
+            addLine(); addLine(); addLine();
             calculateSummary();
+
         } catch (err) {
             alert("Gagal mengirim order. Coba lagi.");
             console.error(err);
@@ -238,8 +230,8 @@ window.onload = function () {
     });
 
     /* ==========================
-       INIT LOAD + SORTABLE
-       ========================== */
+       INIT
+    ========================== */
     loadDropdowns();
 
     Sortable.create(orderBody, {
