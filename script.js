@@ -78,50 +78,50 @@ window.onload = function () {
        ========================== */
     function addLine() {
 
-        const idx = orderBody.children.length + 1;
+    const idx = orderBody.children.length + 1;
 
-        const tr = document.createElement("tr");
+    const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-            <td class="col-drag">⋮⋮</td>
+    tr.innerHTML = `
+        <td class="col-drag">⋮⋮</td>
 
-            <td>
-                <select class="product-select" name="product_${idx}"></select>
-            </td>
+        <td>
+            <select class="product-select" name="product_${idx}"></select>
+        </td>
 
-            <td><input type="number" step="0.01" min="0" class="meter"></td>
-            <td><input type="number" step="1" min="0" class="qty"></td>
+        <td><input type="number" step="0.01" min="0" class="meter" name="meter_${idx}"></td>
+        <td><input type="number" step="1" min="0" class="qty" name="qty_${idx}"></td>
 
-            <td><input type="text" readonly class="unitPrice" data-value=""></td>
-            <td><input type="text" readonly class="ppq" data-value=""></td>
-            <td><input type="text" readonly class="totalPrice" data-value=""></td>
+        <td><input type="text" readonly class="unitPrice" data-value="" name="unitPrice_${idx}"></td>
+        <td><input type="text" readonly class="ppq" data-value="" name="ppq_${idx}"></td>
+        <td><input type="text" readonly class="totalPrice" data-value="" name="totalPrice_${idx}"></td>
 
-            <td><button type="button" class="delete-btn">🗑</button></td>
-        `;
+        <td><button type="button" class="delete-btn">🗑</button></td>
+    `;
 
-        orderBody.appendChild(tr);
+    orderBody.appendChild(tr);
 
-        /* Product dropdown */
-        const select = tr.querySelector(".product-select");
-        const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
+    /* Product dropdown */
+    const select = tr.querySelector(".product-select");
+    const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
 
-        choice.setChoices(
-            productList.map(v => ({ value: v, label: v })),
-            "value",
-            "label",
-            true
-        );
+    choice.setChoices(
+        productList.map(v => ({ value: v, label: v })),
+        "value",
+        "label",
+        true
+    );
 
-        /* EVENT LISTENERS */
-        select.addEventListener("change", () => updatePrice(tr));
-        tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
-        tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
+    /* EVENT LISTENERS */
+    select.addEventListener("change", () => updatePrice(tr));
+    tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
+    tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
 
-        tr.querySelector(".delete-btn").addEventListener("click", () => {
-            tr.remove();
-            calculateSummary();
-        });
-    }
+    tr.querySelector(".delete-btn").addEventListener("click", () => {
+        tr.remove();
+        calculateSummary();
+    });
+}
 
     /* ==========================
        GET PRICE FROM GSHEET
