@@ -4,172 +4,381 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan</title>
 
+  <!-- CHOICES & SORTABLE -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
 /* =========================
-   GLOBAL FORM LAYOUT
+   GLOBAL PAGE LAYOUT
 ========================= */
 body {
-  font-family: Aptos, sans-serif;
-  max-width: 1400px;
-  width: 100%;
-  margin: 40px auto;
-  padding: 0 40px;
+  font-family: Aptos, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #f4f8ff 0, #eef2f7 28%, #e5ebf3 55%, #dde3ee 100%);
+  margin: 0;
+  padding: 40px 16px;
+  display: flex;
+  justify-content: center;
 }
 
-h2 {
+.app-shell {
+  width: 100%;
+  max-width: 1400px;
+}
+
+.form-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow:
+    0 18px 45px rgba(15, 35, 70, 0.12),
+    0 0 0 1px rgba(182, 191, 210, 0.5);
+  padding: 28px 32px 32px;
+  position: relative;
+}
+
+/* HEADER */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-title h2 {
+  color: #264b93;
+  font-size: 24px;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.header-title span {
+  font-size: 12px;
+  color: #7c879c;
+}
+
+.header-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #e8f1ff;
   color: #2b5da4;
-  text-align: center;
-  margin-bottom: 25px;
+  border: 1px solid #c6d7f6;
+}
+
+/* RESULT MESSAGE */
+#result {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #2b5da4;
 }
 
 /* =========================
-   INPUTS
+   FORM LAYOUT
+========================= */
+form {
+  margin-top: 8px;
+}
+
+/* TOP ROW */
+.top-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 18px;
+}
+
+.top-row div {
+  flex: 1;
+}
+
+.top-row label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #324055;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   INPUTS & FIELDS
 ========================= */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+input[type="text"],
+input[type="number"],
+input[type="date"],
+.choices__inner {
   height: 42px !important;
   min-height: 42px !important;
-  border-radius: 6px !important;
-  border: 1px solid #d3d7dc !important;
+  border-radius: 8px !important;
+  border: 1px solid #d0d7e2 !important;
   padding: 0 12px !important;
-  background: white;
+  background: #ffffff;
   box-sizing: border-box;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
-/* DATE FIX */
+/* FOCUS STATE */
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+.choices__inner.is-focused,
+.choices__inner.is-open {
+  outline: none;
+  border-color: #2b6fd0 !important;
+  box-shadow: 0 0 0 3px rgba(43, 111, 208, 0.18);
+}
+
+/* DATE PICKER ICON */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   filter: opacity(60%);
 }
 
-/* =========================
-   TOP ROW
-========================= */
-.top-row {
-  display: flex;
-  gap: 50px;
-  margin-bottom: 20px;
+/* Choices.js alignment */
+.choices__inner,
+.choices__list--single,
+.choices__list--dropdown .choices__item {
+  text-align: center !important;
 }
-.top-row div { flex: 1; }
-.top-row label { font-weight: bold; }
 
 /* =========================
-   TABLE (XERO STYLE)
+   TABLE (XERO PREMIUM)
 ========================= */
 .table-wrapper {
-  overflow-x: auto; /* RESPONSIVE MOBILE */
+  margin-top: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d8dfeb;
+  background: linear-gradient(to bottom, #f7f9fc 0, #f3f6fb 40%, #f0f4fa 100%);
 }
 
 .xero-table {
   width: 100%;
   border-collapse: separate !important;
-  border-spacing: 0 6px;    /* SPACING antar row */
+  border-spacing: 0 0;
+}
+
+.xero-table thead tr {
+  background: linear-gradient(to bottom, #f6f8fb, #eef1f7);
 }
 
 .xero-table th {
-  background: #f7f7f7;
-  padding: 14px 16px;
-  border-bottom: 1px solid #e4e7ea;
-  border-top: 1px solid #e4e7ea;
+  padding: 12px 14px;
+  border-bottom: 1px solid #d8dfeb;
   font-weight: 600;
+  font-size: 12px;
+  color: #5a677c;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   white-space: nowrap;
+  text-align: center !important;
+}
+
+.xero-table tbody tr {
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(24, 45, 80, 0.06);
+}
+
+.xero-table tbody tr + tr {
+  border-top: 1px solid #eef1f7;
 }
 
 .xero-table td {
-  padding: 14px 16px;
-  border-top: 1px solid #e4e7ea;
-  border-bottom: 1px solid #e4e7ea;
-  background: white;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e0e5f0;
+  background: #ffffff;
+  font-size: 13px;
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 
-/* kolom antar cell punya jarak visual */
-.xero-table td + td,
-.xero-table th + th {
-  border-left: 1px solid #f0f0f0;
+/* rounded effect on first & last cell of each row */
+.xero-table tbody tr:first-child td:first-child {
+  border-top-left-radius: 10px;
+}
+.xero-table tbody tr:first-child td:last-child {
+  border-top-right-radius: 10px;
+}
+.xero-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+.xero-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+/* row hover */
+.xero-table tbody tr:hover td {
+  background: #f8fbff;
+}
+
+/* inner inputs full width */
+.xero-table input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* DRAG COLUMN */
 .col-drag {
   cursor: grab;
   text-align: center;
-  width: 18px !important;
+  width: 22px !important;
   padding: 0 !important;
-  font-size: 16px;
-  opacity: 0.5;
+  font-size: 18px;
+  opacity: 0.4;
+  user-select: none;
 }
 
 /* DELETE BUTTON */
 .delete-btn {
   background: none;
   border: none;
-  color: red;
+  color: #d64545;
   font-size: 20px;
   cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-/* Column inputs */
-.xero-table input {
-  width: 100%;
-  box-sizing: border-box;
+.delete-btn:hover {
+  color: #b73232;
+  transform: scale(1.08);
 }
 
 /* ADD ROW BUTTON */
 #addLine {
-  margin-top: 12px;
-  background: #e7f1ff;
-  border: 1px solid #c7dcff;
-  padding: 10px 16px;
-  border-radius: 4px;
-  color: #2b5da4;
+  margin-top: 14px;
+  background: linear-gradient(to right, #e6f0ff, #d9e7ff);
+  border: 1px solid #c2d6ff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: #2452a4;
   font-weight: 600;
   cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(32, 76, 140, 0.12);
+}
+
+#addLine::before {
+  content: "+";
+  font-size: 16px;
+}
+
+#addLine:hover {
+  background: linear-gradient(to right, #dbe8ff, #c5d8ff);
 }
 
 /* =========================
    SUMMARY BOX
 ========================= */
 .summary-box {
-  width: 420px;
+  width: 380px;
   float: right;
-  margin-top: 25px;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #f8faff;
+  border: 1px solid #d0d9ec;
+  box-shadow: 0 10px 22px rgba(26, 51, 92, 0.06);
+}
+
+.summary-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-box td {
+  padding: 6px 4px;
+  font-size: 13px;
+}
+
+.summary-box td:first-child {
+  color: #4f5f7a;
+}
+
+.summary-box td:last-child {
+  text-align: right;
 }
 
 .summary-box input {
   width: 100%;
   height: 32px;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #cfd7e5;
+  background: #ffffff;
+  font-size: 13px;
+  text-align: center !important;
+}
+
+.summary-box tr:last-child td {
+  padding-top: 10px;
+  border-top: 1px dashed #c4cddd;
+}
+
+.summary-box tr:last-child td:first-child {
+  font-weight: 700;
+}
+
+.summary-box tr:last-child input {
+  font-weight: 700;
 }
 
 /* =========================
    FOOTER (NOTES + BUTTON)
 ========================= */
 .footer-area {
-  margin-top: 55px;
+  margin-top: 52px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 40px;
+  gap: 36px;
 }
 
-.footer-left { width: 55%; }
+.footer-left {
+  width: 55%;
+}
+
+.footer-left label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #324055;
+  display: block;
+  margin-bottom: 6px;
+}
 
 textarea {
   width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  min-height: 110px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d0d7e2;
   resize: vertical;
-  font-size: 15px;
+  font-size: 14px;
+  background: #ffffff;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #2b6fd0;
+  box-shadow: 0 0 0 3px rgba(43, 111, 208, 0.16);
 }
 
 .footer-right {
@@ -177,50 +386,103 @@ textarea {
   text-align: right;
 }
 
+/* SUBMIT BUTTON */
 button[type="submit"] {
-  background: #2b5da4;
+  background: linear-gradient(135deg, #2b5da4, #27519a);
   border: none;
-  padding: 12px 22px;
+  padding: 12px 26px;
   color: white;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
+  box-shadow: 0 10px 24px rgba(26, 58, 114, 0.35);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button[type="submit"]::after {
+  content: "→";
+  font-size: 15px;
 }
 
 button[type="submit"]:hover {
-  background: #1f4988;
+  background: linear-gradient(135deg, #264b93, #234682);
 }
 
 /* =========================
    MODAL
 ========================= */
 #modal-bg {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:2000;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 2000;
+  display: none;
+}
+
+#modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 22px 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  width: 320px;
+}
+
+#modal-box h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #27324a;
+}
+
+#newCustomerName {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#saveCustomerBtn {
+  margin-top: 6px;
+  background: #2b5da4;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* =========================
-   MOBILE RESPONSIVE
+   RESPONSIVE
 ========================= */
-@media (max-width: 768px) {
-  
-  body {
-    padding: 0 10px;
+@media (max-width: 900px) {
+  .form-card {
+    padding: 22px 16px 24px;
+  }
+
+  .header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 
   .top-row {
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .summary-box {
     float: none;
     width: 100%;
-    margin-top: 35px;
+    margin-top: 24px;
   }
 
   .footer-area {
@@ -235,94 +497,126 @@ button[type="submit"]:hover {
 
   button[type="submit"] {
     width: 100%;
+    justify-content: center;
   }
 }
 
 /* PRINT */
 @media print {
   @page { size: landscape; }
+  body {
+    background: #ffffff;
+    padding: 0;
+  }
+  .form-card {
+    box-shadow: none;
+    border-radius: 0;
+  }
   #addLine,
   button,
-  textarea { display: none !important; }
+  textarea,
+  #modal-bg {
+    display: none !important;
+  }
 }
-
   </style>
 </head>
 
 <body>
+  <div class="app-shell">
+    <div class="form-card">
 
-<h2>Form Pemesanan</h2>
-<p id="result"></p>
+      <div class="header-bar">
+        <div class="header-title">
+          <h2>Form Pemesanan</h2>
+          <span>Order entry terhubung ke Google Sheets & Xero-style layout</span>
+        </div>
+        <div class="header-tag">SALES ORDER</div>
+      </div>
 
-<form id="orderForm">
+      <p id="result"></p>
 
-  <div class="top-row">
-    <div>
-      <label>Date</label><br>
-      <input type="date" id="date" name="date" required>
-    </div>
+      <form id="orderForm">
 
-    <div>
-      <label>Customer</label><br>
-      <select id="customer" name="customer" required></select>
+        <!-- TOP ROW -->
+        <div class="top-row">
+          <div>
+            <label>Date</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+
+          <div>
+            <label>Customer</label>
+            <select id="customer" name="customer" required></select>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrapper">
+          <table class="xero-table">
+            <thead>
+              <tr>
+                <th style="width:30px;"></th> <!-- drag -->
+                <th style="min-width:260px; width:32%;">Product</th>
+                <th style="min-width:90px; width:10%;">Meter</th>
+                <th style="min-width:80px; width:8%;">Qty</th>
+                <th style="min-width:120px; width:15%;">Unit Price</th>
+                <th style="min-width:120px; width:15%;">Price/Qty</th>
+                <th style="min-width:140px; width:18%;">Total</th>
+                <th style="width:40px;"></th>
+              </tr>
+            </thead>
+            <tbody id="orderBody"></tbody>
+          </table>
+        </div>
+
+        <button type="button" id="addLine">Add row</button>
+
+        <!-- SUMMARY -->
+        <div class="summary-box">
+          <table>
+            <tr>
+              <td>Sub Total</td>
+              <td><input type="text" id="subTotal" readonly></td>
+            </tr>
+            <tr>
+              <td>PPN 11%</td>
+              <td><input type="text" id="ppn" readonly></td>
+            </tr>
+            <tr>
+              <td>Grand Total</td>
+              <td><input type="text" id="grandTotal" readonly></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-area">
+          <div class="footer-left">
+            <label>Catatan tambahan</label>
+            <textarea name="catatan"></textarea>
+          </div>
+
+          <div class="footer-right">
+            <button type="submit" id="submitBtn">Kirim Order</button>
+          </div>
+        </div>
+
+      </form>
     </div>
   </div>
 
-  <!-- TABLE -->
-  <table class="xero-table">
-    <thead>
-      <tr>
-        <th style="width:25px;"></th> <!-- drag -->
-        <th style="min-width:260px; width:32%;">Product</th>
-        <th style="min-width:90px; width:10%;">Meter</th>
-        <th style="min-width:80px; width:8%;">Qty</th>
-        <th style="min-width:120px; width:15%;">Unit Price</th>
-        <th style="min-width:120px; width:15%;">Price/Qty</th>
-        <th style="min-width:140px; width:18%;">Total</th>
-        <th style="width:40px;"></th>
-      </tr>
-    </thead>
-    <tbody id="orderBody"></tbody>
-  </table>
-
-  <button type="button" id="addLine">+ Add row</button>
-
-  <!-- SUMMARY -->
-  <div class="summary-box">
-    <table>
-      <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
-      <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
-      <tr><td><b>Grand Total</b></td><td><input type="text" id="grandTotal" readonly></td></tr>
-    </table>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer-area">
-
-    <div class="footer-left">
-      <label>Catatan tambahan</label>
-      <textarea name="catatan"></textarea>
+  <!-- MODAL ADD CUSTOMER -->
+  <div id="modal-bg">
+    <div id="modal-box">
+      <h3>Tambah Customer Baru</h3>
+      <input id="newCustomerName" placeholder="Nama customer..." />
+      <button id="saveCustomerBtn">Simpan</button>
     </div>
-
-    <div class="footer-right">
-      <button type="submit" id="submitBtn">Kirim Order</button>
-    </div>
-
   </div>
 
-</form>
-
-<!-- MODAL ADD CUSTOMER -->
-<div id="modal-bg">
-  <div id="modal-box">
-    <h3>Tambah Customer Baru</h3>
-    <input id="newCustomerName" placeholder="Nama customer..." />
-    <button id="saveCustomerBtn">Simpan</button>
-  </div>
-</div>
-
-<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="./script.js"></script>
-
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
