@@ -1,6 +1,6 @@
 window.onload = function () {
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbwCHEPLURDtYwte8rhmgMciMZ9hlgWDCOK5oweJ5slULPNb4EsTeMZtHClXPZrk7OWe/exec";
+    const baseURL = "https://script.google.com/macros/s/AKfycbwxs8WJjIuKvTjf_3K6sUdplBc3UdKekSpJ-3ka4HexASDJ3NympbLyHwkYcpW7gh-q/exec";
     let productList = [];
     let choiceCustomer;
 
