@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-<meta charset="UTF-8">
-<title>Form Pemesanan</title>
+  <meta charset="UTF-8">
+  <title>Form Pemesanan</title>
 
-<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-<style>
+  <style>
 /* =========================
    GLOBAL FORM LAYOUT
 ========================= */
@@ -44,7 +43,7 @@ input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   box-sizing: border-box;
 }
 
-/* DATE PICKER FIX */
+/* DATE FIX */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   filter: opacity(60%);
@@ -58,26 +57,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   gap: 50px;
   margin-bottom: 20px;
 }
-
-.top-row div {
-  flex: 1;
-}
-
-.top-row label {
-  font-weight: bold;
-}
+.top-row div { flex: 1; }
+.top-row label { font-weight: bold; }
 
 /* =========================
    TABLE (XERO STYLE)
 ========================= */
 .table-wrapper {
-  overflow-x: auto; /* MOBILE RESPONSIVE */
+  overflow-x: auto; /* RESPONSIVE MOBILE */
 }
 
 .xero-table {
   width: 100%;
   border-collapse: separate !important;
-  border-spacing: 0 6px; /* SPACING antar row */
+  border-spacing: 0 6px;    /* SPACING antar row */
 }
 
 .xero-table th {
@@ -96,7 +89,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: white;
 }
 
-/* VISUAL GAP ANTAR CELL */
+/* kolom antar cell punya jarak visual */
 .xero-table td + td,
 .xero-table th + th {
   border-left: 1px solid #f0f0f0;
@@ -157,7 +150,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* =========================
-   FOOTER
+   FOOTER (NOTES + BUTTON)
 ========================= */
 .footer-area {
   margin-top: 55px;
@@ -167,9 +160,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   gap: 40px;
 }
 
-.footer-left {
-  width: 55%;
-}
+.footer-left { width: 55%; }
 
 textarea {
   width: 100%;
@@ -205,17 +196,18 @@ button[type="submit"]:hover {
    MODAL
 ========================= */
 #modal-bg {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 2000;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:2000;
 }
 
 /* =========================
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
+  
   body {
     padding: 0 10px;
   }
@@ -246,25 +238,20 @@ button[type="submit"]:hover {
   }
 }
 
-/* =========================
-   PRINT
-========================= */
+/* PRINT */
 @media print {
-  @page {
-    size: landscape;
-  }
-
-  #addLine, button, textarea {
-    display: none !important;
-  }
+  @page { size: landscape; }
+  #addLine,
+  button,
+  textarea { display: none !important; }
 }
-</style>
+
+  </style>
 </head>
 
 <body>
 
 <h2>Form Pemesanan</h2>
-
 <p id="result"></p>
 
 <form id="orderForm">
@@ -285,7 +272,7 @@ button[type="submit"]:hover {
   <table class="xero-table">
     <thead>
       <tr>
-        <th style="width:25px;"></th>
+        <th style="width:25px;"></th> <!-- drag -->
         <th style="min-width:260px; width:32%;">Product</th>
         <th style="min-width:90px; width:10%;">Meter</th>
         <th style="min-width:80px; width:8%;">Qty</th>
@@ -295,7 +282,6 @@ button[type="submit"]:hover {
         <th style="width:40px;"></th>
       </tr>
     </thead>
-
     <tbody id="orderBody"></tbody>
   </table>
 
@@ -312,6 +298,7 @@ button[type="submit"]:hover {
 
   <!-- FOOTER -->
   <div class="footer-area">
+
     <div class="footer-left">
       <label>Catatan tambahan</label>
       <textarea name="catatan"></textarea>
@@ -320,6 +307,7 @@ button[type="submit"]:hover {
     <div class="footer-right">
       <button type="submit" id="submitBtn">Kirim Order</button>
     </div>
+
   </div>
 
 </form>
