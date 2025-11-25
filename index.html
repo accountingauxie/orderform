@@ -10,20 +10,19 @@
 
 <style>
 
-/* ============================================================
-   GLOBAL LAYOUT
-============================================================ */
+/* ============================================
+   FULL WHITE PAGE
+============================================ */
 body {
   font-family: Aptos, sans-serif;
-  max-width: 1400px;
-  width: 100%;
+  background: #ffffff !important;
   margin: 40px auto;
   padding: 0 40px;
-  background: #f6f7f9;
+  max-width: 1400px;
+  color: #1c1c1c;
 }
 
 h2 {
-  color: #1f3b63;
   text-align: center;
   margin-bottom: 6px;
   font-size: 26px;
@@ -32,76 +31,69 @@ h2 {
 
 .subtext {
   text-align: center;
-  color: #6b7a8c;
+  color: #6b7280;
   margin-bottom: 25px;
 }
 
-/* ============================================================
-   INPUTS
-============================================================ */
+/* ============================================
+   INPUT FIELDS
+============================================ */
 input, select, textarea {
-  font-family: inherit;
   font-size: 14px;
+  font-family: inherit;
 }
 
 input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   height: 42px !important;
-  min-height: 42px !important;
-  border: 1px solid #d3d7dc !important;
+  border: 1px solid #cfd3db !important;
   border-radius: 6px !important;
   padding: 0 12px !important;
-  background: white;
+  background: #ffffff !important;
+  box-sizing: border-box;
 }
 
-/* Date Picker Icon */
+/* Date icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  filter: opacity(65%);
+  filter: opacity(70%);
 }
 
-/* ============================================================
+/* ============================================
    TOP ROW
-============================================================ */
+============================================ */
 .top-row {
   display: flex;
-  gap: 50px;
+  gap: 40px;
   margin-bottom: 20px;
 }
 
-.top-row div {
-  flex: 1;
-}
+.top-row div { flex: 1; }
+label { font-weight: 600; }
 
-label {
-  font-weight: 600;
-}
-
-/* ============================================================
-   TABLE — NORMAL, STABLE (NO GAP)
-============================================================ */
+/* ============================================
+   TABLE — NORMAL, NO GAP
+============================================ */
 .table-wrapper {
-  width: 100%;
-  /* HAPUS overflow agar dropdown tidak kepotong */
+  overflow-x: auto;
 }
 
 .xero-table {
   width: 100%;
-  border-collapse: collapse !important;   /* IMPORTANT: stable */
+  border-collapse: collapse !important; /* NO COLUMN GAP */
 }
 
 .xero-table th {
-  background: #f1f3f5;
-  padding: 14px 16px;
-  border: 1px solid #dce1e6;
+  background: #f6f6f6;
+  padding: 12px 14px;
+  border: 1px solid #e2e2e2;
   font-weight: 600;
-  font-size: 14px;
   white-space: nowrap;
 }
 
 .xero-table td {
-  padding: 14px 16px;
-  border: 1px solid #e2e6ea;
-  background: white;
+  padding: 12px 14px;
+  border: 1px solid #e2e2e2;
+  background: #ffffff;
 }
 
 .xero-table input {
@@ -114,7 +106,7 @@ label {
   width: 22px !important;
   text-align: center;
   cursor: grab;
-  color: #9ca4b0;
+  color: #9aa3b2;
   font-size: 18px;
 }
 
@@ -122,14 +114,14 @@ label {
 .delete-btn {
   background: none;
   border: none;
-  color: #e14b4b;
+  color: red;
   font-size: 20px;
   cursor: pointer;
 }
 
-/* ============================================================
-   DROPDOWN FIX — ALWAYS FLOAT OUTSIDE TABLE
-============================================================ */
+/* ============================================
+   DROPDOWN FIX — NORMAL BEHAVIOR (NO CUT)
+============================================ */
 .choices {
   width: 100%;
 }
@@ -138,130 +130,103 @@ label {
   overflow: visible !important;
 }
 
-/* FORCE DROPDOWN FLOAT */
+/* dropdown stays BELOW input — NOT fixed */
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
-  position: fixed !important;
-  width: 260px !important;
-  max-height: 300px !important;
+  position: absolute !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  max-height: 250px !important;
   overflow-y: auto !important;
-  background: white !important;
-  border: 1px solid #d0d5db !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
-  z-index: 999999 !important;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.12);
 }
 
-/* Positioning offset so it appears BELOW input */
-.choices__list--dropdown {
-  transform: translateY(40px) !important;
-}
-
-/* ============================================================
+/* ============================================
    ADD ROW BUTTON
-============================================================ */
+============================================ */
 #addLine {
   margin-top: 12px;
   background: #e2eaff;
-  border: 1px solid #c9d6ff;
+  border: 1px solid #c6d4ff;
   padding: 10px 16px;
   border-radius: 6px;
-  color: #2457c5;
+  color: #1f4ccc;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* ============================================================
+/* ============================================
    SUMMARY BOX
-============================================================ */
+============================================ */
 .summary-box {
   width: 420px;
   float: right;
   margin-top: 25px;
-  background: white;
-  padding: 20px;
+  background: #ffffff;
+  padding: 18px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
 }
-
-.summary-box table { width: 100%; }
 
 .summary-box td {
   padding: 6px 0;
-  font-size: 14px;
-  color: #3a4654;
 }
 
 .summary-box input {
   width: 100%;
   height: 34px;
   padding: 6px;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  border: 1px solid #d1d4da;
-  background: #fafafa;
   text-align: right;
+  background: #fafafa;
   font-weight: 600;
 }
 
-/* ============================================================
+/* ============================================
    FOOTER
-============================================================ */
+============================================ */
 .footer-area {
-  margin-top: 55px;
+  margin-top: 60px;
   display: flex;
   justify-content: space-between;
   gap: 40px;
 }
 
-.footer-left { width: 55%; }
+.footer-left { flex: 1; }
 
 textarea {
   width: 100%;
-  min-height: 140px;
+  min-height: 150px;
   padding: 12px;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  border: 1px solid #cfd3d8;
   resize: vertical;
-  font-size: 15px;
 }
 
 .footer-right {
-  width: 40%;
+  width: 320px;
   text-align: right;
 }
 
 button[type="submit"] {
   background: #1f6ef3;
-  color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 12px 22px;
+  color: white;
   border-radius: 8px;
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
 }
 
-button[type="submit"]:hover {
-  background: #1758c3;
-}
-
-/* ============================================================
-   MOBILE
-============================================================ */
+/* MOBILE */
 @media (max-width: 768px) {
-  body { padding: 0 10px; }
-  .top-row { flex-direction: column; gap: 12px; }
-  .summary-box { float: none; width: 100%; }
+  .top-row { flex-direction: column; }
   .footer-area { flex-direction: column; }
-  .footer-left, .footer-right { width: 100%; }
-  button[type="submit"] { width: 100%; }
-}
-
-/* ============================================================
-   PRINT
-============================================================ */
-@media print {
-  @page { size: landscape; }
-  #addLine, button, textarea { display: none !important; }
+  .footer-right { width: 100%; text-align: left; }
 }
 
 </style>
@@ -270,11 +235,10 @@ button[type="submit"]:hover {
 <body>
 
 <h2>Form Pemesanan</h2>
-<div class="subtext">Xero Modern — Stable Version</div>
+<div class="subtext">Xero Ultra Modern — Pure Flat Version</div>
 
 <form id="orderForm">
 
-  <!-- TOP INPUTS -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -287,28 +251,28 @@ button[type="submit"]:hover {
     </div>
   </div>
 
-  <!-- TABLE -->
   <div class="table-wrapper">
     <table class="xero-table">
       <thead>
         <tr>
           <th style="width:24px;"></th>
-          <th style="min-width:250px;">Product</th>
-          <th style="min-width:90px;">Meter</th>
-          <th style="min-width:80px;">Qty</th>
-          <th style="min-width:120px;">Unit Price</th>
-          <th style="min-width:120px;">Price/Qty</th>
-          <th style="min-width:140px;">Total</th>
+          <th>Product</th>
+          <th>Meter</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Price/Qty</th>
+          <th>Total</th>
           <th style="width:40px;"></th>
         </tr>
       </thead>
+
       <tbody id="orderBody"></tbody>
+
     </table>
   </div>
 
   <button type="button" id="addLine">+ Add row</button>
 
-  <!-- SUMMARY -->
   <div class="summary-box">
     <table>
       <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
@@ -317,7 +281,6 @@ button[type="submit"]:hover {
     </table>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer-area">
     <div class="footer-left">
       <label>Catatan tambahan</label>
