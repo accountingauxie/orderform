@@ -2,102 +2,108 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Pemesanan (Xero Modern)</title>
+  <title>Form Pemesanan – Xero Ultra Modern</title>
 
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
-/* =========================
-   PAGE
-========================= */
+/* =========================================
+   PAGE LAYOUT – ULTRA MODERN
+========================================= */
 body {
   font-family: "Segoe UI", Tahoma, sans-serif;
-  background: #f5f7f9;
+  background: #f4f6f8;
   margin: 0;
-  padding: 40px 24px;
+  padding: 42px 20px;
   display: flex;
   justify-content: center;
 }
 
-.container {
+.wrapper {
   width: 100%;
-  max-width: 1200px;
-  background: white;
-  padding: 32px 36px;
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  max-width: 1220px;
+  background: #ffffff;
+  padding: 36px 40px;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.05);
 }
 
-/* HEADER */
+/* =========================================
+   HEADER – XERO 2024 STYLE
+========================================= */
 h2 {
-  color: #2a497d;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   margin: 0;
   text-align: center;
-  margin-bottom: 24px;
+  color: #222e44;
 }
 
-/* =========================
-   INPUTS
-========================= */
+.subheader {
+  text-align: center;
+  color: #6b7a8a;
+  font-size: 13px;
+  margin: 6px 0 24px;
+  letter-spacing: 0.02em;
+}
+
+/* =========================================
+   INPUTS – ROUNDED, CLEAN
+========================================= */
 input, select, textarea {
   font-size: 14px;
-  text-align: center !important;
-  vertical-align: middle !important;
   font-family: inherit;
+  text-align: center !important;
 }
 
 input[type="text"],
 input[type="number"],
 input[type="date"],
 .choices__inner {
-  height: 40px !important;
-  min-height: 40px !important;
-  border-radius: 6px !important;
-  border: 1px solid #d4d8dd !important;
-  padding: 0 10px !important;
-  background: #fff;
+  height: 44px !important;
+  border-radius: 10px !important;
+  border: 1px solid #d6d9dd !important;
+  padding: 0 12px !important;
+  background: #ffffff;
   transition: 0.15s;
 }
 
 input:focus,
 .choices__inner.is-focused,
 .choices__inner.is-open {
+  border-color: #4a92ff !important;
+  box-shadow: 0 0 0 3px rgba(74,146,255,0.18);
   outline: none;
-  border-color: #2d6cdf !important;
-  box-shadow: 0 0 0 2px rgba(45,108,223,0.15);
 }
 
-/* =========================
+/* =========================================
    TOP ROW
-========================= */
+========================================= */
 .top-row {
   display: flex;
   gap: 36px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
-.top-row div {
-  flex: 1;
-}
+.top-row div { flex: 1; }
 
 label {
   font-size: 13px;
   font-weight: 600;
-  color: #364154;
+  color: #374355;
+  margin-bottom: 6px;
   display: block;
-  margin-bottom: 4px;
 }
 
-/* =========================
-   TABLE (XERO MODERN)
-========================= */
-.table-wrapper {
-  border-radius: 10px;
+/* =========================================
+   TABLE – ULTRA CLEAN
+========================================= */
+.table-box {
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid #e4e7ea;
-  margin-bottom: 14px;
+  border: 1px solid #e1e4e8;
+  background: #ffffff;
 }
 
 .xero-table {
@@ -105,78 +111,88 @@ label {
   border-collapse: collapse;
 }
 
-.xero-table th {
-  background: #f6f8fa;
-  padding: 12px;
-  border-bottom: 1px solid #e0e4e8;
+.xero-table thead th {
+  background: #f7f9fa;
+  padding: 14px 10px;
+  color: #5b6678;
   font-size: 12px;
   font-weight: 600;
-  color: #556070;
   text-align: center;
+  border-bottom: 1px solid #e5e7ea;
   letter-spacing: 0.03em;
 }
 
 .xero-table td {
-  background: #fff;
-  padding: 10px;
-  border-bottom: 1px solid #f0f2f5;
+  padding: 12px 10px;
+  border-bottom: 1px solid #f0f2f4;
   text-align: center;
+  background: #ffffff;
 }
 
-.xero-table tr:hover td {
-  background: #f9fbfd;
+/* Hover effect */
+.xero-table tbody tr:hover td {
+  background: #f8fbff;
 }
 
+/* Inputs inside table */
 .xero-table input {
   width: 100%;
-  box-sizing: border-box;
+  border-radius: 8px !important;
 }
 
-/* DRAG */
+/* Drag icon */
 .col-drag {
   cursor: grab;
-  width: 24px !important;
+  font-size: 18px;
   opacity: 0.5;
   user-select: none;
 }
 
-/* DELETE BUTTON */
+/* Delete button */
 .delete-btn {
   background: none;
   border: none;
-  color: #cc3232;
-  font-size: 18px;
+  color: #d03c3c;
+  font-size: 20px;
   cursor: pointer;
+  transition: 0.15s;
 }
 
-/* ADD ROW */
+.delete-btn:hover {
+  color: #b12f2f;
+}
+
+/* =========================================
+   ADD ROW BUTTON – ULTRA MODERN
+========================================= */
 #addLine {
-  background: #eaf2ff;
-  border: 1px solid #d1dcff;
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #2d6cdf;
+  margin-top: 14px;
+  background: #eef4ff;
+  border: 1px solid #c7d7ff;
+  color: #2f6fe4;
+  padding: 10px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.15s;
 }
 
 #addLine:hover {
-  background: #dfe9ff;
+  background: #e2ecff;
 }
 
-/* =========================
-   SUMMARY BOX
-========================= */
+/* =========================================
+   SUMMARY BOX – CLEAN
+========================================= */
 .summary-box {
-  width: 360px;
+  width: 380px;
   float: right;
-  background: #fafbfc;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid #e1e5eb;
-  margin-top: 10px;
+  background: #fafbfd;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #dbe0e6;
+  margin-top: 20px;
 }
 
 .summary-box table {
@@ -184,42 +200,38 @@ label {
 }
 
 .summary-box td {
-  padding: 6px 4px;
+  padding: 8px 4px;
   font-size: 13px;
 }
 
 .summary-box input {
-  height: 30px;
-  font-size: 13px;
-  border-radius: 4px;
-  border: 1px solid #d4d7dc;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #d0d4db;
   text-align: center !important;
+  font-size: 13px;
 }
 
 .summary-box tr:last-child td:first-child {
   font-weight: 700;
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* =========================================
+   FOOTER – NOTES + BUTTON
+========================================= */
 .footer-area {
-  margin-top: 50px;
+  margin-top: 60px;
   display: flex;
-  gap: 36px;
-  justify-content: space-between;
-}
-
-.footer-left {
-  flex: 1;
+  gap: 40px;
 }
 
 textarea {
   width: 100%;
   min-height: 110px;
-  border-radius: 8px;
-  border: 1px solid #d4d7dc;
-  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #d6d9dd;
+  padding: 12px;
+  font-size: 14px;
   resize: vertical;
 }
 
@@ -228,26 +240,26 @@ textarea {
   text-align: right;
 }
 
-/* SUBMIT */
+/* SUBMIT BUTTON – XERO BLUE */
 button[type="submit"] {
-  background: #2d6cdf;
+  background: #2f6fe4;
   border: none;
-  padding: 10px 22px;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
+  padding: 12px 26px;
+  border-radius: 12px;
+  color: white;
   font-weight: 600;
-  transition: 0.18s;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s;
 }
 
 button[type="submit"]:hover {
-  background: #255dc2;
+  background: #275ec7;
 }
 
-/* =========================
+/* =========================================
    MODAL
-========================= */
+========================================= */
 #modal-bg {
   display:none;
   position:fixed;
@@ -257,15 +269,15 @@ button[type="submit"]:hover {
 }
 
 #modal-box {
-  background: #fff;
-  width: 300px;
-  padding: 20px;
-  border-radius: 10px;
+  background:#fff;
+  width:320px;
+  padding:22px;
+  border-radius:14px;
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow:0 10px 30px rgba(0,0,0,0.18);
 }
 
 /* PRINT */
@@ -277,9 +289,11 @@ button[type="submit"]:hover {
 </head>
 
 <body>
-  <div class="container">
+  <div class="wrapper">
 
     <h2>Form Pemesanan</h2>
+    <div class="subheader">Xero Ultra Modern UI • Clean • Minimal • Centered Layout</div>
+
     <p id="result"></p>
 
     <form id="orderForm">
@@ -298,11 +312,11 @@ button[type="submit"]:hover {
       </div>
 
       <!-- TABLE -->
-      <div class="table-wrapper">
+      <div class="table-box">
         <table class="xero-table">
           <thead>
             <tr>
-              <th style="width:25px;"></th>
+              <th style="width:24px;"></th>
               <th style="width:32%;">Product</th>
               <th>Meter</th>
               <th>Qty</th>
@@ -330,7 +344,7 @@ button[type="submit"]:hover {
       <!-- FOOTER -->
       <div class="footer-area">
 
-        <div class="footer-left">
+        <div style="flex:1;">
           <label>Catatan tambahan</label>
           <textarea name="catatan"></textarea>
         </div>
@@ -338,6 +352,7 @@ button[type="submit"]:hover {
         <div class="footer-right">
           <button type="submit" id="submitBtn">Kirim Order</button>
         </div>
+
       </div>
 
     </form>
@@ -346,9 +361,9 @@ button[type="submit"]:hover {
   <!-- MODAL -->
   <div id="modal-bg">
     <div id="modal-box">
-      <h3>Tambah Customer Baru</h3>
-      <input id="newCustomerName" placeholder="Nama customer...">
-      <button id="saveCustomerBtn">Simpan</button>
+      <h3 style="margin-top:0;">Tambah Customer</h3>
+      <input id="newCustomerName" placeholder="Nama customer..." style="width:100%; margin-bottom:10px;">
+      <button id="saveCustomerBtn" style="width:100%; background:#2f6fe4; border:none; padding:10px; border-radius:10px; color:#fff; font-size:14px;">Simpan</button>
     </div>
   </div>
 
