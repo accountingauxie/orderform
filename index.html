@@ -2,140 +2,160 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Form Pemesanan — Xero Invoice Clone</title>
+<title>Form Pemesanan – Xero Clone v4</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
+:root {
+  --xero-bg: #F5F6F7;
+  --xero-border: #E3E6E8;
+  --xero-text: #253858;
+  --xero-muted: #6B778C;
+  --xero-blue: #1F6EF3;
+}
 
-/* ============================================================
-   1. GLOBAL PAGE BACKGROUND — EXACT XERO
-============================================================ */
+* { box-sizing: border-box; }
+
 body {
-  font-family: Arial, sans-serif;
-  background: #F5F6F7;
   margin: 0;
-  padding: 30px 0;
+  padding: 24px 0 40px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--xero-bg);
+  color: var(--xero-text);
 }
 
-/* ============================================================
-   2. MAIN CONTAINER — XERO INVOICE CARD
-============================================================ */
-.xero-container {
+/* HEADER BAR SIMPLE */
+.page-header {
+  max-width: 1240px;
+  margin: 0 auto 12px;
+  padding: 0 24px;
+  font-size: 12px;
+  color: var(--xero-muted);
+}
+
+/* MAIN CARD SEPERTI XERO */
+.xero-card {
   background: #ffffff;
-  border: 1px solid #E3E6E8;
+  border: 1px solid var(--xero-border);
   border-radius: 8px;
-  padding: 28px 34px;
-  max-width: 1250px;
-  margin: auto;
-  box-shadow: 0px 1px 2px rgba(0,0,0,0.04);
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 32px 28px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
-/* ============================================================
-   3. HEADER
-============================================================ */
-h2 {
-  text-align: left;
-  font-size: 24px;
+.card-title {
+  font-size: 22px;
   font-weight: 600;
-  color: #253858;
-  margin-bottom: 25px;
+  margin: 0 0 20px;
 }
 
-/* ============================================================
-   4. TOP FORM (Contact - Date - Invoice No)
-============================================================ */
-.top-grid {
+/* TOP ROW: DATE + CUSTOMER (kayak Issue date/Contact) */
+.top-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
-  margin-bottom: 28px;
+  grid-template-columns: 1.1fr 2fr;
+  gap: 18px 24px;
+  margin-bottom: 24px;
 }
 
 label {
-  font-size: 13px;
+  display: block;
+  font-size: 12px;
   font-weight: 600;
   margin-bottom: 4px;
-  display: inline-block;
   color: #4A5568;
 }
 
 input, select {
   width: 100%;
   height: 40px;
-  border: 1px solid #C4C7CC;
-  border-radius: 5px;
-  padding: 6px 10px;
   font-size: 14px;
-  box-sizing: border-box;
-  background: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #C4C7CC;
+  background: #ffffff;
 }
 
-/* ============================================================
-   5. TABLE — XERO STYLE EXACT
-============================================================ */
+/* TABLE AREA */
 .table-wrapper {
-  margin-top: 10px;
-  overflow: visible !important;
+  margin-top: 6px;
+  overflow: visible !important; /* NO SCROLL DI TABEL */
 }
 
 .xero-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed !important;
-  background: white;
+  table-layout: fixed;          /* supaya width kolom nurut */
+  background: #ffffff;
 }
 
+/* HEADER TABEL – XERO STYLE */
 .xero-table thead th {
   background: #F3F4F5;
   border-bottom: 1px solid #D9DCE0;
-  color: #253858;
-  font-size: 13px;
-  padding: 10px 12px;
+  padding: 10px 8px;
+  font-size: 12px;
   font-weight: 600;
+  color: #4A4F59;
   text-align: left;
+  white-space: nowrap;
 }
 
+/* CELL TABEL */
 .xero-table td {
-  border-bottom: 1px solid #EAECEE;
-  padding: 10px 12px;
-  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 8px 8px;
+  background: #ffffff;
 }
 
 .xero-table input {
   width: 100%;
   height: 34px;
-  border: 1px solid #D2D6DB;
   border-radius: 4px;
-  padding: 5px 8px;
+  border: 1px solid #D2D6DB;
+  padding: 5px 6px;
   font-size: 14px;
-  box-sizing: border-box;
 }
 
-/* COLUMN WIDTHS — MATCH XERO */
+/* LEBAR KOLOM SESUAI STRUKTUR YANG KAMU MAU */
+/* 1 = drag, 2=Product, 3=Meter, 4=Qty, 5=UnitPrice, 6=Price/Qty, 7=Discount, 8=SubTotal, 9=Tax, 10=Total, 11=delete */
+
 .xero-table th:nth-child(1),
-.xero-table td:nth-child(1) { width: 34px !important; }
+.xero-table td:nth-child(1) { width: 28px; }
 
 .xero-table th:nth-child(2),
-.xero-table td:nth-child(2) { width: 45% !important; }
+.xero-table td:nth-child(2) { width: 28%; }
 
 .xero-table th:nth-child(3),
-.xero-table td:nth-child(3) { width: 10% !important; }
+.xero-table td:nth-child(3) { width: 8%; }
 
 .xero-table th:nth-child(4),
-.xero-table td:nth-child(4) { width: 10% !important; }
+.xero-table td:nth-child(4) { width: 7%; }
 
 .xero-table th:nth-child(5),
-.xero-table td:nth-child(5) { width: 12% !important; }
+.xero-table td:nth-child(5) { width: 10%; }
 
 .xero-table th:nth-child(6),
-.xero-table td:nth-child(6) { width: 12% !important; }
+.xero-table td:nth-child(6) { width: 10%; }
 
 .xero-table th:nth-child(7),
-.xero-table td:nth-child(7) { width: 35px !important; }
+.xero-table td:nth-child(7) { width: 8%; }
 
-/* drag icon */
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) { width: 9%; }
+
+.xero-table th:nth-child(9),
+.xero-table td:nth-child(9) { width: 7%; }
+
+.xero-table th:nth-child(10),
+.xero-table td:nth-child(10) { width: 11%; }
+
+.xero-table th:nth-child(11),
+.xero-table td:nth-child(11) { width: 30px; }
+
+/* drag handle */
 .col-drag {
   text-align: center;
   cursor: grab;
@@ -143,179 +163,188 @@ input, select {
   font-size: 18px;
 }
 
-/* delete icon */
+/* delete button */
 .delete-btn {
   background: none;
   border: none;
+  color: #B00020;
   font-size: 18px;
   cursor: pointer;
-  color: #B00020;
 }
 
-/* ============================================================
-   6. DROPDOWN FIX (Choices.js)
-============================================================ */
+/* Choices.js – dropdown jangan kepotong */
+.choices {
+  width: 100%;
+}
+
+.choices__inner {
+  border-radius: 4px !important;
+  border-color: #D2D6DB !important;
+  min-height: 34px !important;
+  padding: 2px 6px !important;
+}
+
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
   position: absolute !important;
   width: 100% !important;
-  z-index: 99999 !important;
-  background: white;
+  z-index: 9999 !important;
+  background: #ffffff;
   border: 1px solid #C4C7CC;
   max-height: 260px;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* ============================================================
-   7. ADD ROW BUTTON — EXACT LIKE XERO
-============================================================ */
+/* Add row button – gaya Xero */
 #addLine {
   margin-top: 16px;
   background: #ffffff;
   border: 1px solid #C5C7D0;
-  padding: 8px 14px;
-  border-radius: 5px;
-  color: #2F3F52;
-  font-weight: 600;
-  cursor: pointer;
+  padding: 7px 14px;
+  border-radius: 4px;
   font-size: 13px;
-  display: inline-block;
+  font-weight: 600;
+  color: #2F3F52;
+  cursor: pointer;
 }
 
-/* ============================================================
-   8. SUMMARY SECTION (Subtotal/Total)
-============================================================ */
+/* SUMMARY (Sub Total, PPN, Grand Total) */
 .summary-box {
-  margin-top: 30px;
+  margin-top: 32px;
   float: right;
   text-align: right;
 }
 
-.summary-box table td {
-  padding: 6px 4px;
-  font-size: 14px;
-}
+.summary-box table { border-collapse: collapse; }
+.summary-box td { padding: 5px 4px; font-size: 13px; }
 
 .summary-box input {
-  width: 160px;
-  height: 34px;
-  border: 1px solid #C4C7CC;
+  width: 170px;
+  height: 32px;
   border-radius: 4px;
-  padding: 6px;
-  background: #FAFAFA;
+  border: 1px solid #C4C7CC;
   text-align: right;
+  padding: 4px 6px;
+  background: #FAFAFA;
   font-weight: 600;
 }
 
-/* ============================================================
-   9. FOOTER NOTE AREA
-============================================================ */
-textarea {
-  width: 100%;
-  min-height: 140px;
-  border-radius: 6px;
-  border: 1px solid #C4C7CC;
-  padding: 12px;
-  margin-top: 20px;
-  font-size: 14px;
+/* Notes & submit */
+.notes-area {
+  margin-top: 40px;
+  clear: both;
 }
 
-/* ============================================================
-   10. SUBMIT BUTTON — XERO BLUE
-============================================================ */
+.notes-area textarea {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 4px;
+  border: 1px solid #C4C7CC;
+  padding: 10px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.actions-bar {
+  margin-top: 20px;
+  text-align: right;
+}
+
 button[type="submit"] {
-  background: #1F6EF3;
-  color: white;
-  padding: 10px 18px;
+  background: var(--xero-blue);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  margin-top: 22px;
-  float: right;
+  border-radius: 4px;
+  padding: 9px 18px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
+/* Responsive sedikit */
+@media (max-width: 900px) {
+  .xero-card { padding: 18px 16px 22px; }
+  .top-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
-
 <body>
 
-<div class="xero-container">
+<div class="page-header">
+  Sales overview › Orders
+</div>
 
-  <h2>Form Pemesanan</h2>
+<div class="xero-card">
+  <h1 class="card-title">Form Pemesanan</h1>
 
-  <!-- TOP FIELDS -->
-  <div class="top-grid">
-    <div>
-      <label>Customer</label>
-      <select id="customer"></select>
+  <form id="orderForm">
+    <!-- TOP -->
+    <div class="top-row">
+      <div>
+        <label>Date</label>
+        <input type="date" id="date" required>
+      </div>
+      <div>
+        <label>Customer</label>
+        <select id="customer" required></select>
+      </div>
     </div>
 
-    <div>
-      <label>Date</label>
-      <input type="date" id="date">
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table class="xero-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Product</th>
+            <th>Meter</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Price/Qty</th>
+            <th>Discount</th>
+            <th>Sub Total</th>
+            <th>Tax</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="orderBody"></tbody>
+      </table>
     </div>
 
-    <div>
-      <label>Invoice Number</label>
-      <input type="text" id="invnum" placeholder="Auto">
+    <button type="button" id="addLine">Add row</button>
+
+    <!-- SUMMARY -->
+    <div class="summary-box">
+      <table>
+        <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
+        <tr><td>PPN 11%</td><td><input type="text" id="ppn" readonly></td></tr>
+        <tr><td><strong>Grand Total</strong></td><td><input type="text" id="grandTotal" readonly></td></tr>
+      </table>
     </div>
 
-    <div>
-      <label>Reference</label>
-      <input type="text">
+    <!-- NOTES -->
+    <div class="notes-area">
+      <label>Catatan tambahan</label>
+      <textarea id="catatan"></textarea>
     </div>
-  </div>
 
-  <!-- TABLE -->
-  <div class="table-wrapper">
-    <table class="xero-table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Product</th>
-          <th>Meter</th>
-          <th>Qty</th>
-          <th>Unit Price</th>
-          <th>Amount</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody id="orderBody"></tbody>
-    </table>
-  </div>
-
-  <button type="button" id="addLine">Add row</button>
-
-  <!-- SUMMARY -->
-  <div class="summary-box">
-    <table>
-      <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
-      <tr><td>Total GST</td><td><input id="ppn" readonly></td></tr>
-      <tr><td><b>Total</b></td><td><input id="grandTotal" readonly></td></tr>
-    </table>
-  </div>
-
-  <!-- NOTES -->
-  <label>Catatan tambahan</label>
-  <textarea id="catatan"></textarea>
-
-  <button type="submit">Kirim Order</button>
-
+    <div class="actions-bar">
+      <button type="submit">Kirim Order</button>
+    </div>
+  </form>
 </div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
 
-<!-- LOAD 3 DEFAULT ROWS -->
+<!-- Default 3 rows – pakai addRow() dari script.js -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    if (typeof addRow === "function") {
-        addRow(); addRow(); addRow();
-    }
+  if (typeof addRow === "function") {
+    addRow(); addRow(); addRow();
+  }
 });
 </script>
 
