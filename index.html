@@ -10,9 +10,9 @@
 
 <style>
 
-/* ============================================
-   FULL WHITE PAGE
-============================================ */
+/* ==========================================================
+   FULL WHITE BACKGROUND
+========================================================== */
 body {
   font-family: Aptos, sans-serif;
   background: #ffffff !important;
@@ -35,15 +35,18 @@ h2 {
   margin-bottom: 25px;
 }
 
-/* ============================================
+/* ==========================================================
    INPUT FIELDS
-============================================ */
+========================================================== */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
 }
 
-input[type="text"], input[type="number"], input[type="date"], .choices__inner {
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+.choices__inner {
   height: 42px !important;
   border: 1px solid #cfd3db !important;
   border-radius: 6px !important;
@@ -58,9 +61,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: opacity(70%);
 }
 
-/* ============================================
+/* ==========================================================
    TOP ROW
-============================================ */
+========================================================== */
 .top-row {
   display: flex;
   gap: 40px;
@@ -70,18 +73,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .top-row div { flex: 1; }
 label { font-weight: 600; }
 
-/* ============================================
-   TABLE — NORMAL, NO GAP
-============================================ */
+/* ==========================================================
+   TABLE — NO GAP — FULL WIDTH — PRODUCT LEBAR
+========================================================== */
 .table-wrapper {
-  overflow-x: auto;
+  overflow: visible !important;  /* PENTING: NO SCROLL AREA TABLE */
 }
 
 .xero-table {
   width: 100%;
-  border-collapse: collapse !important; /* NO COLUMN GAP */
+  border-collapse: collapse !important;
 }
 
+/* Header */
 .xero-table th {
   background: #f6f6f6;
   padding: 12px 14px;
@@ -90,6 +94,13 @@ label { font-weight: 600; }
   white-space: nowrap;
 }
 
+/* Product column EXTRA WIDE */
+.xero-table th:nth-child(2),
+.xero-table td:nth-child(2) {
+  width: 60% !important;
+}
+
+/* Data cells */
 .xero-table td {
   padding: 12px 14px;
   border: 1px solid #e2e2e2;
@@ -101,7 +112,7 @@ label { font-weight: 600; }
   box-sizing: border-box;
 }
 
-/* Drag handle */
+/* drag handle */
 .col-drag {
   width: 22px !important;
   text-align: center;
@@ -119,9 +130,9 @@ label { font-weight: 600; }
   cursor: pointer;
 }
 
-/* ============================================
-   DROPDOWN FIX — NORMAL BEHAVIOR (NO CUT)
-============================================ */
+/* ==========================================================
+   DROPDOWN FIX — NOT CUT — NORMAL POSITION
+========================================================== */
 .choices {
   width: 100%;
 }
@@ -130,22 +141,22 @@ label { font-weight: 600; }
   overflow: visible !important;
 }
 
-/* dropdown stays BELOW input — NOT fixed */
+/* dropdown stays under input */
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
   position: absolute !important;
   width: 100% !important;
-  z-index: 9999 !important;
   background: #ffffff !important;
   border: 1px solid #d1d5db !important;
   max-height: 250px !important;
   overflow-y: auto !important;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.12);
+  z-index: 99999 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-/* ============================================
+/* ==========================================================
    ADD ROW BUTTON
-============================================ */
+========================================================== */
 #addLine {
   margin-top: 12px;
   background: #e2eaff;
@@ -157,9 +168,9 @@ label { font-weight: 600; }
   cursor: pointer;
 }
 
-/* ============================================
+/* ==========================================================
    SUMMARY BOX
-============================================ */
+========================================================== */
 .summary-box {
   width: 420px;
   float: right;
@@ -185,9 +196,9 @@ label { font-weight: 600; }
   font-weight: 600;
 }
 
-/* ============================================
+/* ==========================================================
    FOOTER
-============================================ */
+========================================================== */
 .footer-area {
   margin-top: 60px;
   display: flex;
@@ -203,9 +214,9 @@ textarea {
   padding: 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  resize: vertical;
 }
 
+/* Right side */
 .footer-right {
   width: 320px;
   text-align: right;
@@ -239,6 +250,7 @@ button[type="submit"] {
 
 <form id="orderForm">
 
+  <!-- TOP INPUTS -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -251,6 +263,7 @@ button[type="submit"] {
     </div>
   </div>
 
+  <!-- TABLE -->
   <div class="table-wrapper">
     <table class="xero-table">
       <thead>
@@ -273,6 +286,7 @@ button[type="submit"] {
 
   <button type="button" id="addLine">+ Add row</button>
 
+  <!-- SUMMARY -->
   <div class="summary-box">
     <table>
       <tr><td>Sub Total</td><td><input type="text" id="subTotal" readonly></td></tr>
@@ -281,6 +295,7 @@ button[type="submit"] {
     </table>
   </div>
 
+  <!-- FOOTER -->
   <div class="footer-area">
     <div class="footer-left">
       <label>Catatan tambahan</label>
