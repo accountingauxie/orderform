@@ -10,83 +10,61 @@
 
 <style>
 
-/* ==========================================================
-   FULL WHITE BACKGROUND
-========================================================== */
+/* ============================
+   GLOBAL
+============================ */
 body {
   font-family: Aptos, sans-serif;
   background: #ffffff !important;
   margin: 40px auto;
   padding: 0 40px;
   max-width: 1400px;
-  color: #1c1c1c;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 6px;
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.subtext {
-  text-align: center;
-  color: #6b7280;
-  margin-bottom: 25px;
-}
-
-/* ==========================================================
+/* ============================
    INPUT FIELDS
-========================================================== */
+============================ */
 input, select, textarea {
   font-size: 14px;
   font-family: inherit;
 }
 
-input[type="text"], 
-input[type="number"], 
-input[type="date"], 
+input[type="text"],
+input[type="number"],
+input[type="date"],
 .choices__inner {
   height: 42px !important;
   border: 1px solid #cfd3db !important;
   border-radius: 6px !important;
   padding: 0 12px !important;
   background: #ffffff !important;
-  box-sizing: border-box;
 }
 
-/* Date icon */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: opacity(70%);
-}
-
-/* ==========================================================
-   TOP ROW
-========================================================== */
+/* ============================
+   HEADER SECTION
+============================ */
 .top-row {
   display: flex;
   gap: 40px;
   margin-bottom: 20px;
 }
-
 .top-row div { flex: 1; }
 label { font-weight: 600; }
 
-/* ==========================================================
-   TABLE — NO GAP — PRODUCT SUPER WIDE — NO SCROLL
-========================================================== */
+/* ============================
+   TABLE — FIXED LAYOUT
+============================ */
 .table-wrapper {
-  overflow: visible !important;  /* NO SCROLL IN TABLE */
+  overflow: visible !important;
 }
 
 .xero-table {
   width: 100%;
   border-collapse: collapse !important;
-  table-layout: fixed !important; /* CONTROL WIDTH RELIABLY */
+  table-layout: fixed !important;  /* SUPER IMPORTANT */
 }
 
-/* Header */
+/* TABLE HEADER */
 .xero-table th {
   background: #f6f6f6;
   padding: 12px 14px;
@@ -95,10 +73,28 @@ label { font-weight: 600; }
   white-space: nowrap;
 }
 
-/* PRODUCT COLUMN — WIDEST */
+/* TABLE CELLS */
+.xero-table td {
+  padding: 12px 14px;
+  border: 1px solid #e2e2e2;
+  background: #ffffff;
+}
+
+.xero-table input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* DRAG COLUMN */
+.xero-table th:nth-child(1),
+.xero-table td:nth-child(1) {
+  width: 32px !important;
+}
+
+/* PRODUCT LEBAR */
 .xero-table th:nth-child(2),
 .xero-table td:nth-child(2) {
-  width: 45% !important;
+  width: 50% !important;   /* FIX WIDTH */
 }
 
 /* METER */
@@ -111,80 +107,38 @@ label { font-weight: 600; }
 
 /* UNIT PRICE */
 .xero-table th:nth-child(5),
-.xero-table td:nth-child(5) { width: 15% !important; }
+.xero-table td:nth-child(5) { width: 12% !important; }
 
 /* PRICE/QTY */
 .xero-table th:nth-child(6),
-.xero-table td:nth-child(6) { width: 15% !important; }
+.xero-table td:nth-child(6) { width: 10% !important; }
 
 /* TOTAL */
 .xero-table th:nth-child(7),
 .xero-table td:nth-child(7) { width: 15% !important; }
 
-/* DRAG COL */
-.xero-table th:first-child,
-.xero-table td:first-child { width: 32px !important; }
+/* DELETE COLUMN */
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) { width: 40px !important; }
 
-/* DELETE COL */
-.xero-table th:last-child,
-.xero-table td:last-child { width: 40px !important; }
-
-/* Data cells */
-.xero-table td {
-  padding: 12px 14px;
-  border: 1px solid #e2e2e2;
-  background: #ffffff;
-}
-
-.xero-table input {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* drag handle */
-.col-drag {
-  text-align: center;
-  cursor: grab;
-  color: #9aa3b2;
-  font-size: 18px;
-}
-
-/* delete button */
-.delete-btn {
-  background: none;
-  border: none;
-  color: red;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* ==========================================================
-   DROPDOWN FIX — NOT CUT — NORMAL POSITION
-========================================================== */
-.choices {
-  width: 100%;
-}
-
-.choices__inner {
-  overflow: visible !important;
-}
-
-/* dropdown stays inside table but ABOVE it visually */
+/* ============================
+   DROPDOWN FIX
+============================ */
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
   position: absolute !important;
   width: 100% !important;
-  background: #ffffff !important;
+  z-index: 9999 !important;
   border: 1px solid #d1d5db !important;
-  max-height: 250px !important;
-  overflow-y: auto !important;
-  z-index: 99999 !important;
+  background: white !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  max-height: 260px !important;
+  overflow-y: auto !important;
 }
 
-/* ==========================================================
+/* ============================
    ADD ROW BUTTON
-========================================================== */
+============================ */
 #addLine {
   margin-top: 12px;
   background: #e2eaff;
@@ -196,9 +150,9 @@ label { font-weight: 600; }
   cursor: pointer;
 }
 
-/* ==========================================================
-   SUMMARY BOX
-========================================================== */
+/* ============================
+   SUMMARY SECTION
+============================ */
 .summary-box {
   width: 420px;
   float: right;
@@ -209,33 +163,27 @@ label { font-weight: 600; }
   border: 1px solid #e5e7eb;
 }
 
-.summary-box td {
-  padding: 6px 0;
-}
-
+.summary-box table { width: 100%; }
 .summary-box input {
   width: 100%;
   height: 34px;
   padding: 6px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  text-align: right;
   background: #fafafa;
-  font-weight: 600;
+  text-align: right;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
 }
 
-/* ==========================================================
+/* ============================
    FOOTER
-========================================================== */
+============================ */
 .footer-area {
   margin-top: 60px;
   display: flex;
   justify-content: space-between;
   gap: 40px;
 }
-
 .footer-left { flex: 1; }
-
 textarea {
   width: 100%;
   min-height: 150px;
@@ -243,12 +191,7 @@ textarea {
   border: 1px solid #d1d5db;
   border-radius: 6px;
 }
-
-/* Right side */
-.footer-right {
-  width: 320px;
-  text-align: right;
-}
+.footer-right { width: 320px; text-align: right; }
 
 button[type="submit"] {
   background: #1f6ef3;
@@ -261,24 +204,17 @@ button[type="submit"] {
   font-weight: 600;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .top-row { flex-direction: column; }
-  .footer-area { flex-direction: column; }
-  .footer-right { width: 100%; text-align: left; }
-}
-
 </style>
 </head>
 
 <body>
 
 <h2>Form Pemesanan</h2>
-<div class="subtext">Xero Ultra Modern — Verified Fix Version</div>
+<div class="subtext">Xero Ultra Modern — Verified Fix v2</div>
 
 <form id="orderForm">
 
-  <!-- TOP INPUTS -->
+  <!-- TOP -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -308,7 +244,6 @@ button[type="submit"] {
       </thead>
 
       <tbody id="orderBody"></tbody>
-
     </table>
   </div>
 
@@ -339,6 +274,17 @@ button[type="submit"] {
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
+
+<!-- DEFAULT 3 ROWS -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (typeof addRow === "function") {
+        addRow();
+        addRow();
+        addRow();  // default 3 rows
+    }
+});
+</script>
 
 </body>
 </html>
