@@ -74,15 +74,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 label { font-weight: 600; }
 
 /* ==========================================================
-   TABLE — NO GAP — FULL WIDTH — PRODUCT LEBAR
+   TABLE — NO GAP — PRODUCT SUPER WIDE — NO SCROLL
 ========================================================== */
 .table-wrapper {
-  overflow: visible !important;  /* PENTING: NO SCROLL AREA TABLE */
+  overflow: visible !important;  /* NO SCROLL IN TABLE */
 }
 
 .xero-table {
   width: 100%;
   border-collapse: collapse !important;
+  table-layout: fixed !important; /* CONTROL WIDTH RELIABLY */
 }
 
 /* Header */
@@ -94,11 +95,39 @@ label { font-weight: 600; }
   white-space: nowrap;
 }
 
-/* Product column EXTRA WIDE */
+/* PRODUCT COLUMN — WIDEST */
 .xero-table th:nth-child(2),
 .xero-table td:nth-child(2) {
-  width: 60% !important;
+  width: 55% !important;
 }
+
+/* METER */
+.xero-table th:nth-child(3),
+.xero-table td:nth-child(3) { width: 10% !important; }
+
+/* QTY */
+.xero-table th:nth-child(4),
+.xero-table td:nth-child(4) { width: 8% !important; }
+
+/* UNIT PRICE */
+.xero-table th:nth-child(5),
+.xero-table td:nth-child(5) { width: 12% !important; }
+
+/* PRICE/QTY */
+.xero-table th:nth-child(6),
+.xero-table td:nth-child(6) { width: 10% !important; }
+
+/* TOTAL */
+.xero-table th:nth-child(7),
+.xero-table td:nth-child(7) { width: 15% !important; }
+
+/* DRAG COL */
+.xero-table th:first-child,
+.xero-table td:first-child { width: 32px !important; }
+
+/* DELETE COL */
+.xero-table th:last-child,
+.xero-table td:last-child { width: 40px !important; }
 
 /* Data cells */
 .xero-table td {
@@ -114,7 +143,6 @@ label { font-weight: 600; }
 
 /* drag handle */
 .col-drag {
-  width: 22px !important;
   text-align: center;
   cursor: grab;
   color: #9aa3b2;
@@ -141,7 +169,7 @@ label { font-weight: 600; }
   overflow: visible !important;
 }
 
-/* dropdown stays under input */
+/* dropdown stays inside table but ABOVE it visually */
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
   position: absolute !important;
@@ -246,7 +274,7 @@ button[type="submit"] {
 <body>
 
 <h2>Form Pemesanan</h2>
-<div class="subtext">Xero Ultra Modern — Pure Flat Version</div>
+<div class="subtext">Xero Ultra Modern — Verified Fix Version</div>
 
 <form id="orderForm">
 
@@ -268,14 +296,14 @@ button[type="submit"] {
     <table class="xero-table">
       <thead>
         <tr>
-          <th style="width:24px;"></th>
+          <th></th>
           <th>Product</th>
           <th>Meter</th>
           <th>Qty</th>
           <th>Unit Price</th>
           <th>Price/Qty</th>
           <th>Total</th>
-          <th style="width:40px;"></th>
+          <th></th>
         </tr>
       </thead>
 
