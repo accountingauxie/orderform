@@ -3,155 +3,166 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Form Pemesanan — Xero Ultra Modern</title>
+<title>Form Pemesanan</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
-/* ============================================
-   GLOBAL PAGE LAYOUT
-============================================ */
+
+/* ============================================================
+   GLOBAL LAYOUT
+============================================================ */
 body {
   font-family: Aptos, sans-serif;
   max-width: 1400px;
   width: 100%;
   margin: 40px auto;
   padding: 0 40px;
-  background: #f5f7fa;
+  background: #f6f7f9;
 }
 
 h2 {
-  color: #1e395b;
+  color: #1f3b63;
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  font-size: 26px;
+  font-weight: 700;
 }
 
-.subheader {
+.subtext {
   text-align: center;
-  color: #7b8794;
+  color: #6b7a8c;
   margin-bottom: 25px;
-  font-size: 14px;
 }
 
-/* ============================================
+/* ============================================================
    INPUTS
-============================================ */
+============================================================ */
 input, select, textarea {
-  font-size: 14px;
   font-family: inherit;
+  font-size: 14px;
 }
 
 input[type="text"], input[type="number"], input[type="date"], .choices__inner {
   height: 42px !important;
   min-height: 42px !important;
-  border-radius: 6px !important;
   border: 1px solid #d3d7dc !important;
+  border-radius: 6px !important;
   padding: 0 12px !important;
   background: white;
-  box-sizing: border-box;
 }
 
-/* date picker icon */
+/* Date Picker Icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   filter: opacity(65%);
 }
 
-/* ============================================
-   TOP SECTION
-============================================ */
+/* ============================================================
+   TOP ROW
+============================================================ */
 .top-row {
   display: flex;
   gap: 50px;
   margin-bottom: 20px;
 }
 
-.top-row div { flex: 1; }
-.top-row label { font-weight: bold; }
+.top-row div {
+  flex: 1;
+}
 
-/* ============================================
-   XERO ULTRA MODERN TABLE — COLUMN GAP
-============================================ */
+label {
+  font-weight: 600;
+}
+
+/* ============================================================
+   TABLE — NORMAL, STABLE (NO GAP)
+============================================================ */
 .table-wrapper {
   width: 100%;
-  overflow-x: auto;
-  padding-bottom: 20px;
+  /* HAPUS overflow agar dropdown tidak kepotong */
 }
 
 .xero-table {
   width: 100%;
-  border-collapse: separate !important;
-  border-spacing: 16px 0;   /* COLUMN GAP → 16px */
+  border-collapse: collapse !important;   /* IMPORTANT: stable */
 }
 
-.xero-table thead th {
-  background: #eef1f4;
+.xero-table th {
+  background: #f1f3f5;
   padding: 14px 16px;
+  border: 1px solid #dce1e6;
   font-weight: 600;
   font-size: 14px;
-  color: #455468;
-  border-radius: 6px;
   white-space: nowrap;
-  text-align: left;
 }
 
-/* ROWS */
-.xero-table tbody td {
+.xero-table td {
+  padding: 14px 16px;
+  border: 1px solid #e2e6ea;
   background: white;
-  padding: 12px 14px;
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-  position: relative;
 }
 
-/* drag handle */
+.xero-table input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Drag handle */
 .col-drag {
-  width: 30px !important;
+  width: 22px !important;
   text-align: center;
-  color: #a0a9b4;
   cursor: grab;
+  color: #9ca4b0;
   font-size: 18px;
 }
 
 /* delete button */
 .delete-btn {
-  font-size: 18px;
-  color: #d9534f;
   background: none;
   border: none;
+  color: #e14b4b;
+  font-size: 20px;
   cursor: pointer;
 }
 
-/* Inputs inside table */
-.xero-table input {
-  width: 100%;
-  box-sizing: border-box;
-  text-align: left;
-}
-
-/* Ensure dropdown is not cut */
+/* ============================================================
+   DROPDOWN FIX — ALWAYS FLOAT OUTSIDE TABLE
+============================================================ */
 .choices {
   width: 100%;
-  z-index: 50 !important;
 }
 
+.choices__inner {
+  overflow: visible !important;
+}
+
+/* FORCE DROPDOWN FLOAT */
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 99999 !important;
-  position: absolute !important;
-  width: 100% !important;
+  position: fixed !important;
+  width: 260px !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  background: white !important;
+  border: 1px solid #d0d5db !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+  z-index: 999999 !important;
 }
 
-/* ============================================
+/* Positioning offset so it appears BELOW input */
+.choices__list--dropdown {
+  transform: translateY(40px) !important;
+}
+
+/* ============================================================
    ADD ROW BUTTON
-============================================ */
+============================================================ */
 #addLine {
   margin-top: 12px;
   background: #e2eaff;
-  border: 1px solid #c4d3ff;
+  border: 1px solid #c9d6ff;
   padding: 10px 16px;
   border-radius: 6px;
   color: #2457c5;
@@ -159,27 +170,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* ============================================
+/* ============================================================
    SUMMARY BOX
-============================================ */
+============================================================ */
 .summary-box {
   width: 420px;
   float: right;
   margin-top: 25px;
-  background: #ffffff;
-  padding: 18px 20px;
+  background: white;
+  padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.summary-box table {
-  width: 100%;
-}
+.summary-box table { width: 100%; }
 
 .summary-box td {
   padding: 6px 0;
-  color: #3b4856;
   font-size: 14px;
+  color: #3a4654;
 }
 
 .summary-box input {
@@ -187,20 +196,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 34px;
   padding: 6px;
   border-radius: 6px;
-  border: 1px solid #d1d7de;
+  border: 1px solid #d1d4da;
+  background: #fafafa;
   text-align: right;
   font-weight: 600;
-  background: #fafbfc;
 }
 
-/* ============================================
-   FOOTER AREA
-============================================ */
+/* ============================================================
+   FOOTER
+============================================================ */
 .footer-area {
   margin-top: 55px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 40px;
 }
 
@@ -211,7 +219,7 @@ textarea {
   min-height: 140px;
   padding: 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #cfd3d8;
   resize: vertical;
   font-size: 15px;
 }
@@ -223,9 +231,9 @@ textarea {
 
 button[type="submit"] {
   background: #1f6ef3;
+  color: white;
   border: none;
   padding: 12px 24px;
-  color: white;
   border-radius: 8px;
   cursor: pointer;
   font-size: 15px;
@@ -233,41 +241,40 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: #1558c2;
+  background: #1758c3;
 }
 
-/* ============================================
-   MOBILE FIX
-============================================ */
+/* ============================================================
+   MOBILE
+============================================================ */
 @media (max-width: 768px) {
   body { padding: 0 10px; }
   .top-row { flex-direction: column; gap: 12px; }
-  .summary-box { width: 100%; float: none; }
+  .summary-box { float: none; width: 100%; }
   .footer-area { flex-direction: column; }
   .footer-left, .footer-right { width: 100%; }
   button[type="submit"] { width: 100%; }
 }
 
-/* ============================================
+/* ============================================================
    PRINT
-============================================ */
+============================================================ */
 @media print {
   @page { size: landscape; }
   #addLine, button, textarea { display: none !important; }
 }
+
 </style>
 </head>
 
 <body>
 
 <h2>Form Pemesanan</h2>
-<div class="subheader">Xero Ultra Modern — Pure Flat Version</div>
-
-<p id="result"></p>
+<div class="subtext">Xero Modern — Stable Version</div>
 
 <form id="orderForm">
 
-  <!-- TOP ROW -->
+  <!-- TOP INPUTS -->
   <div class="top-row">
     <div>
       <label>Date</label><br>
@@ -285,8 +292,8 @@ button[type="submit"]:hover {
     <table class="xero-table">
       <thead>
         <tr>
-          <th style="width:30px;"></th>
-          <th style="min-width:260px;">Product</th>
+          <th style="width:24px;"></th>
+          <th style="min-width:250px;">Product</th>
           <th style="min-width:90px;">Meter</th>
           <th style="min-width:80px;">Qty</th>
           <th style="min-width:120px;">Unit Price</th>
