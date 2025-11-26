@@ -7,7 +7,7 @@ window.onload = function () {
     const orderForm = document.getElementById("orderForm");
     const orderBody = document.getElementById("orderBody");
 
-    // set default tanggal hari ini
+    // default tanggal hari ini
     document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
     function formatRupiah(num) {
@@ -26,8 +26,6 @@ window.onload = function () {
 
     /* ============================================================
        AUTO INVOICE NUMBER INVYYMMXXXX
-       - Jika backend kirim data.nextInv → pakai itu
-       - Kalau tidak, pakai localStorage dan reset tiap bulan
     ============================================================ */
     function generateLocalInvoiceNumber() {
         const now = new Date();
@@ -60,7 +58,7 @@ window.onload = function () {
     }
 
     /* ============================================================
-       LOAD DATA (customers, products, optional nextInv)
+       LOAD DATA (customers + products + optional nextInv)
     ============================================================ */
     async function loadDropdowns() {
         const res = await fetch(baseURL + "?action=getdata");
@@ -86,10 +84,11 @@ window.onload = function () {
         // Set Invoice Number
         setInvoiceNumber(data.nextInv);
 
-        // Default 3 rows
+        // default 3 rows
         addLine();
         addLine();
         addLine();
+        calculateSummary();
     }
 
     /* ============================================================
@@ -123,7 +122,7 @@ window.onload = function () {
 
         orderBody.appendChild(tr);
 
-        /* PRODUCT DROPDOWN */
+        // PRODUCT DROPDOWN
         const select = tr.querySelector(".product-select");
         const choice = new Choices(select, {
             searchEnabled: true,
@@ -167,9 +166,10 @@ window.onload = function () {
     }
 
     /* ============================================================
-       CALCULATE ROW (discount per Qty)
+       CALCULATE ROW
        - Unit price already includes 11% tax
-       - TotalRow = (meter * price * qty) - (discountPerQty * qty)
+       - Discount per Qty (discPerQty × qty)
+       - TotalRow = (meter * price * qty) − (discountPerQty * qty)
     ============================================================ */
     function calculateRow(tr) {
         const meter = parseFloat(tr.querySelector(".meter").value) || 0;
@@ -177,10 +177,10 @@ window.onload = function () {
         const discPerQty = parseFloat(tr.querySelector(".disc").value) || 0;
         const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
 
-        const ppq = meter * price;               // harga per qty (meter × unit price)
-        const gross = ppq * qty;                 // total sebelum diskon
-        const discTotal = discPerQty * qty;      // diskon total
-        const total = gross - discTotal;         // total akhir (tax incl)
+        const ppq = meter * price;          // price per qty (meter × unit price)
+        const gross = ppq * qty;
+        const discTotal = discPerQty * qty;
+        const total = gross - discTotal;
 
         const ppqInput = tr.querySelector(".ppq");
         ppqInput.setAttribute("data-value", ppq);
@@ -212,12 +212,12 @@ window.onload = function () {
     }
 
     /* ============================================================
-       BUTTON ADD ROW
+       ADD ROW BUTTON
     ============================================================ */
     document.getElementById("addLine").addEventListener("click", addLine);
 
     /* ============================================================
-       FORM SUBMIT + VALIDATION
+       SUBMIT + VALIDATION
     ============================================================ */
     orderForm.addEventListener("submit", async e => {
         e.preventDefault();
@@ -228,7 +228,7 @@ window.onload = function () {
             return;
         }
 
-        // minimal 1 baris punya produk
+        // minimal 1 baris ada product
         let validRow = false;
         document.querySelectorAll(".product-select").forEach(sel => {
             if (sel.value) validRow = true;
@@ -238,7 +238,7 @@ window.onload = function () {
             return;
         }
 
-        // convert field yang punya data-value agar dikirim angka murni
+        // kirim angka murni untuk field data-value
         document.querySelectorAll("[data-value]").forEach(el => {
             el.value = el.getAttribute("data-value");
         });
@@ -255,15 +255,15 @@ window.onload = function () {
             const txt = await res.text();
             alert(txt);
 
+            // reset form
             orderForm.reset();
             orderBody.innerHTML = "";
             document.getElementById("date").value = new Date().toISOString().split("T")[0];
-
-            // set inv baru
-            setInvoiceNumber();
+            setInvoiceNumber(); // invoice baru
 
             addLine(); addLine(); addLine();
             calculateSummary();
+
         } catch (err) {
             alert("Gagal mengirim order. Coba lagi.");
             console.error(err);
