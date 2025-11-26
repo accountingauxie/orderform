@@ -1,258 +1,459 @@
-window.onload = function () {
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Order – Xero New Invoice Style</title>
 
-  const baseURL = "https://script.google.com/macros/s/AKfycbw8105MSJQsOG0PyNQAQviOec1OZN_7_B-8fbNdGcjfsLe6sYbn5n9cpjF9OS2gGVsE/exec";
-  let productList = [];
-  let choiceCustomer;
+<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-  const orderForm = document.getElementById("orderForm");
-  const orderBody = document.getElementById("orderBody");
+<style>
 
-  document.getElementById("date").value = new Date().toISOString().split("T")[0];
+/* ============================================================
+   XERO GLOBAL FONT — HELVETICA NEUE
+============================================================ */
+* {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  box-sizing: border-box;
+}
 
-  function formatRupiah(num) {
-    return "Rp " + Number(num || 0).toLocaleString("id-ID", {
-      maximumFractionDigits: 0
-    });
-  }
 
-  /* ==========================
-     LOAD DATA
-  ========================== */
-  async function loadDropdowns() {
-    const res = await fetch(baseURL + "?action=getdata");
-    const data = await res.json();
+/* ============================================================
+   COLOR SYSTEM
+============================================================ */
+:root {
+  --blue: #1f6ff2;
+  --blue-dark: #1854c9;
+  --bg: #f4f6f8;
+  --text-dark: #1f2933;
+  --text-muted: #6b778c;
+  --border: #d0d7e2;
+  --border-light: #e4e7eb;
+  --row-hover: #f7f9fc;
+  --header-bg: #eef0f3;
+}
 
-    productList = data.products || [];
 
-    // CUSTOMER DROPDOWN
-    choiceCustomer = new Choices("#customer", {
-      searchEnabled: true,
-      shouldSort: false,
-      placeholder: true
-    });
+/* ============================================================
+   PAGE BASE
+============================================================ */
+body {
+  margin: 0;
+  padding: 32px 0 60px;
+  background: var(--bg);
+  color: var(--text-dark);
+}
 
-    choiceCustomer.setChoices(
-      [
-        ...(data.customers || []).map(v => ({ value: v, label: v })),
-        { value: "__add__", label: "➕ Add New Customer" }
-      ],
-      "value",
-      "label",
-      true
-    );
+.xero-card {
+  width: 1320px;
+  margin: auto;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 30px 36px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
 
-    document.getElementById("customer").addEventListener("change", function () {
-      if (this.value === "__add__") {
-        alert("Fitur tambah customer baru via modal bisa ditambah nanti 🙂");
-      }
-    });
 
-    // default 3 rows
-    addLine();
-    addLine();
-    addLine();
-  }
+/* ============================================================
+   TYPOGRAPHY
+============================================================ */
 
-  /* ==========================
-     ADD LINE
-  ========================== */
-  function addLine() {
+/* PAGE TITLE */
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+  margin: 0 0 26px 0;
+}
 
-    const idx = orderBody.children.length + 1;
-    const tr = document.createElement("tr");
+/* LABELS */
+label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 6px;
+}
 
-    tr.innerHTML = `
-      <td class="col-drag">⋮⋮</td>
+/* INPUT TEXT */
+input, select, textarea, .choices__inner {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.1px;
+  color: var(--text-dark);
+}
 
-      <td>
-        <select class="product-select" name="product_${idx}"></select>
-      </td>
+::placeholder {
+  color: #9ba6b5;
+  opacity: 1;
+  font-weight: 300;
+}
 
-      <td><input type="number" step="0.01" min="0" class="meter" name="meter_${idx}"></td>
-      <td><input type="number" step="1"   min="0" class="qty"   name="qty_${idx}"></td>
 
-      <td><input type="text" readonly class="unitPrice" data-value="" name="unitPrice_${idx}"></td>
-      <td><input type="text" readonly class="ppq"       data-value="" name="ppq_${idx}"></td>
+/* ============================================================
+   INPUT FIELD
+============================================================ */
+input, select {
+  width: 100%;
+  height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
 
-      <td><input type="number" step="1" min="0" class="discount" name="discount_${idx}" value="0"></td>
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--blue) !important;
+  box-shadow: 0 0 0 3px rgba(31,111,242,0.20);
+  outline: none;
+}
 
-      <td><input type="text" readonly class="subtotal"   data-value="" name="subtotal_${idx}"></td>
-      <td><input type="text" readonly class="tax"        data-value="" name="tax_${idx}"></td>
-      <td><input type="text" readonly class="totalPrice" data-value="" name="totalPrice_${idx}"></td>
+input[readonly] {
+  background: #f9fafb !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+}
 
-      <td><button type="button" class="delete-btn">🗑</button></td>
-    `;
 
-    orderBody.appendChild(tr);
+/* ============================================================
+   TOP GRID
+============================================================ */
+.top-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
+  column-gap: 32px;
+  row-gap: 20px;
+  margin-bottom: 32px;
+}
 
-    // Product dropdown
-    const select = tr.querySelector(".product-select");
-    const choice = new Choices(select, {
-      searchEnabled: true,
-      shouldSort: false
-    });
 
-    choice.setChoices(
-      productList.map(v => ({ value: v, label: v })),
-      "value",
-      "label",
-      true
-    );
+/* ============================================================
+   TABLE EXACT XERO
+============================================================ */
+.table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: visible !important;
+}
 
-    select.addEventListener("change", () => updatePrice(tr));
-    tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
-    tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
-    tr.querySelector(".discount").addEventListener("input", () => calculateRow(tr));
+table.xero-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
 
-    tr.querySelector(".delete-btn").addEventListener("click", () => {
-      tr.remove();
-      calculateSummary();
-    });
-  }
+.xero-table thead th {
+  background: var(--header-bg);
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  color: #4b5568 !important;
+}
 
-  /* ==========================
-     GET PRICE
-  ========================== */
-  async function updatePrice(tr) {
-    const product = tr.querySelector(".product-select").value;
-    if (!product) return;
+.xero-table tbody td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px !important;
+}
 
-    const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
-    const price = parseFloat(await res.text()) || 0;
+.xero-table tbody tr:hover td {
+  background: var(--row-hover);
+}
 
-    const unitPrice = tr.querySelector(".unitPrice");
-    unitPrice.setAttribute("data-value", price);
-    unitPrice.value = formatRupiah(price);
+.xero-table input {
+  height: 36px;
+  border: 1px solid #cbd2e1;
+  border-radius: 5px;
+  font-size: 13px !important;
+}
 
-    calculateRow(tr);
-  }
 
-  /* ==========================
-     CALCULATE PER ROW
-  ========================== */
-  function calculateRow(tr) {
-    const meterInput = tr.querySelector(".meter");
-    const qtyInput = tr.querySelector(".qty");
-    const discInput = tr.querySelector(".discount");
+/* COLUMN WIDTHS */
+.xero-table th:nth-child(1),
+.xero-table td:nth-child(1) { width: 4%; }
 
-    let meter = parseFloat(meterInput.value) || 0;
-    let qty   = parseFloat(qtyInput.value)   || 0;
-    let disc  = parseFloat(discInput.value)  || 0;
+.xero-table th:nth-child(2),
+.xero-table td:nth-child(2) { width: 22%; }
 
-    if (meter < 0) meter = meterInput.value = 0;
-    if (qty   < 0) qty   = qtyInput.value   = 0;
-    if (disc  < 0) disc  = discInput.value  = 0;
+.xero-table th:nth-child(3),
+.xero-table td:nth-child(3) { width: 9%; }
 
-    const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
+.xero-table th:nth-child(4),
+.xero-table td:nth-child(4) { width: 7%; }
 
-    // Price per Qty
-    const ppq = meter * price;
-    tr.querySelector(".ppq").setAttribute("data-value", ppq);
-    tr.querySelector(".ppq").value = formatRupiah(ppq);
+.xero-table th:nth-child(5),
+.xero-table td:nth-child(5) { width: 11%; }
 
-    // Subtotal per row (sebelum pajak, sesudah diskon)
-    let subtotal = ppq * qty - disc;
-    if (subtotal < 0) subtotal = 0;
+.xero-table th:nth-child(6),
+.xero-table td:nth-child(6) { width: 11%; }
 
-    const tax = subtotal * 0.11;
-    const total = subtotal + tax;
+.xero-table th:nth-child(7),
+.xero-table td:nth-child(7) { width: 9%; }
 
-    const subEl = tr.querySelector(".subtotal");
-    subEl.setAttribute("data-value", subtotal);
-    subEl.value = formatRupiah(subtotal);
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) { width: 11%; }
 
-    const taxEl = tr.querySelector(".tax");
-    taxEl.setAttribute("data-value", tax);
-    taxEl.value = formatRupiah(tax);
+.xero-table th:nth-child(9),
+.xero-table td:nth-child(9) { width: 10%; }
 
-    const totEl = tr.querySelector(".totalPrice");
-    totEl.setAttribute("data-value", total);
-    totEl.value = formatRupiah(total);
+.xero-table th:nth-child(10),
+.xero-table td:nth-child(10) { width: 11%; }
 
-    calculateSummary();
-  }
+.xero-table th:nth-child(11),
+.xero-table td:nth-child(11) { width: 34px; }
 
-  /* ==========================
-     CALCULATE SUMMARY
-  ========================== */
-  function calculateSummary() {
 
-    let subtotal = 0;
-    let tax = 0;
-    let grand = 0;
+/* DRAG */
+.col-drag {
+  cursor: grab;
+  color: #9aa5b1;
+  font-size: 18px;
+  text-align: center;
+}
 
-    document.querySelectorAll(".subtotal").forEach(el => {
-      subtotal += parseFloat(el.getAttribute("data-value")) || 0;
-    });
 
-    document.querySelectorAll(".tax").forEach(el => {
-      tax += parseFloat(el.getAttribute("data-value")) || 0;
-    });
+/* DELETE */
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #d11a2a;
+}
 
-    document.querySelectorAll(".totalPrice").forEach(el => {
-      grand += parseFloat(el.getAttribute("data-value")) || 0;
-    });
 
-    document.getElementById("subTotal").value   = formatRupiah(subtotal);
-    document.getElementById("ppn").value        = formatRupiah(tax);
-    document.getElementById("grandTotal").value = formatRupiah(grand);
-  }
+/* ============================================================
+   ADD ROW BUTTON
+============================================================ */
+#addLine {
+  margin-top: 14px;
+  padding: 9px 16px;
+  border-radius: 5px;
+  border: 1px solid #cbd2e1;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-  /* ==========================
-     BUTTON ADD LINE
-  ========================== */
-  document.getElementById("addLine").addEventListener("click", addLine);
+#addLine:hover {
+  background: #f3f4f6;
+}
 
-  /* ==========================
-     SUBMIT FORM
-  ========================== */
-  orderForm.addEventListener("submit", async e => {
-    e.preventDefault();
 
-    if (!orderForm.checkValidity()) {
-      orderForm.reportValidity();
-      return;
-    }
+/* ============================================================
+   NOTES
+============================================================ */
+textarea {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  padding: 10px;
+  resize: vertical;
+  font-size: 14px;
+}
 
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.innerText = "Sending...";
 
-    // ubah semua display (Rp ..) ke angka murni sebelum kirim
-    document.querySelectorAll("[data-value]").forEach(el => {
-      el.value = el.getAttribute("data-value") || 0;
-    });
+/* ============================================================
+   SUMMARY BOX
+============================================================ */
+.summary-box {
+  width: 240px;
+  float: right;
+  margin-top: 30px;
+}
 
-    try {
-      const res = await fetch(baseURL, {
-        method: "POST",
-        body: new FormData(orderForm)
-      });
+.summary-box table {
+  width: 100%;
+}
 
-      const txt = await res.text();
-      alert(txt);
+.summary-box td {
+  padding: 7px 2px;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
 
-      orderForm.reset();
-      orderBody.innerHTML = "";
-      addLine(); addLine(); addLine();
-      calculateSummary();
+.summary-box input {
+  width: 130px;
+  height: 34px;
+  background: #f9fafb;
+  border: 1px solid #d0d7e2;
+  border-radius: 5px;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: right;
+  padding-right: 8px;
+}
 
-    } catch (err) {
-      alert("Gagal mengirim order. Coba lagi.");
-      console.error(err);
-    }
 
-    btn.disabled = false;
-    btn.innerText = "Kirim Order";
-  });
+/* ============================================================
+   SUBMIT BUTTON
+============================================================ */
+#submitBtn {
+  margin-top: 50px;
+  float: right;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 11px 28px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-  /* ==========================
-     INIT
-  ========================== */
-  loadDropdowns();
+#submitBtn:hover {
+  background: var(--blue-dark);
+}
 
-  Sortable.create(orderBody, {
-    handle: ".col-drag",
-    animation: 150
-  });
-};
+
+/* ============================================================
+   XERO DROPDOWN – Choices.js override
+============================================================ */
+
+.choices { overflow: visible !important; }
+
+.choices__inner {
+  background: #fff !important;
+  border: 1px solid #cbd2e1 !important;
+  border-radius: 5px !important;
+  min-height: 36px !important;
+  padding: 6px 8px !important;
+  font-size: 13px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* floating panel like Xero */
+.choices__list--dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  border: 1px solid #cbd2e1 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+  max-height: 260px !important;
+  overflow-y: auto !important;
+}
+
+.choices__list--dropdown .choices__item {
+  padding: 10px 14px !important;
+  border-bottom: 1px solid #f0f2f5 !important;
+  font-size: 13px !important;
+}
+
+.choices__item--selectable:hover {
+  background: var(--row-hover) !important;
+}
+
+.choices__item--selectable.is-highlighted {
+  background: #eff4ff !important;
+  border-left: 3px solid var(--blue) !important;
+}
+
+.choices__list--dropdown .choices__item[data-value="__add__"] {
+  font-weight: 600 !important;
+  color: var(--blue) !important;
+}
+
+.choices__list--dropdown .choices__input {
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-size: 13px !important;
+}
+
+.choices__button {
+  display: none !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="xero-card">
+  <h2 class="section-title">Form Pemesanan</h2>
+
+  <form id="orderForm">
+
+    <div class="top-grid">
+      <div>
+        <label>Customer</label>
+        <select id="customer" required></select>
+      </div>
+
+      <div>
+        <label>Date</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <div>
+        <label>Invoice Number</label>
+        <input id="invnum" name="invnum" placeholder="Auto">
+      </div>
+
+      <div>
+        <label>Reference</label>
+        <input id="reference" name="reference">
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="xero-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Product</th>
+            <th>Meter</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Price/Qty</th>
+            <th>Discount</th>
+            <th>Subtotal</th>
+            <th>Tax</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody id="orderBody"></tbody>
+      </table>
+    </div>
+
+    <button type="button" id="addLine">Add row</button>
+
+    <div style="margin-top:26px;">
+      <label>Catatan</label>
+      <textarea id="catatan" name="catatan"></textarea>
+    </div>
+
+    <div class="summary-box">
+      <table>
+        <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
+        <tr><td>Total tax</td><td><input id="ppn" readonly></td></tr>
+        <tr><td><strong>Total</strong></td><td><input id="grandTotal" readonly></td></tr>
+      </table>
+    </div>
+
+    <button type="submit" id="submitBtn">Kirim Order</button>
+
+  </form>
+</div>
+
+<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="./script.js"></script>
+
+</body>
+</html>
