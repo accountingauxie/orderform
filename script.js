@@ -7,6 +7,7 @@ window.onload = function () {
     const orderForm = document.getElementById("orderForm");
     const orderBody = document.getElementById("orderBody");
 
+    // set default tanggal hari ini
     document.getElementById("date").value = new Date().toISOString().split("T")[0];
 
     function formatRupiah(num) {
@@ -15,36 +16,85 @@ window.onload = function () {
         });
     }
 
-    /* ================================================
-       LOAD DATA
-    ================================================= */
+    function formatXeroNumber(num) {
+        const n = Number(num || 0);
+        return n.toLocaleString("en-NZ", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    /* ============================================================
+       AUTO INVOICE NUMBER INVYYMMXXXX
+       - Jika backend kirim data.nextInv → pakai itu
+       - Kalau tidak, pakai localStorage dan reset tiap bulan
+    ============================================================ */
+    function generateLocalInvoiceNumber() {
+        const now = new Date();
+        const yy = String(now.getFullYear() % 100).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const prefix = `INV${yy}${mm}`;
+
+        const key = "ORDERFORM_LAST_INV";
+        const saved = localStorage.getItem(key);
+
+        let counter = 1;
+        if (saved && saved.startsWith(prefix)) {
+            const lastNum = parseInt(saved.slice(prefix.length), 10);
+            if (!isNaN(lastNum)) counter = lastNum + 1;
+        }
+
+        const inv = prefix + String(counter).padStart(4, "0");
+        localStorage.setItem(key, inv);
+        return inv;
+    }
+
+    function setInvoiceNumber(nextInvFromServer) {
+        let inv;
+        if (nextInvFromServer && /^INV\d{4}\d{4}$/.test(nextInvFromServer)) {
+            inv = nextInvFromServer;
+        } else {
+            inv = generateLocalInvoiceNumber();
+        }
+        document.getElementById("invnum").value = inv;
+    }
+
+    /* ============================================================
+       LOAD DATA (customers, products, optional nextInv)
+    ============================================================ */
     async function loadDropdowns() {
         const res = await fetch(baseURL + "?action=getdata");
         const data = await res.json();
 
         productList = data.products || [];
 
+        // CUSTOMER DROPDOWN
         customerChoice = new Choices("#customer", {
             searchEnabled: true,
             shouldSort: false,
-            placeholder: true
+            placeholder: true,
+            itemSelectText: ""
         });
 
         customerChoice.setChoices(
-            data.customers.map(v => ({ value: v, label: v })),
+            (data.customers || []).map(v => ({ value: v, label: v })),
             "value",
             "label",
             true
         );
 
+        // Set Invoice Number
+        setInvoiceNumber(data.nextInv);
+
+        // Default 3 rows
         addLine();
         addLine();
         addLine();
     }
 
-    /* ================================================
+    /* ============================================================
        ADD ROW
-    ================================================= */
+    ============================================================ */
     function addLine() {
 
         const idx = orderBody.children.length + 1;
@@ -54,19 +104,19 @@ window.onload = function () {
         tr.innerHTML = `
             <td class="col-drag">⋮⋮</td>
 
-            <td><select class="product-select" name="product_${idx}"></select></td>
+            <td>
+                <select class="product-select" name="product_${idx}"></select>
+            </td>
 
-            <td><input type="number" class="meter" min="0" step="0.01"></td>
-            <td><input type="number" class="qty" min="0" step="1"></td>
+            <td><input type="number" class="meter" min="0" step="0.01" name="meter_${idx}"></td>
+            <td><input type="number" class="qty" min="0" step="1" name="qty_${idx}"></td>
 
-            <td><input type="text" class="unitPrice" data-value="" readonly></td>
-            <td><input type="text" class="ppq" data-value="" readonly></td>
+            <td><input type="text" class="unitPrice" data-value="" name="unitPrice_${idx}" readonly></td>
+            <td><input type="text" class="ppq" data-value="" name="ppq_${idx}" readonly></td>
 
-            <td><input type="number" class="disc" min="0" step="1" value="0"></td>
+            <td><input type="number" class="disc" min="0" step="1" value="0" name="disc_${idx}"></td>
 
-            <td><input type="text" class="subtotal" data-value="" readonly></td>
-            <td><input type="text" class="tax" data-value="" readonly></td>
-            <td><input type="text" class="totalPrice" data-value="" readonly></td>
+            <td><input type="text" class="totalPrice" data-value="" name="total_${idx}" readonly></td>
 
             <td><button type="button" class="delete-btn">🗑</button></td>
         `;
@@ -77,7 +127,8 @@ window.onload = function () {
         const select = tr.querySelector(".product-select");
         const choice = new Choices(select, {
             searchEnabled: true,
-            shouldSort: false
+            shouldSort: false,
+            itemSelectText: ""
         });
 
         choice.setChoices(
@@ -98,9 +149,9 @@ window.onload = function () {
         });
     }
 
-    /* ================================================
+    /* ============================================================
        GET PRICE
-    ================================================= */
+    ============================================================ */
     async function updatePrice(tr) {
         const product = tr.querySelector(".product-select").value;
         if (!product) return;
@@ -108,65 +159,66 @@ window.onload = function () {
         const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
         const price = parseFloat(await res.text()) || 0;
 
-        tr.querySelector(".unitPrice").setAttribute("data-value", price);
-        tr.querySelector(".unitPrice").value = formatRupiah(price);
+        const unitPrice = tr.querySelector(".unitPrice");
+        unitPrice.setAttribute("data-value", price);
+        unitPrice.value = formatRupiah(price);
 
         calculateRow(tr);
     }
 
-    /* ================================================
-       CALCULATE ROW
-    ================================================= */
+    /* ============================================================
+       CALCULATE ROW (discount per Qty)
+       - Unit price already includes 11% tax
+       - TotalRow = (meter * price * qty) - (discountPerQty * qty)
+    ============================================================ */
     function calculateRow(tr) {
         const meter = parseFloat(tr.querySelector(".meter").value) || 0;
         const qty = parseFloat(tr.querySelector(".qty").value) || 0;
-        const disc = parseFloat(tr.querySelector(".disc").value) || 0;
-
+        const discPerQty = parseFloat(tr.querySelector(".disc").value) || 0;
         const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
 
-        const ppq = meter * price;
-        const subtotal = (ppq * qty) - disc;
-        const tax = subtotal * 0.11;
-        const total = subtotal + tax;
+        const ppq = meter * price;               // harga per qty (meter × unit price)
+        const gross = ppq * qty;                 // total sebelum diskon
+        const discTotal = discPerQty * qty;      // diskon total
+        const total = gross - discTotal;         // total akhir (tax incl)
 
-        tr.querySelector(".ppq").value = formatRupiah(ppq);
-        tr.querySelector(".ppq").setAttribute("data-value", ppq);
+        const ppqInput = tr.querySelector(".ppq");
+        ppqInput.setAttribute("data-value", ppq);
+        ppqInput.value = formatRupiah(ppq);
 
-        tr.querySelector(".subtotal").value = formatRupiah(subtotal);
-        tr.querySelector(".subtotal").setAttribute("data-value", subtotal);
-
-        tr.querySelector(".tax").value = formatRupiah(tax);
-        tr.querySelector(".tax").setAttribute("data-value", tax);
-
-        tr.querySelector(".totalPrice").value = formatRupiah(total);
-        tr.querySelector(".totalPrice").setAttribute("data-value", total);
+        const totalInput = tr.querySelector(".totalPrice");
+        totalInput.setAttribute("data-value", total);
+        totalInput.value = formatRupiah(total);
 
         calculateSummary();
     }
 
-    /* ================================================
-       SUMMARY
-    ================================================= */
+    /* ============================================================
+       SUMMARY (DPP / PPN / GRAND TOTAL)
+    ============================================================ */
     function calculateSummary() {
-        let subtotal = 0;
+        let grandTotal = 0;
 
-        document.querySelectorAll(".subtotal").forEach(el => {
-            subtotal += parseFloat(el.getAttribute("data-value")) || 0;
+        document.querySelectorAll(".totalPrice").forEach(el => {
+            grandTotal += parseFloat(el.getAttribute("data-value")) || 0;
         });
 
-        const ppn = subtotal * 0.11;
-        const grand = subtotal + ppn;
+        const dpp = grandTotal / 1.11;
+        const ppn = grandTotal - dpp;
 
-        document.getElementById("subTotal").value = formatRupiah(subtotal);
-        document.getElementById("ppn").value = formatRupiah(ppn);
-        document.getElementById("grandTotal").value = formatRupiah(grand);
+        document.getElementById("grandVal").textContent = formatXeroNumber(grandTotal);
+        document.getElementById("dppVal").textContent = formatXeroNumber(dpp);
+        document.getElementById("ppnVal").textContent = formatXeroNumber(ppn);
     }
 
+    /* ============================================================
+       BUTTON ADD ROW
+    ============================================================ */
     document.getElementById("addLine").addEventListener("click", addLine);
 
-    /* ================================================
-       FORM SUBMIT
-    ================================================= */
+    /* ============================================================
+       FORM SUBMIT + VALIDATION
+    ============================================================ */
     orderForm.addEventListener("submit", async e => {
         e.preventDefault();
 
@@ -176,54 +228,58 @@ window.onload = function () {
             return;
         }
 
+        // minimal 1 baris punya produk
         let validRow = false;
-        document.querySelectorAll(".product-select").forEach(s => {
-            if (s.value) validRow = true;
+        document.querySelectorAll(".product-select").forEach(sel => {
+            if (sel.value) validRow = true;
         });
-
         if (!validRow) {
             alert("Minimal 1 item harus diisi.");
             return;
         }
 
+        // convert field yang punya data-value agar dikirim angka murni
         document.querySelectorAll("[data-value]").forEach(el => {
             el.value = el.getAttribute("data-value");
         });
 
         const btn = document.getElementById("submitBtn");
         btn.disabled = true;
-        btn.innerText = "Sending...";
+        btn.textContent = "Sending...";
 
         try {
             const res = await fetch(baseURL, {
                 method: "POST",
                 body: new FormData(orderForm)
             });
-
-            alert(await res.text());
+            const txt = await res.text();
+            alert(txt);
 
             orderForm.reset();
             orderBody.innerHTML = "";
+            document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+            // set inv baru
+            setInvoiceNumber();
+
             addLine(); addLine(); addLine();
             calculateSummary();
-
         } catch (err) {
-            alert("Gagal mengirim order.");
+            alert("Gagal mengirim order. Coba lagi.");
             console.error(err);
         }
 
         btn.disabled = false;
-        btn.innerText = "Kirim Order";
+        btn.textContent = "Kirim Order";
     });
 
-    /* ================================================
+    /* ============================================================
        INIT
-    ================================================= */
+    ============================================================ */
     loadDropdowns();
 
     Sortable.create(orderBody, {
         handle: ".col-drag",
         animation: 150
     });
-
 };
