@@ -1,277 +1,296 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Order – Xero Ultra Modern</title>
+<meta charset="UTF-8">
+<title>Order Form – Xero Ultra Modern</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-  <style>
-    * {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-      -webkit-font-smoothing: antialiased !important;
-      box-sizing: border-box;
-    }
+<style>
+* {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  box-sizing: border-box;
+}
 
-    :root {
-      --blue: #1f6ff2;
-      --blue-dark: #1854c9;
-      --bg: #f4f6f8;
-      --text-dark: #1f2933;
-      --text-muted: #6b778c;
-      --border: #d0d7e2;
-      --border-light: #e4e7eb;
-      --header-bg: #eef0f3;
-      --row-hover: #f7f9fc;
-    }
+:root {
+  --blue: #1f6ff2;
+  --blue-dark: #1854c9;
+  --bg: #f4f6f8;
+  --text-dark: #1f2933;
+  --text-muted: #6b778c;
+  --border: #d0d7e2;
+  --border-light: #e4e7eb;
+  --header-bg: #eef0f3;
+  --row-hover: #f7f9fc;
+}
 
-    body {
-      margin: 0;
-      padding: 32px 0 60px;
-      background: var(--bg);
-      color: var(--text-dark);
-    }
+body {
+  margin: 0;
+  padding: 32px 0 60px;
+  background: var(--bg);
+  color: var(--text-dark);
+}
 
-    .xero-card {
-      width: calc(100% - 80px); /* margin kiri-kanan 40px */
-      margin: 0 auto;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 32px 36px 40px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
+/* CARD */
+.xero-card {
+  width: calc(100% - 80px);
+  margin: 0 auto;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 36px 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
 
-    .section-title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 26px;
-    }
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 26px;
+}
 
-    /* TOP GRID */
-    .top-grid {
-      display: grid;
-      grid-template-columns: 2fr 1.1fr 1.1fr; /* Customer, Date, Invoice */
-      gap: 22px 32px;
-      margin-bottom: 32px;
-    }
+/* TOP GRID */
+.top-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1.2fr;
+  gap: 22px 32px;
+  margin-bottom: 32px;
+}
 
-    label {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 
-    input, select {
-      width: 100%;
-      height: 42px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px 10px;
-      font-size: 14px;
-    }
+input, select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
 
-    input[readonly] {
-      background: #f5f7fa;
-      color: #4b5563;
-      cursor: default;
-    }
+input[readonly] {
+  background: #f5f7fa;
+  color: #4b5563;
+  cursor: default;
+}
 
-    /* TABLE */
-    .table-wrapper {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: visible !important;
-      position: relative;
-      margin-bottom: 12px;
-    }
+/* TABLE */
+.table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: visible !important;
+  margin-bottom: 12px;
+}
 
-    table.xero-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
+table.xero-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
 
-    .xero-table thead th {
-      background: var(--header-bg);
-      padding: 10px 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #4b5568;
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--border-light);
-    }
+.xero-table thead th {
+  background: var(--header-bg);
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5568;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light);
+}
 
-    .xero-table td {
-      border-bottom: 1px solid var(--border-light);
-      padding: 10px 8px;
-    }
+.xero-table td {
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 8px;
+}
 
-    .xero-table input {
-      height: 36px;
-      border-radius: 5px;
-      border: 1px solid var(--border);
-    }
+.xero-table input {
+  height: 36px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
 
-    /* Column widths */
-    .xero-table th:nth-child(1),
-    .xero-table td:nth-child(1) { width: 4%; }
+/* Column widths */
+.xero-table th:nth-child(1),
+.xero-table td:nth-child(1) { width: 4%; }
 
-    .xero-table th:nth-child(2),
-    .xero-table td:nth-child(2) { width: 26%; }
+.xero-table th:nth-child(2),
+.xero-table td:nth-child(2) { width: 26%; }
 
-    .xero-table th:nth-child(3),
-    .xero-table td:nth-child(3) { width: 10%; }
+.xero-table th:nth-child(3),
+.xero-table td:nth-child(3) { width: 10%; }
 
-    .xero-table th:nth-child(4),
-    .xero-table td:nth-child(4) { width: 7%; }
+.xero-table th:nth-child(4),
+.xero-table td:nth-child(4) { width: 7%; }
 
-    .xero-table th:nth-child(5),
-    .xero-table td:nth-child(5) { width: 13%; }
+.xero-table th:nth-child(5),
+.xero-table td:nth-child(5) { width: 12%; }
 
-    .xero-table th:nth-child(6),
-    .xero-table td:nth-child(6) { width: 13%; }
+.xero-table th:nth-child(6),
+.xero-table td:nth-child(6) { width: 12%; }
 
-    .xero-table th:nth-child(7),
-    .xero-table td:nth-child(7) { width: 10%; }
+.xero-table th:nth-child(7),
+.xero-table td:nth-child(7) { width: 13%; }
 
-    .xero-table th:nth-child(8),
-    .xero-table td:nth-child(8) { width: 13%; }
+.xero-table th:nth-child(8),
+.xero-table td:nth-child(8) { width: 34px; }
 
-    .xero-table th:nth-child(9),
-    .xero-table td:nth-child(9) { width: 34px; }
+.col-drag {
+  cursor: grab;
+  font-size: 18px;
+  color: #9aa5b1;
+  text-align: center;
+}
 
-    .col-drag {
-      cursor: grab;
-      font-size: 18px;
-      color: #9aa5b1;
-      text-align: center;
-    }
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d11a2a;
+  font-size: 16px;
+}
 
-    .delete-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #d11a2a;
-      font-size: 16px;
-    }
+/* ADD ROW */
+#addLine {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 5px;
+  border: 1px solid #ccd3dd;
+  background: white;
+  cursor: pointer;
+}
 
-    #addLine {
-      margin-top: 10px;
-      padding: 8px 14px;
-      border-radius: 5px;
-      border: 1px solid #ccd3dd;
-      background: white;
-      cursor: pointer;
-    }
+/* TEXTAREA */
+textarea {
+  width: 100%;
+  height: 140px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 8px;
+}
 
-    textarea {
-      width: 100%;
-      height: 140px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      padding: 10px;
-      font-size: 14px;
-      margin-top: 8px;
-    }
+/* SUMMARY */
+.summary-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
 
-    /* SUMMARY (DPP / PPN / GRAND TOTAL) */
-    .summary-wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 24px;
-    }
+.summary-box {
+  width: 260px;
+}
 
-    .summary-box {
-      width: 260px;
-    }
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
 
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
+.summary-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 16px;
+}
 
-    .summary-row span:first-child {
-      color: #4b5563;
-    }
+/* BUTTON */
+#submitBtn {
+  background: var(--blue);
+  border: none;
+  padding: 9px 22px;
+  border-radius: 50px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+#submitBtn:hover { background: var(--blue-dark); }
 
-    .summary-row span:last-child {
-      color: #111827;
-    }
+/* DROPDOWN CHOICES */
+.choices__inner {
+  min-height: 36px !important;
+  padding: 6px 8px !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--border) !important;
+}
+.choices__list--dropdown {
+  position: absolute !important;
+  width: 100% !important;
+  z-index: 99999 !important;
+  max-height: 260px !important;
+  overflow-y: auto !important;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid #c9d2df;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.choices__list--dropdown .choices__list {
+  max-height: none !important;
+  overflow: visible !important;
+}
 
-    .summary-total-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-      font-weight: 700;
-      font-size: 16px;
-    }
+/* MODAL ADD CUSTOMER */
+#modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  z-index: 999999;
+}
 
-    .summary-total-row span:first-child {
-      color: #1f2933;
-    }
+#modal-box {
+  width: 380px;
+  background: white;
+  padding: 22px 26px;
+  border-radius: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-    .summary-total-row span:last-child {
-      color: #111827;
-    }
+#modal-box h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 600;
+}
 
-    .summary-actions {
-      margin-top: 12px;
-      display: flex;
-      justify-content: flex-end;
-    }
+.modal-btn {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
 
-    #submitBtn {
-      background: var(--blue);
-      border: none;
-      padding: 9px 22px;
-      border-radius: 50px;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.modal-btn button {
+  padding: 7px 18px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+}
 
-    #submitBtn:hover {
-      background: var(--blue-dark);
-    }
+#saveCustomerBtn {
+  background: var(--blue);
+  color: white;
+}
 
-    /* CHOICES (dropdown, single scroll) */
-    .choices__inner {
-      min-height: 36px !important;
-      padding: 6px 8px !important;
-      border-radius: 5px !important;
-      border: 1px solid var(--border) !important;
-    }
-
-    .choices__list--dropdown {
-      position: absolute !important;
-      width: 100% !important;
-      z-index: 99999 !important;
-      max-height: 260px !important;
-      overflow-y: auto !important;   /* hanya 1 scroll di sini */
-      border-radius: 6px;
-      background: white;
-      border: 1px solid #c9d2df;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    .choices__list--dropdown .choices__list {
-      max-height: none !important;
-      overflow: visible !important;  /* hilangkan scroll di dalam → no double scroll */
-    }
-
-    .choices__item--selectable:hover {
-      background: var(--row-hover) !important;
-    }
-  </style>
+#cancelCustomerBtn {
+  background: #d0d7e2;
+}
+</style>
 </head>
 
 <body>
@@ -286,17 +305,17 @@
     <div class="top-grid">
       <div>
         <label>Customer</label>
-        <select id="customer" name="customer"></select>
+        <select id="customer"></select>
       </div>
 
       <div>
         <label>Date</label>
-        <input type="date" id="date" name="date">
+        <input type="date" id="date">
       </div>
 
       <div>
-        <label>Invoice Number</label>
-        <input id="invnum" name="invnum" readonly>
+        <label>Order Number</label>
+        <input id="ordnum" readonly>
       </div>
     </div>
 
@@ -310,48 +329,63 @@
             <th>Meter</th>
             <th>Qty</th>
             <th>Unit Price</th>
+            <th>Discount/Unit</th>
             <th>Price/Qty</th>
-            <th>Discount/Qty</th>
             <th>Total</th>
             <th></th>
           </tr>
         </thead>
-
         <tbody id="orderBody"></tbody>
       </table>
     </div>
 
     <button type="button" id="addLine">Add row</button>
 
-    <!-- CATATAN -->
+    <!-- NOTES -->
     <div style="margin-top:26px;">
       <label>Catatan</label>
       <textarea id="catatan" name="catatan"></textarea>
     </div>
 
-    <!-- SUMMARY (DPP / PPN / GRAND TOTAL) + BUTTON -->
+    <!-- SUMMARY -->
     <div class="summary-wrapper">
       <div class="summary-box">
+
         <div class="summary-row">
           <span>DPP</span>
           <span id="dppVal">0.00</span>
         </div>
+
         <div class="summary-row">
           <span>PPN 11%</span>
           <span id="ppnVal">0.00</span>
         </div>
+
         <div class="summary-total-row">
           <span>Grand Total</span>
           <span id="grandVal">0.00</span>
         </div>
 
-        <div class="summary-actions">
+        <div style="margin-top:12px; text-align:right;">
           <button type="submit" id="submitBtn">Kirim Order</button>
         </div>
+
       </div>
     </div>
 
   </form>
+</div>
+
+<!-- MODAL ADD CUSTOMER -->
+<div id="modal-bg">
+  <div id="modal-box">
+    <h3>Add New Customer</h3>
+    <input id="newCustomerName" placeholder="Customer name" style="width:100%; height:38px; padding:6px 10px; border-radius:5px; border:1px solid #cfd5df;">
+    <div class="modal-btn">
+      <button id="cancelCustomerBtn">Cancel</button>
+      <button id="saveCustomerBtn">Save</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
