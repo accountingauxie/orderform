@@ -8,9 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
-
 /* ============================================================
-   XERO GLOBAL FONT — HELVETICA NEUE
+   GLOBAL FONT — HELVETICA NEUE
 ============================================================ */
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
@@ -19,10 +18,6 @@
   box-sizing: border-box;
 }
 
-
-/* ============================================================
-   COLOR SYSTEM
-============================================================ */
 :root {
   --blue: #1f6ff2;
   --blue-dark: #1854c9;
@@ -31,14 +26,10 @@
   --text-muted: #6b778c;
   --border: #d0d7e2;
   --border-light: #e4e7eb;
-  --row-hover: #f7f9fc;
   --header-bg: #eef0f3;
+  --row-hover: #f7f9fc;
 }
 
-
-/* ============================================================
-   PAGE BASE
-============================================================ */
 body {
   margin: 0;
   padding: 32px 0 60px;
@@ -56,71 +47,11 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-
-/* ============================================================
-   TYPOGRAPHY
-============================================================ */
-
-/* PAGE TITLE */
 .section-title {
   font-size: 22px;
   font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: -0.2px;
-  margin: 0 0 26px 0;
+  margin-bottom: 26px;
 }
-
-/* LABELS */
-label {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--text-muted) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.5px !important;
-  margin-bottom: 6px;
-}
-
-/* INPUT TEXT */
-input, select, textarea, .choices__inner {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  letter-spacing: -0.1px;
-  color: var(--text-dark);
-}
-
-::placeholder {
-  color: #9ba6b5;
-  opacity: 1;
-  font-weight: 300;
-}
-
-
-/* ============================================================
-   INPUT FIELD
-============================================================ */
-input, select {
-  width: 100%;
-  height: 42px;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: #fff;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--blue) !important;
-  box-shadow: 0 0 0 3px rgba(31,111,242,0.20);
-  outline: none;
-}
-
-input[readonly] {
-  background: #f9fafb !important;
-  font-weight: 600 !important;
-  color: #374151 !important;
-}
-
 
 /* ============================================================
    TOP GRID
@@ -128,14 +59,29 @@ input[readonly] {
 .top-grid {
   display: grid;
   grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
-  column-gap: 32px;
-  row-gap: 20px;
+  gap: 22px 32px;
   margin-bottom: 32px;
 }
 
+label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+input, select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
 
 /* ============================================================
-   TABLE EXACT XERO
+   TABLE
 ============================================================ */
 .table-wrapper {
   border: 1px solid var(--border);
@@ -151,33 +97,26 @@ table.xero-table {
 
 .xero-table thead th {
   background: var(--header-bg);
-  padding: 12px 8px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  color: #4b5568 !important;
-}
-
-.xero-table tbody td {
   padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5568;
+  text-transform: uppercase;
   border-bottom: 1px solid var(--border-light);
-  font-size: 13px !important;
 }
 
-.xero-table tbody tr:hover td {
-  background: var(--row-hover);
+.xero-table td {
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 8px;
 }
 
 .xero-table input {
   height: 36px;
-  border: 1px solid #cbd2e1;
   border-radius: 5px;
-  font-size: 13px !important;
+  border: 1px solid var(--border);
 }
 
-
-/* COLUMN WIDTHS */
+/* ROW SIZES */
 .xero-table th:nth-child(1),
 .xero-table td:nth-child(1) { width: 4%; }
 
@@ -211,58 +150,42 @@ table.xero-table {
 .xero-table th:nth-child(11),
 .xero-table td:nth-child(11) { width: 34px; }
 
-
-/* DRAG */
 .col-drag {
   cursor: grab;
-  color: #9aa5b1;
   font-size: 18px;
+  color: #9aa5b1;
   text-align: center;
 }
 
-
-/* DELETE */
 .delete-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
   color: #d11a2a;
+  font-size: 16px;
 }
-
 
 /* ============================================================
    ADD ROW BUTTON
 ============================================================ */
 #addLine {
   margin-top: 14px;
-  padding: 9px 16px;
+  padding: 8px 14px;
   border-radius: 5px;
-  border: 1px solid #cbd2e1;
-  background: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  border: 1px solid #ccd3dd;
+  background: white;
   cursor: pointer;
 }
 
-#addLine:hover {
-  background: #f3f4f6;
-}
-
-
-/* ============================================================
-   NOTES
-============================================================ */
+/* NOTES */
 textarea {
   width: 100%;
-  min-height: 140px;
+  height: 140px;
   border-radius: 6px;
   border: 1px solid var(--border);
   padding: 10px;
-  resize: vertical;
   font-size: 14px;
 }
-
 
 /* ============================================================
    SUMMARY BOX
@@ -273,28 +196,16 @@ textarea {
   margin-top: 30px;
 }
 
-.summary-box table {
-  width: 100%;
-}
-
-.summary-box td {
-  padding: 7px 2px;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-}
-
 .summary-box input {
   width: 130px;
   height: 34px;
   background: #f9fafb;
-  border: 1px solid #d0d7e2;
+  border: 1px solid var(--border);
   border-radius: 5px;
-  font-size: 13px !important;
-  font-weight: 600 !important;
   text-align: right;
   padding-right: 8px;
+  font-weight: 600;
 }
-
 
 /* ============================================================
    SUBMIT BUTTON
@@ -303,12 +214,11 @@ textarea {
   margin-top: 50px;
   float: right;
   background: var(--blue);
-  color: white;
   border: none;
   padding: 11px 28px;
-  border-radius: 100px;
+  border-radius: 50px;
+  color: white;
   font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
 }
 
@@ -316,66 +226,30 @@ textarea {
   background: var(--blue-dark);
 }
 
-
 /* ============================================================
-   XERO DROPDOWN – Choices.js override
+   CHOICES.JS (Xero Style)
 ============================================================ */
-
-.choices { overflow: visible !important; }
-
 .choices__inner {
-  background: #fff !important;
-  border: 1px solid #cbd2e1 !important;
-  border-radius: 5px !important;
   min-height: 36px !important;
   padding: 6px 8px !important;
-  font-size: 13px !important;
-  display: flex !important;
-  align-items: center !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--border) !important;
 }
 
-/* floating panel like Xero */
 .choices__list--dropdown {
   position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
   width: 100% !important;
+  left: 0 !important;
   z-index: 9999 !important;
-  border: 1px solid #cbd2e1 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
-  max-height: 260px !important;
-  overflow-y: auto !important;
-}
-
-.choices__list--dropdown .choices__item {
-  padding: 10px 14px !important;
-  border-bottom: 1px solid #f0f2f5 !important;
-  font-size: 13px !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .choices__item--selectable:hover {
   background: var(--row-hover) !important;
-}
-
-.choices__item--selectable.is-highlighted {
-  background: #eff4ff !important;
-  border-left: 3px solid var(--blue) !important;
-}
-
-.choices__list--dropdown .choices__item[data-value="__add__"] {
-  font-weight: 600 !important;
-  color: var(--blue) !important;
-}
-
-.choices__list--dropdown .choices__input {
-  padding: 8px 10px !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  font-size: 13px !important;
-}
-
-.choices__button {
-  display: none !important;
 }
 
 </style>
@@ -384,6 +258,7 @@ textarea {
 <body>
 
 <div class="xero-card">
+
   <h2 class="section-title">Form Pemesanan</h2>
 
   <form id="orderForm">
@@ -391,22 +266,22 @@ textarea {
     <div class="top-grid">
       <div>
         <label>Customer</label>
-        <select id="customer" required></select>
+        <select id="customer"></select>
       </div>
 
       <div>
         <label>Date</label>
-        <input type="date" id="date" name="date" required>
+        <input type="date" id="date">
       </div>
 
       <div>
         <label>Invoice Number</label>
-        <input id="invnum" name="invnum" placeholder="Auto">
+        <input id="invnum" placeholder="Auto">
       </div>
 
       <div>
         <label>Reference</label>
-        <input id="reference" name="reference">
+        <input id="reference">
       </div>
     </div>
 
@@ -436,7 +311,7 @@ textarea {
 
     <div style="margin-top:26px;">
       <label>Catatan</label>
-      <textarea id="catatan" name="catatan"></textarea>
+      <textarea id="catatan"></textarea>
     </div>
 
     <div class="summary-box">
