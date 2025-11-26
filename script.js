@@ -1,6 +1,6 @@
 window.onload = function () {
 
-    const baseURL = "YOUR_WEBAPP_URL_HERE"; 
+    const baseURL = "https://script.google.com/macros/s/AKfycbx5nIOngaL4vM4Z-uOZqnWOxRUGLB0Fs_F0mvGtHVimi9gwV1CAFBQhQoSh6Y6QSQs5/exec"; 
     // ganti dengan URL Web App GAS kamu
 
     let productList = [];
