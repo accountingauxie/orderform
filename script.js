@@ -1,459 +1,229 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>Order – Xero New Invoice Style</title>
-
-<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-
-<style>
-
-/* ============================================================
-   XERO GLOBAL FONT — HELVETICA NEUE
-============================================================ */
-* {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  box-sizing: border-box;
-}
-
-
-/* ============================================================
-   COLOR SYSTEM
-============================================================ */
-:root {
-  --blue: #1f6ff2;
-  --blue-dark: #1854c9;
-  --bg: #f4f6f8;
-  --text-dark: #1f2933;
-  --text-muted: #6b778c;
-  --border: #d0d7e2;
-  --border-light: #e4e7eb;
-  --row-hover: #f7f9fc;
-  --header-bg: #eef0f3;
-}
-
-
-/* ============================================================
-   PAGE BASE
-============================================================ */
-body {
-  margin: 0;
-  padding: 32px 0 60px;
-  background: var(--bg);
-  color: var(--text-dark);
-}
-
-.xero-card {
-  width: 1320px;
-  margin: auto;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 30px 36px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-
-
-/* ============================================================
-   TYPOGRAPHY
-============================================================ */
-
-/* PAGE TITLE */
-.section-title {
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: -0.2px;
-  margin: 0 0 26px 0;
-}
-
-/* LABELS */
-label {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--text-muted) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.5px !important;
-  margin-bottom: 6px;
-}
-
-/* INPUT TEXT */
-input, select, textarea, .choices__inner {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  letter-spacing: -0.1px;
-  color: var(--text-dark);
-}
-
-::placeholder {
-  color: #9ba6b5;
-  opacity: 1;
-  font-weight: 300;
-}
-
-
-/* ============================================================
-   INPUT FIELD
-============================================================ */
-input, select {
-  width: 100%;
-  height: 42px;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: #fff;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--blue) !important;
-  box-shadow: 0 0 0 3px rgba(31,111,242,0.20);
-  outline: none;
-}
-
-input[readonly] {
-  background: #f9fafb !important;
-  font-weight: 600 !important;
-  color: #374151 !important;
-}
-
-
-/* ============================================================
-   TOP GRID
-============================================================ */
-.top-grid {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
-  column-gap: 32px;
-  row-gap: 20px;
-  margin-bottom: 32px;
-}
-
-
-/* ============================================================
-   TABLE EXACT XERO
-============================================================ */
-.table-wrapper {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: visible !important;
-}
-
-table.xero-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.xero-table thead th {
-  background: var(--header-bg);
-  padding: 12px 8px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  color: #4b5568 !important;
-}
-
-.xero-table tbody td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--border-light);
-  font-size: 13px !important;
-}
-
-.xero-table tbody tr:hover td {
-  background: var(--row-hover);
-}
-
-.xero-table input {
-  height: 36px;
-  border: 1px solid #cbd2e1;
-  border-radius: 5px;
-  font-size: 13px !important;
-}
-
-
-/* COLUMN WIDTHS */
-.xero-table th:nth-child(1),
-.xero-table td:nth-child(1) { width: 4%; }
-
-.xero-table th:nth-child(2),
-.xero-table td:nth-child(2) { width: 22%; }
-
-.xero-table th:nth-child(3),
-.xero-table td:nth-child(3) { width: 9%; }
-
-.xero-table th:nth-child(4),
-.xero-table td:nth-child(4) { width: 7%; }
-
-.xero-table th:nth-child(5),
-.xero-table td:nth-child(5) { width: 11%; }
-
-.xero-table th:nth-child(6),
-.xero-table td:nth-child(6) { width: 11%; }
-
-.xero-table th:nth-child(7),
-.xero-table td:nth-child(7) { width: 9%; }
-
-.xero-table th:nth-child(8),
-.xero-table td:nth-child(8) { width: 11%; }
-
-.xero-table th:nth-child(9),
-.xero-table td:nth-child(9) { width: 10%; }
-
-.xero-table th:nth-child(10),
-.xero-table td:nth-child(10) { width: 11%; }
-
-.xero-table th:nth-child(11),
-.xero-table td:nth-child(11) { width: 34px; }
-
-
-/* DRAG */
-.col-drag {
-  cursor: grab;
-  color: #9aa5b1;
-  font-size: 18px;
-  text-align: center;
-}
-
-
-/* DELETE */
-.delete-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: #d11a2a;
-}
-
-
-/* ============================================================
-   ADD ROW BUTTON
-============================================================ */
-#addLine {
-  margin-top: 14px;
-  padding: 9px 16px;
-  border-radius: 5px;
-  border: 1px solid #cbd2e1;
-  background: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#addLine:hover {
-  background: #f3f4f6;
-}
-
-
-/* ============================================================
-   NOTES
-============================================================ */
-textarea {
-  width: 100%;
-  min-height: 140px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  padding: 10px;
-  resize: vertical;
-  font-size: 14px;
-}
-
-
-/* ============================================================
-   SUMMARY BOX
-============================================================ */
-.summary-box {
-  width: 240px;
-  float: right;
-  margin-top: 30px;
-}
-
-.summary-box table {
-  width: 100%;
-}
-
-.summary-box td {
-  padding: 7px 2px;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-}
-
-.summary-box input {
-  width: 130px;
-  height: 34px;
-  background: #f9fafb;
-  border: 1px solid #d0d7e2;
-  border-radius: 5px;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  text-align: right;
-  padding-right: 8px;
-}
-
-
-/* ============================================================
-   SUBMIT BUTTON
-============================================================ */
-#submitBtn {
-  margin-top: 50px;
-  float: right;
-  background: var(--blue);
-  color: white;
-  border: none;
-  padding: 11px 28px;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#submitBtn:hover {
-  background: var(--blue-dark);
-}
-
-
-/* ============================================================
-   XERO DROPDOWN – Choices.js override
-============================================================ */
-
-.choices { overflow: visible !important; }
-
-.choices__inner {
-  background: #fff !important;
-  border: 1px solid #cbd2e1 !important;
-  border-radius: 5px !important;
-  min-height: 36px !important;
-  padding: 6px 8px !important;
-  font-size: 13px !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-/* floating panel like Xero */
-.choices__list--dropdown {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  width: 100% !important;
-  z-index: 9999 !important;
-  border: 1px solid #cbd2e1 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
-  max-height: 260px !important;
-  overflow-y: auto !important;
-}
-
-.choices__list--dropdown .choices__item {
-  padding: 10px 14px !important;
-  border-bottom: 1px solid #f0f2f5 !important;
-  font-size: 13px !important;
-}
-
-.choices__item--selectable:hover {
-  background: var(--row-hover) !important;
-}
-
-.choices__item--selectable.is-highlighted {
-  background: #eff4ff !important;
-  border-left: 3px solid var(--blue) !important;
-}
-
-.choices__list--dropdown .choices__item[data-value="__add__"] {
-  font-weight: 600 !important;
-  color: var(--blue) !important;
-}
-
-.choices__list--dropdown .choices__input {
-  padding: 8px 10px !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  font-size: 13px !important;
-}
-
-.choices__button {
-  display: none !important;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="xero-card">
-  <h2 class="section-title">Form Pemesanan</h2>
-
-  <form id="orderForm">
-
-    <div class="top-grid">
-      <div>
-        <label>Customer</label>
-        <select id="customer" required></select>
-      </div>
-
-      <div>
-        <label>Date</label>
-        <input type="date" id="date" name="date" required>
-      </div>
-
-      <div>
-        <label>Invoice Number</label>
-        <input id="invnum" name="invnum" placeholder="Auto">
-      </div>
-
-      <div>
-        <label>Reference</label>
-        <input id="reference" name="reference">
-      </div>
-    </div>
-
-    <div class="table-wrapper">
-      <table class="xero-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Product</th>
-            <th>Meter</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Price/Qty</th>
-            <th>Discount</th>
-            <th>Subtotal</th>
-            <th>Tax</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
-        </thead>
-
-        <tbody id="orderBody"></tbody>
-      </table>
-    </div>
-
-    <button type="button" id="addLine">Add row</button>
-
-    <div style="margin-top:26px;">
-      <label>Catatan</label>
-      <textarea id="catatan" name="catatan"></textarea>
-    </div>
-
-    <div class="summary-box">
-      <table>
-        <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
-        <tr><td>Total tax</td><td><input id="ppn" readonly></td></tr>
-        <tr><td><strong>Total</strong></td><td><input id="grandTotal" readonly></td></tr>
-      </table>
-    </div>
-
-    <button type="submit" id="submitBtn">Kirim Order</button>
-
-  </form>
-</div>
-
-<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="./script.js"></script>
-
-</body>
-</html>
+window.onload = function () {
+
+    const baseURL = "https://script.google.com/macros/s/AKfycbw8105MSJQsOG0PyNQAQviOec1OZN_7_B-8fbNdGcjfsLe6sYbn5n9cpjF9OS2gGVsE/exec";
+    let productList = [];
+    let customerChoice;
+
+    const orderForm = document.getElementById("orderForm");
+    const orderBody = document.getElementById("orderBody");
+
+    document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+    function formatRupiah(num) {
+        return "Rp " + Number(num || 0).toLocaleString("id-ID", {
+            maximumFractionDigits: 0
+        });
+    }
+
+    /* ================================================
+       LOAD DATA
+    ================================================= */
+    async function loadDropdowns() {
+        const res = await fetch(baseURL + "?action=getdata");
+        const data = await res.json();
+
+        productList = data.products || [];
+
+        customerChoice = new Choices("#customer", {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true
+        });
+
+        customerChoice.setChoices(
+            data.customers.map(v => ({ value: v, label: v })),
+            "value",
+            "label",
+            true
+        );
+
+        addLine();
+        addLine();
+        addLine();
+    }
+
+    /* ================================================
+       ADD ROW
+    ================================================= */
+    function addLine() {
+
+        const idx = orderBody.children.length + 1;
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td class="col-drag">⋮⋮</td>
+
+            <td><select class="product-select" name="product_${idx}"></select></td>
+
+            <td><input type="number" class="meter" min="0" step="0.01"></td>
+            <td><input type="number" class="qty" min="0" step="1"></td>
+
+            <td><input type="text" class="unitPrice" data-value="" readonly></td>
+            <td><input type="text" class="ppq" data-value="" readonly></td>
+
+            <td><input type="number" class="disc" min="0" step="1" value="0"></td>
+
+            <td><input type="text" class="subtotal" data-value="" readonly></td>
+            <td><input type="text" class="tax" data-value="" readonly></td>
+            <td><input type="text" class="totalPrice" data-value="" readonly></td>
+
+            <td><button type="button" class="delete-btn">🗑</button></td>
+        `;
+
+        orderBody.appendChild(tr);
+
+        /* PRODUCT DROPDOWN */
+        const select = tr.querySelector(".product-select");
+        const choice = new Choices(select, {
+            searchEnabled: true,
+            shouldSort: false
+        });
+
+        choice.setChoices(
+            productList.map(v => ({ value: v, label: v })),
+            "value",
+            "label",
+            true
+        );
+
+        select.addEventListener("change", () => updatePrice(tr));
+        tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(".disc").addEventListener("input", () => calculateRow(tr));
+
+        tr.querySelector(".delete-btn").addEventListener("click", () => {
+            tr.remove();
+            calculateSummary();
+        });
+    }
+
+    /* ================================================
+       GET PRICE
+    ================================================= */
+    async function updatePrice(tr) {
+        const product = tr.querySelector(".product-select").value;
+        if (!product) return;
+
+        const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
+        const price = parseFloat(await res.text()) || 0;
+
+        tr.querySelector(".unitPrice").setAttribute("data-value", price);
+        tr.querySelector(".unitPrice").value = formatRupiah(price);
+
+        calculateRow(tr);
+    }
+
+    /* ================================================
+       CALCULATE ROW
+    ================================================= */
+    function calculateRow(tr) {
+        const meter = parseFloat(tr.querySelector(".meter").value) || 0;
+        const qty = parseFloat(tr.querySelector(".qty").value) || 0;
+        const disc = parseFloat(tr.querySelector(".disc").value) || 0;
+
+        const price = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
+
+        const ppq = meter * price;
+        const subtotal = (ppq * qty) - disc;
+        const tax = subtotal * 0.11;
+        const total = subtotal + tax;
+
+        tr.querySelector(".ppq").value = formatRupiah(ppq);
+        tr.querySelector(".ppq").setAttribute("data-value", ppq);
+
+        tr.querySelector(".subtotal").value = formatRupiah(subtotal);
+        tr.querySelector(".subtotal").setAttribute("data-value", subtotal);
+
+        tr.querySelector(".tax").value = formatRupiah(tax);
+        tr.querySelector(".tax").setAttribute("data-value", tax);
+
+        tr.querySelector(".totalPrice").value = formatRupiah(total);
+        tr.querySelector(".totalPrice").setAttribute("data-value", total);
+
+        calculateSummary();
+    }
+
+    /* ================================================
+       SUMMARY
+    ================================================= */
+    function calculateSummary() {
+        let subtotal = 0;
+
+        document.querySelectorAll(".subtotal").forEach(el => {
+            subtotal += parseFloat(el.getAttribute("data-value")) || 0;
+        });
+
+        const ppn = subtotal * 0.11;
+        const grand = subtotal + ppn;
+
+        document.getElementById("subTotal").value = formatRupiah(subtotal);
+        document.getElementById("ppn").value = formatRupiah(ppn);
+        document.getElementById("grandTotal").value = formatRupiah(grand);
+    }
+
+    document.getElementById("addLine").addEventListener("click", addLine);
+
+    /* ================================================
+       FORM SUBMIT
+    ================================================= */
+    orderForm.addEventListener("submit", async e => {
+        e.preventDefault();
+
+        const cust = document.getElementById("customer").value;
+        if (!cust) {
+            alert("Customer wajib diisi.");
+            return;
+        }
+
+        let validRow = false;
+        document.querySelectorAll(".product-select").forEach(s => {
+            if (s.value) validRow = true;
+        });
+
+        if (!validRow) {
+            alert("Minimal 1 item harus diisi.");
+            return;
+        }
+
+        document.querySelectorAll("[data-value]").forEach(el => {
+            el.value = el.getAttribute("data-value");
+        });
+
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = true;
+        btn.innerText = "Sending...";
+
+        try {
+            const res = await fetch(baseURL, {
+                method: "POST",
+                body: new FormData(orderForm)
+            });
+
+            alert(await res.text());
+
+            orderForm.reset();
+            orderBody.innerHTML = "";
+            addLine(); addLine(); addLine();
+            calculateSummary();
+
+        } catch (err) {
+            alert("Gagal mengirim order.");
+            console.error(err);
+        }
+
+        btn.disabled = false;
+        btn.innerText = "Kirim Order";
+    });
+
+    /* ================================================
+       INIT
+    ================================================= */
+    loadDropdowns();
+
+    Sortable.create(orderBody, {
+        handle: ".col-drag",
+        animation: 150
+    });
+
+};
