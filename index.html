@@ -10,7 +10,7 @@
 <style>
 
 /* ============================================================
-   XERO GLOBAL FONT — HELVETICA NEUE + SMOOTHING
+   XERO GLOBAL FONT — HELVETICA NEUE
 ============================================================ */
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
@@ -21,7 +21,7 @@
 
 
 /* ============================================================
-   COLOR SYSTEM (Xero exact palette)
+   COLOR SYSTEM
 ============================================================ */
 :root {
   --blue: #1f6ff2;
@@ -37,7 +37,7 @@
 
 
 /* ============================================================
-   BASE LAYOUT
+   PAGE BASE
 ============================================================ */
 body {
   margin: 0;
@@ -58,7 +58,7 @@ body {
 
 
 /* ============================================================
-   TYPOGRAPHY — FULL XERO SYSTEM
+   TYPOGRAPHY
 ============================================================ */
 
 /* PAGE TITLE */
@@ -68,14 +68,13 @@ body {
   line-height: 1.35;
   letter-spacing: -0.2px;
   margin: 0 0 26px 0;
-  color: #1f2933;
 }
 
-/* LABELS — uppercase small grey */
+/* LABELS */
 label {
   font-size: 12px !important;
   font-weight: 600 !important;
-  color: #6b778c !important;
+  color: var(--text-muted) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px !important;
   margin-bottom: 6px;
@@ -86,7 +85,7 @@ input, select, textarea, .choices__inner {
   font-size: 14px !important;
   font-weight: 400 !important;
   letter-spacing: -0.1px;
-  color: #1f2933;
+  color: var(--text-dark);
 }
 
 ::placeholder {
@@ -97,7 +96,7 @@ input, select, textarea, .choices__inner {
 
 
 /* ============================================================
-   INPUT + FORM CONTROL
+   INPUT FIELD
 ============================================================ */
 input, select {
   width: 100%;
@@ -116,7 +115,6 @@ textarea:focus {
   outline: none;
 }
 
-/* READONLY fields */
 input[readonly] {
   background: #f9fafb !important;
   font-weight: 600 !important;
@@ -125,7 +123,7 @@ input[readonly] {
 
 
 /* ============================================================
-   TOP GRID (Contact / Date / Invoice)
+   TOP GRID
 ============================================================ */
 .top-grid {
   display: grid;
@@ -137,12 +135,12 @@ input[readonly] {
 
 
 /* ============================================================
-   TABLE — EXACT XERO LOOK
+   TABLE EXACT XERO
 ============================================================ */
 .table-wrapper {
   border: 1px solid var(--border);
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 table.xero-table {
@@ -157,18 +155,14 @@ table.xero-table {
   border-bottom: 1px solid var(--border);
   font-size: 12px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.3px;
   text-transform: uppercase;
   color: #4b5568 !important;
-  text-align: left;
 }
 
 .xero-table tbody td {
   padding: 10px 8px;
   border-bottom: 1px solid var(--border-light);
   font-size: 13px !important;
-  font-weight: 400 !important;
-  letter-spacing: -0.05px;
 }
 
 .xero-table tbody tr:hover td {
@@ -183,7 +177,7 @@ table.xero-table {
 }
 
 
-/* COLUMN SIZES — matched from Xero */
+/* COLUMN WIDTHS */
 .xero-table th:nth-child(1),
 .xero-table td:nth-child(1) { width: 4%; }
 
@@ -218,7 +212,7 @@ table.xero-table {
 .xero-table td:nth-child(11) { width: 34px; }
 
 
-/* DRAG HANDLE */
+/* DRAG */
 .col-drag {
   cursor: grab;
   color: #9aa5b1;
@@ -227,7 +221,7 @@ table.xero-table {
 }
 
 
-/* DELETE BUTTON */
+/* DELETE */
 .delete-btn {
   background: none;
   border: none;
@@ -237,7 +231,9 @@ table.xero-table {
 }
 
 
-/* ADD ROW BUTTON */
+/* ============================================================
+   ADD ROW BUTTON
+============================================================ */
 #addLine {
   margin-top: 14px;
   padding: 9px 16px;
@@ -269,7 +265,7 @@ textarea {
 
 
 /* ============================================================
-   SUMMARY BOX (Subtotal / Tax / Total)
+   SUMMARY BOX
 ============================================================ */
 .summary-box {
   width: 240px;
@@ -301,7 +297,7 @@ textarea {
 
 
 /* ============================================================
-   SUBMIT BUTTON (floating right)
+   SUBMIT BUTTON
 ============================================================ */
 #submitBtn {
   margin-top: 50px;
@@ -313,9 +309,7 @@ textarea {
   border-radius: 100px;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.1px;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.14);
 }
 
 #submitBtn:hover {
@@ -324,72 +318,66 @@ textarea {
 
 
 /* ============================================================
-   XERO DROPDOWN STYLE — Choices.js FULL OVERRIDE
+   XERO DROPDOWN – Choices.js override
 ============================================================ */
 
-/* Remove Choices spacing */
-.choices { margin-bottom: 0 !important; }
+.choices { overflow: visible !important; }
 
-/* Selected box */
 .choices__inner {
   background: #fff !important;
   border: 1px solid #cbd2e1 !important;
   border-radius: 5px !important;
   min-height: 36px !important;
   padding: 6px 8px !important;
-  box-shadow: none !important;
   font-size: 13px !important;
   display: flex !important;
   align-items: center !important;
 }
 
-/* Dropdown panel */
+/* floating panel like Xero */
 .choices__list--dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
   border: 1px solid #cbd2e1 !important;
   border-radius: 6px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
-  margin-top: 2px !important;
-  width: 100% !important;
+  max-height: 260px !important;
+  overflow-y: auto !important;
 }
 
-/* Items */
 .choices__list--dropdown .choices__item {
   padding: 10px 14px !important;
   border-bottom: 1px solid #f0f2f5 !important;
-  white-space: normal !important;
-  line-height: 1.32 !important;
   font-size: 13px !important;
-  font-weight: 400 !important;
 }
 
-/* Hover */
 .choices__item--selectable:hover {
-  background: #f7f9fc !important;
+  background: var(--row-hover) !important;
 }
 
-/* Highlight */
 .choices__item--selectable.is-highlighted {
   background: #eff4ff !important;
   border-left: 3px solid var(--blue) !important;
 }
 
-/* First row: Create new item */
 .choices__list--dropdown .choices__item[data-value="__add__"] {
   font-weight: 600 !important;
   color: var(--blue) !important;
 }
 
-/* Dropdown search box */
 .choices__list--dropdown .choices__input {
   padding: 8px 10px !important;
   border-bottom: 1px solid #e5e7eb !important;
   font-size: 13px !important;
 }
 
-/* Remove inline delete button */
 .choices__button {
   display: none !important;
 }
+
 </style>
 </head>
 
@@ -400,7 +388,6 @@ textarea {
 
   <form id="orderForm">
 
-    <!-- TOP GRID -->
     <div class="top-grid">
       <div>
         <label>Customer</label>
@@ -423,11 +410,8 @@ textarea {
       </div>
     </div>
 
-
-    <!-- TABLE -->
     <div class="table-wrapper">
       <table class="xero-table">
-
         <thead>
           <tr>
             <th></th>
@@ -450,14 +434,11 @@ textarea {
 
     <button type="button" id="addLine">Add row</button>
 
-
-    <!-- NOTES -->
-    <div style="margin-top: 26px;">
-      <label style="margin-bottom:8px;">Catatan</label>
+    <div style="margin-top:26px;">
+      <label>Catatan</label>
       <textarea id="catatan" name="catatan"></textarea>
     </div>
 
-    <!-- SUMMARY BOX -->
     <div class="summary-box">
       <table>
         <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
@@ -472,6 +453,7 @@ textarea {
 </div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="script.js"></script>
+<script src="./script.js"></script>
+
 </body>
 </html>
