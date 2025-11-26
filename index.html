@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Sukses Jaya - Form Order</title>
+<title>Order – Xero Ultra Modern</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -29,6 +29,9 @@
   --row-hover: #f7f9fc;
 }
 
+/* ============================================================
+   PAGE LAYOUT
+============================================================ */
 body {
   margin: 0;
   padding: 32px 0 60px;
@@ -36,16 +39,14 @@ body {
   color: var(--text-dark);
 }
 
-/* ============================================================
-   CARD (CONTAINER) — WIDTH SAMA SEPERTI XERO: 1360px
-============================================================ */
+/* Card hampir full-width (mirip Xero) */
 .xero-card {
-  width: 1360px;
-  margin: auto;
+  width: calc(100% - 80px);  /* margin kiri-kanan 40px */
+  margin: 0 auto;
   background: white;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 32px 36px 80px;
+  padding: 32px 36px 40px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
@@ -88,8 +89,9 @@ input, select {
 .table-wrapper {
   border: 1px solid var(--border);
   border-radius: 6px;
-  overflow: visible !important;     /* DROPDOWN FIX */
+  overflow: visible !important;   /* dropdown tidak tergunting */
   position: relative;
+  margin-bottom: 12px;
 }
 
 table.xero-table {
@@ -119,7 +121,7 @@ table.xero-table {
   border: 1px solid var(--border);
 }
 
-/* WIDTHS */
+/* Column widths */
 .xero-table th:nth-child(1),
 .xero-table td:nth-child(1) { width: 4%; }
 
@@ -153,7 +155,7 @@ table.xero-table {
 .xero-table th:nth-child(11),
 .xero-table td:nth-child(11) { width: 34px; }
 
-/* Drag Column */
+/* Drag column */
 .col-drag {
   cursor: grab;
   font-size: 18px;
@@ -174,7 +176,7 @@ table.xero-table {
    ADD ROW BUTTON
 ============================================================ */
 #addLine {
-  margin-top: 14px;
+  margin-top: 10px;
   padding: 8px 14px;
   border-radius: 5px;
   border: 1px solid #ccd3dd;
@@ -196,16 +198,30 @@ textarea {
 }
 
 /* ============================================================
-   SUMMARY BOX (STILL INSIDE WHITE CARD)
+   SUMMARY + BUTTON (semua di dalam box putih kanan)
 ============================================================ */
+.summary-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
 .summary-box {
   width: 260px;
-  margin-top: 26px;
-  float: right;
   background: white;
-  padding: 15px 10px 10px;
+  padding: 15px 12px 14px;
   border-radius: 6px;
   border: 1px solid #e3e6ea;
+}
+
+.summary-box table {
+  width: 100%;
+}
+
+.summary-box td {
+  padding: 4px 2px;
+  font-size: 13px;
 }
 
 .summary-box input {
@@ -219,20 +235,17 @@ textarea {
   font-weight: 600;
 }
 
-/* ============================================================
-   SUBMIT BUTTON (BELOW SUMMARY)
-============================================================ */
-.submit-area {
-  width: 100%;
+/* tombol di dalam summary */
+.summary-actions {
+  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 25px;
 }
 
 #submitBtn {
   background: var(--blue);
   border: none;
-  padding: 11px 28px;
+  padding: 9px 22px;
   border-radius: 50px;
   color: white;
   font-size: 14px;
@@ -244,7 +257,7 @@ textarea {
 }
 
 /* ============================================================
-   CHOICES DROPDOWN FIX
+   CHOICES DROPDOWN (Xero-ish)
 ============================================================ */
 .choices__inner {
   min-height: 36px !important;
@@ -333,18 +346,19 @@ textarea {
       <textarea id="catatan"></textarea>
     </div>
 
-    <!-- SUMMARY -->
-    <div class="summary-box">
-      <table>
-        <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
-        <tr><td>Total tax</td><td><input id="ppn" readonly></td></tr>
-        <tr><td><strong>Total</strong></td><td><input id="grandTotal" readonly></td></tr>
-      </table>
-    </div>
+    <!-- SUMMARY + BUTTON DI DALAM BOX PUTIH -->
+    <div class="summary-wrapper">
+      <div class="summary-box">
+        <table>
+          <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
+          <tr><td>Total tax</td><td><input id="ppn" readonly></td></tr>
+          <tr><td><strong>Total</strong></td><td><input id="grandTotal" readonly></td></tr>
+        </table>
 
-    <!-- SUBMIT BUTTON UNDER SUMMARY -->
-    <div class="submit-area">
-      <button type="submit" id="submitBtn">Kirim Order</button>
+        <div class="summary-actions">
+          <button type="submit" id="submitBtn">Kirim Order</button>
+        </div>
+      </div>
     </div>
 
   </form>
