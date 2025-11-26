@@ -1,167 +1,238 @@
 window.onload = function () {
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbxVLp7NlU-giwsUvES8Lkq2wSeckGausQmG1xclkahzZwjk-qAjt3xwAPgCXBH2jZptww/exec";
+    const baseURL = "YOUR_WEBAPP_URL_HERE"; 
+    // ganti dengan URL Web App GAS kamu
 
     let productList = [];
-    let customerList = [];
     let choiceCustomer;
 
+    const orderForm = document.getElementById("orderForm");
     const orderBody = document.getElementById("orderBody");
 
-    /* ============= FORMAT RUPIAH ============= */
-    function rupiah(x) {
-        return "Rp " + Number(x || 0).toLocaleString("id-ID");
+    document.getElementById("date").value = new Date().toISOString().split("T")[0];
+
+    /* ==========================
+       FORMAT RUPIAH
+    ========================== */
+    function rupiah(n) {
+        return "Rp " + Number(n || 0).toLocaleString("id-ID", {
+            maximumFractionDigits: 0
+        });
     }
 
-    /* ============= LOAD DROPDOWN ============= */
-    async function loadData() {
+    /* ==========================
+       GENERATE ORDER NUMBER
+       Format: 1 + 6 digit → total 7 digit
+    ========================== */
+    function generateOrderNumber() {
+        let last = localStorage.getItem("ORDERFORM_LAST_ORDER");
+        if (!last) last = 1000000;
+
+        let next = Number(last) + 1;
+        localStorage.setItem("ORDERFORM_LAST_ORDER", next);
+
+        return next;
+    }
+
+    document.getElementById("orderID").value = generateOrderNumber();
+
+
+    /* ==========================
+       LOAD PRODUCTS & CUSTOMERS
+    ========================== */
+    async function loadDropdowns() {
         const res = await fetch(baseURL + "?action=getdata");
         const data = await res.json();
 
-        productList = data.products;
-        customerList = data.customers;
+        productList = data.products || [];
 
+        /* CUSTOMER DROPDOWN */
         choiceCustomer = new Choices("#customer", {
             searchEnabled: true,
             shouldSort: false,
-            placeholder: true
+            placeholder: true,
         });
 
-        const custChoices = customerList.map(c => ({ value: c, label: c }));
-        custChoices.unshift({ value: "__add__", label: "➕ Tambah Customer" });
+        const customerChoices = [
+            ...(data.customers || []).map(v => ({ value: v, label: v })),
+            { value: "__add__", label: "➕ Add Customer Baru" }
+        ];
 
-        choiceCustomer.setChoices(custChoices, "value", "label", true);
+        choiceCustomer.setChoices(customerChoices, "value", "label", true);
 
-        document.getElementById("customer").addEventListener("change", (e) => {
-            if (e.target.value === "__add__") {
-                document.getElementById("modal-bg").style.display = "flex";
+        document.getElementById("customer").addEventListener("change", function () {
+            if (this.value === "__add__") {
+                const name = prompt("Nama customer baru:");
+                if (!name) return;
+
+                fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name))
+                    .then(() => {
+                        choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
+                        choiceCustomer.setChoiceByValue(name);
+                    });
             }
         });
 
         addRow();
     }
 
-    /* ============= ADD CUSTOMER ============= */
-    document.getElementById("saveCustomer").addEventListener("click", async () => {
-        const name = document.getElementById("newCustomer").value.trim();
-        if (!name) return;
 
-        await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
-        choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
-        choiceCustomer.setChoiceByValue(name);
-
-        document.getElementById("modal-bg").style.display = "none";
-    });
-
-    /* ============= ADD ROW ============= */
+    /* ==========================
+       ADD ROW
+    ========================== */
     function addRow() {
         const idx = orderBody.children.length + 1;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="drag">⋮⋮</td>
-            <td><select name="product_${idx}" class="productSel"></select></td>
-            <td><input name="meter_${idx}" type="number" step="0.01"></td>
-            <td><input name="qty_${idx}" type="number" step="1"></td>
-            <td><input name="unitPrice_${idx}" type="text" class="unitPrice" readonly data-value="0"></td>
-            <td><input name="discount_${idx}" class="discountUnit" type="number" step="1"></td>
-            <td><input name="ppq_${idx}" type="text" class="ppq" readonly data-value="0"></td>
-            <td><input name="totalPrice_${idx}" type="text" class="totalPrice" readonly data-value="0"></td>
-            <td><button class="delete-btn">✖</button></td>
+            <td style="cursor:grab;">⋮⋮</td>
+
+            <td>
+                <select class="product" name="product_${idx}"></select>
+            </td>
+
+            <td><input type="number" step="0.01" class="meter" name="meter_${idx}"></td>
+            <td><input type="number" step="1" class="qty" name="qty_${idx}"></td>
+
+            <td><input type="text" class="unitPrice" name="unitPrice_${idx}" readonly></td>
+
+            <td><input type="number" class="discountUnit" name="discount_${idx}" value="0"></td>
+
+            <td><input type="text" class="ppq" name="ppq_${idx}" readonly></td>
+            <td><input type="text" class="totalPrice" name="totalPrice_${idx}" readonly></td>
+
+            <td><button type="button" class="delete-btn">✕</button></td>
         `;
 
         orderBody.appendChild(tr);
 
-        const select = tr.querySelector(".productSel");
+        /* PRODUCT DROPDOWN */
+        const select = tr.querySelector(".product");
         const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
 
-        const items = productList.map(p => ({ value: p, label: p }));
-        choice.setChoices(items, "value", "label", true);
+        choice.setChoices(
+            productList.map(v => ({ value: v, label: v })),
+            "value",
+            "label",
+            true
+        );
 
-        select.addEventListener("change", () => updatePrice(tr));
-        tr.querySelector(`input[name="meter_${idx}"]`).addEventListener("input", () => calc(tr));
-        tr.querySelector(`input[name="qty_${idx}"]`).addEventListener("input", () => calc(tr));
-        tr.querySelector(`input[name="discount_${idx}"]`).addEventListener("input", () => calc(tr));
+        select.addEventListener("change", () => loadPrice(tr));
+        tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(".discountUnit").addEventListener("input", () => calculateRow(tr));
 
         tr.querySelector(".delete-btn").addEventListener("click", () => {
             tr.remove();
-            calcSummary();
+            calculateSummary();
         });
     }
 
-    document.getElementById("addRow").addEventListener("click", addRow);
 
-    /* ============= GET PRICE ============= */
-    async function updatePrice(tr) {
-        const product = tr.querySelector(".productSel").value;
+    /* ==========================
+       LOAD UNIT PRICE
+    ========================== */
+    async function loadPrice(tr) {
+        const product = tr.querySelector(".product").value;
         if (!product) return;
 
         const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
         const price = Number(await res.text());
 
-        tr.querySelector(".unitPrice").setAttribute("data-value", price);
-        tr.querySelector(".unitPrice").value = rupiah(price);
+        const unit = tr.querySelector(".unitPrice");
+        unit.setAttribute("data-value", price);
+        unit.value = rupiah(price);
 
-        calc(tr);
+        calculateRow(tr);
     }
 
-    /* ============= CALC ROW ============= */
-    function calc(tr) {
-        let meter = parseFloat(tr.querySelector("[name^='meter']").value) || 0;
-        let qty = parseFloat(tr.querySelector("[name^='qty']").value) || 0;
-        let price = Number(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
-        let disc = Number(tr.querySelector(".discountUnit").value) || 0;
 
-        let priceQty = meter * (price - disc);
-        let total = priceQty * qty;
+    /* ==========================
+       CALCULATE PER ROW
+    ========================== */
+    function calculateRow(tr) {
+        const meter = Number(tr.querySelector(".meter").value || 0);
+        const qty = Number(tr.querySelector(".qty").value || 0);
+        const unit = Number(tr.querySelector(".unitPrice").getAttribute("data-value") || 0);
+        const discount = Number(tr.querySelector(".discountUnit").value || 0);
 
-        tr.querySelector(".ppq").setAttribute("data-value", priceQty);
-        tr.querySelector(".ppq").value = rupiah(priceQty);
+        const finalUnit = unit - discount;
+        const ppq = meter * finalUnit;
+        const total = ppq * qty;
 
-        tr.querySelector(".totalPrice").setAttribute("data-value", total);
+        tr.querySelector(".ppq").value = rupiah(ppq);
+        tr.querySelector(".ppq").setAttribute("data-value", ppq);
+
         tr.querySelector(".totalPrice").value = rupiah(total);
+        tr.querySelector(".totalPrice").setAttribute("data-value", total);
 
-        calcSummary();
+        calculateSummary();
     }
 
-    /* ============= CALC SUMMARY ============= */
-    function calcSummary() {
-        let grand = 0;
+
+    /* ==========================
+       CALCULATE SUMMARY
+    ========================== */
+    function calculateSummary() {
+        let total = 0;
 
         document.querySelectorAll(".totalPrice").forEach(el => {
-            grand += Number(el.getAttribute("data-value")) || 0;
+            total += Number(el.getAttribute("data-value") || 0);
         });
 
-        let dpp = grand / 1.11;
-        let ppn = grand - dpp;
+        const dpp = total / 1.11;
+        const ppn = total - dpp;
 
-        document.getElementById("dpp").textContent = rupiah(Math.round(dpp));
-        document.getElementById("ppn").textContent = rupiah(Math.round(ppn));
-        document.getElementById("grand").textContent = rupiah(Math.round(grand));
+        document.getElementById("dpp").textContent = rupiah(dpp);
+        document.getElementById("ppn").textContent = rupiah(ppn);
+        document.getElementById("grandTotal").textContent = rupiah(total);
     }
 
-    /* ============= SUBMIT ============= */
-    document.getElementById("orderForm").addEventListener("submit", async (e) => {
+
+    /* ==========================
+       ADD ROW BUTTON
+    ========================== */
+    document.getElementById("addRow").addEventListener("click", addRow);
+
+
+    /* ==========================
+       SUBMIT FORM
+    ========================== */
+    orderForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const btn = document.getElementById("submitBtn");
         btn.disabled = true;
         btn.textContent = "Sending...";
 
-        document.querySelectorAll("[data-value]").forEach(el => {
-            el.value = el.getAttribute("data-value");
-        });
+        try {
+            const res = await fetch(baseURL, {
+                method: "POST",
+                body: new FormData(orderForm)
+            });
 
-        const result = await fetch(baseURL, {
-            method: "POST",
-            body: new FormData(orderForm)
-        });
+            const msg = await res.text();
+            alert(msg);
 
-        alert(await result.text());
+            location.reload();
+
+        } catch (err) {
+            alert("Gagal mengirim order.");
+            console.error(err);
+        }
+
         btn.disabled = false;
         btn.textContent = "Kirim Order";
-        location.reload();
     });
 
-    loadData();
+
+    /* ==========================
+       INIT
+    ========================== */
+    loadDropdowns();
+
+    Sortable.create(orderBody, {
+        handle: "td",
+        animation: 150
+    });
 };
