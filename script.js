@@ -1,282 +1,167 @@
 window.onload = function () {
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbw8105MSJQsOG0PyNQAQviOec1OZN_7_B-8fbNdGcjfsLe6sYbn5n9cpjF9OS2gGVsE/exec";
+    const baseURL = "https://script.google.com/macros/s/AKfycbxVLp7NlU-giwsUvES8Lkq2wSeckGausQmG1xclkahzZwjk-qAjt3xwAPgCXBH2jZptww/exec";
+
     let productList = [];
+    let customerList = [];
     let choiceCustomer;
 
-    const orderForm = document.getElementById("orderForm");
     const orderBody = document.getElementById("orderBody");
 
-    const modalBG = document.getElementById("modal-bg");
-    const newCustomerInput = document.getElementById("newCustomerName");
-    const saveCustomerBtn = document.getElementById("saveCustomerBtn");
-    const cancelCustomerBtn = document.getElementById("cancelCustomerBtn");
-
-    document.getElementById("date").value = new Date().toISOString().split("T")[0];
-
-    /* ------------------------ FORMAT ------------------------ */
-    function formatRupiah(num) {
-        return "Rp " + Number(num || 0).toLocaleString("id-ID", {
-            maximumFractionDigits: 0
-        });
+    /* ============= FORMAT RUPIAH ============= */
+    function rupiah(x) {
+        return "Rp " + Number(x || 0).toLocaleString("id-ID");
     }
 
-    function formatXero(num) {
-        const n = Number(num || 0);
-        return n.toLocaleString("en-NZ", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    }
-
-    /* ------------------------ ORDER NUMBER ------------------------ */
-    const ORDER_PREFIX = "1";  
-    const ORDER_KEY = "ORDERFORM_LAST_ORDER";
-
-    function generateOrderNumber() {
-        let last = localStorage.getItem(ORDER_KEY);
-
-        if (!last) {
-            const newNum = ORDER_PREFIX + "000001";
-            localStorage.setItem(ORDER_KEY, newNum);
-            return newNum;
-        }
-
-        const prefix = last.slice(0,1);
-        const counter = parseInt(last.slice(1), 10);
-
-        const next = prefix + String(counter + 1).padStart(6, "0");
-        localStorage.setItem(ORDER_KEY, next);
-        return next;
-    }
-
-    function setOrderNumber() {
-        const num = generateOrderNumber();
-        document.getElementById("ordnum").value = num;
-    }
-
-    /* ------------------------ LOAD DROPDOWN ------------------------ */
-    async function loadDropdowns() {
+    /* ============= LOAD DROPDOWN ============= */
+    async function loadData() {
         const res = await fetch(baseURL + "?action=getdata");
         const data = await res.json();
 
-        productList = data.products || [];
+        productList = data.products;
+        customerList = data.customers;
 
-        // CUSTOMER DROPDOWN
         choiceCustomer = new Choices("#customer", {
             searchEnabled: true,
             shouldSort: false,
-            placeholder: true,
-            itemSelectText: ""
+            placeholder: true
         });
 
-        const customerArray = data.customers || [];
+        const custChoices = customerList.map(c => ({ value: c, label: c }));
+        custChoices.unshift({ value: "__add__", label: "➕ Tambah Customer" });
 
-        choiceCustomer.setChoices(
-            [
-                { value: "__add__", label: "➕ Add New Customer", disabled: false },
-                ...customerArray.map(c => ({ value: c, label: c }))
-            ],
-            "value",
-            "label",
-            true
-        );
+        choiceCustomer.setChoices(custChoices, "value", "label", true);
 
-        document.getElementById("customer").addEventListener("change", e => {
+        document.getElementById("customer").addEventListener("change", (e) => {
             if (e.target.value === "__add__") {
-                modalBG.style.display = "block";
-                newCustomerInput.value = "";
-                newCustomerInput.focus();
+                document.getElementById("modal-bg").style.display = "flex";
             }
         });
 
-        cancelCustomerBtn.onclick = () => {
-            modalBG.style.display = "none";
-            choiceCustomer.setChoiceByValue("");
-        };
-
-        saveCustomerBtn.onclick = async () => {
-            const name = newCustomerInput.value.trim();
-            if (!name) return;
-
-            await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
-
-            choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
-            choiceCustomer.setChoiceByValue(name);
-
-            modalBG.style.display = "none";
-        };
-
-        // Order number
-        setOrderNumber();
-
-        // Default 3 rows
-        addLine(); addLine(); addLine();
-        calculateSummary();
+        addRow();
     }
 
-    /* ------------------------ ADD ROW ------------------------ */
-    function addLine() {
+    /* ============= ADD CUSTOMER ============= */
+    document.getElementById("saveCustomer").addEventListener("click", async () => {
+        const name = document.getElementById("newCustomer").value.trim();
+        if (!name) return;
+
+        await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
+        choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
+        choiceCustomer.setChoiceByValue(name);
+
+        document.getElementById("modal-bg").style.display = "none";
+    });
+
+    /* ============= ADD ROW ============= */
+    function addRow() {
         const idx = orderBody.children.length + 1;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="col-drag">⋮⋮</td>
-
-            <td><select class="product-select" name="product_${idx}"></select></td>
-
-            <td><input type="number" class="meter" min="0" step="0.01" name="meter_${idx}"></td>
-            <td><input type="number" class="qty" min="0" step="1" name="qty_${idx}"></td>
-
-            <td><input type="text" class="unitPrice" data-value="" name="unitPrice_${idx}" readonly></td>
-
-            <td><input type="number" class="discUnit" min="0" step="0.01" value="0" name="discUnit_${idx}"></td>
-
-            <td><input type="text" class="ppq" data-value="" name="ppq_${idx}" readonly></td>
-
-            <td><input type="text" class="totalPrice" data-value="" name="total_${idx}" readonly></td>
-
-            <td><button type="button" class="delete-btn">🗑</button></td>
+            <td class="drag">⋮⋮</td>
+            <td><select name="product_${idx}" class="productSel"></select></td>
+            <td><input name="meter_${idx}" type="number" step="0.01"></td>
+            <td><input name="qty_${idx}" type="number" step="1"></td>
+            <td><input name="unitPrice_${idx}" type="text" class="unitPrice" readonly data-value="0"></td>
+            <td><input name="discount_${idx}" class="discountUnit" type="number" step="1"></td>
+            <td><input name="ppq_${idx}" type="text" class="ppq" readonly data-value="0"></td>
+            <td><input name="totalPrice_${idx}" type="text" class="totalPrice" readonly data-value="0"></td>
+            <td><button class="delete-btn">✖</button></td>
         `;
 
         orderBody.appendChild(tr);
 
-        /* Product dropdown */
-        const select = tr.querySelector(".product-select");
-        const choice = new Choices(select, {
-            searchEnabled: true,
-            shouldSort: false,
-            itemSelectText: ""
-        });
+        const select = tr.querySelector(".productSel");
+        const choice = new Choices(select, { searchEnabled: true, shouldSort: false });
 
-        choice.setChoices(
-            productList.map(v => ({ value: v, label: v })),
-            "value",
-            "label",
-            true
-        );
+        const items = productList.map(p => ({ value: p, label: p }));
+        choice.setChoices(items, "value", "label", true);
 
         select.addEventListener("change", () => updatePrice(tr));
-        tr.querySelector(".meter").addEventListener("input", () => calculateRow(tr));
-        tr.querySelector(".qty").addEventListener("input", () => calculateRow(tr));
-        tr.querySelector(".discUnit").addEventListener("input", () => calculateRow(tr));
+        tr.querySelector(`input[name="meter_${idx}"]`).addEventListener("input", () => calc(tr));
+        tr.querySelector(`input[name="qty_${idx}"]`).addEventListener("input", () => calc(tr));
+        tr.querySelector(`input[name="discount_${idx}"]`).addEventListener("input", () => calc(tr));
 
         tr.querySelector(".delete-btn").addEventListener("click", () => {
             tr.remove();
-            calculateSummary();
+            calcSummary();
         });
     }
 
-    /* ------------------------ GET PRICE ------------------------ */
+    document.getElementById("addRow").addEventListener("click", addRow);
+
+    /* ============= GET PRICE ============= */
     async function updatePrice(tr) {
-        const product = tr.querySelector(".product-select").value;
+        const product = tr.querySelector(".productSel").value;
         if (!product) return;
 
         const res = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
-        const price = parseFloat(await res.text()) || 0;
+        const price = Number(await res.text());
 
-        const up = tr.querySelector(".unitPrice");
-        up.setAttribute("data-value", price);
-        up.value = formatRupiah(price);
+        tr.querySelector(".unitPrice").setAttribute("data-value", price);
+        tr.querySelector(".unitPrice").value = rupiah(price);
 
-        calculateRow(tr);
+        calc(tr);
     }
 
-    /* ------------------------ CALCULATE ROW ------------------------ */
-    function calculateRow(tr) {
-        const meter = parseFloat(tr.querySelector(".meter").value) || 0;
-        const qty = parseFloat(tr.querySelector(".qty").value) || 0;
-        const discUnit = parseFloat(tr.querySelector(".discUnit").value) || 0;
+    /* ============= CALC ROW ============= */
+    function calc(tr) {
+        let meter = parseFloat(tr.querySelector("[name^='meter']").value) || 0;
+        let qty = parseFloat(tr.querySelector("[name^='qty']").value) || 0;
+        let price = Number(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
+        let disc = Number(tr.querySelector(".discountUnit").value) || 0;
 
-        const unitPrice = parseFloat(tr.querySelector(".unitPrice").getAttribute("data-value")) || 0;
+        let priceQty = meter * (price - disc);
+        let total = priceQty * qty;
 
-        const netUnit = Math.max(unitPrice - discUnit, 0);
-        const ppq = meter * netUnit;
-        const total = ppq * qty;
-
-        tr.querySelector(".ppq").setAttribute("data-value", ppq);
-        tr.querySelector(".ppq").value = formatRupiah(ppq);
+        tr.querySelector(".ppq").setAttribute("data-value", priceQty);
+        tr.querySelector(".ppq").value = rupiah(priceQty);
 
         tr.querySelector(".totalPrice").setAttribute("data-value", total);
-        tr.querySelector(".totalPrice").value = formatRupiah(total);
+        tr.querySelector(".totalPrice").value = rupiah(total);
 
-        calculateSummary();
+        calcSummary();
     }
 
-    /* ------------------------ SUMMARY ------------------------ */
-    function calculateSummary() {
+    /* ============= CALC SUMMARY ============= */
+    function calcSummary() {
         let grand = 0;
 
         document.querySelectorAll(".totalPrice").forEach(el => {
-            grand += parseFloat(el.getAttribute("data-value")) || 0;
+            grand += Number(el.getAttribute("data-value")) || 0;
         });
 
-        const dpp = grand / 1.11;
-        const ppn = grand - dpp;
+        let dpp = grand / 1.11;
+        let ppn = grand - dpp;
 
-        document.getElementById("grandVal").textContent = formatXero(grand);
-        document.getElementById("dppVal").textContent = formatXero(dpp);
-        document.getElementById("ppnVal").textContent = formatXero(ppn);
+        document.getElementById("dpp").textContent = rupiah(Math.round(dpp));
+        document.getElementById("ppn").textContent = rupiah(Math.round(ppn));
+        document.getElementById("grand").textContent = rupiah(Math.round(grand));
     }
 
-    /* ------------------------ SUBMIT FORM ------------------------ */
-    orderForm.addEventListener("submit", async e => {
+    /* ============= SUBMIT ============= */
+    document.getElementById("orderForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        if (!document.getElementById("customer").value) {
-            alert("Customer wajib diisi.");
-            return;
-        }
-
-        let validRow = false;
-        document.querySelectorAll(".product-select").forEach(sel => {
-            if (sel.value) validRow = true;
-        });
-        if (!validRow) {
-            alert("Minimal 1 product harus diisi.");
-            return;
-        }
-
-        // Convert data-value → value
-        document.querySelectorAll("[data-value]").forEach(el => {
-            el.value = el.getAttribute("data-value");
-        });
 
         const btn = document.getElementById("submitBtn");
         btn.disabled = true;
         btn.textContent = "Sending...";
 
-        try {
-            const res = await fetch(baseURL, {
-                method: "POST",
-                body: new FormData(orderForm)
-            });
-            const txt = await res.text();
-            alert(txt);
+        document.querySelectorAll("[data-value]").forEach(el => {
+            el.value = el.getAttribute("data-value");
+        });
 
-            orderForm.reset();
-            orderBody.innerHTML = "";
-            document.getElementById("date").value = new Date().toISOString().split("T")[0];
+        const result = await fetch(baseURL, {
+            method: "POST",
+            body: new FormData(orderForm)
+        });
 
-            setOrderNumber();
-
-            addLine(); addLine(); addLine();
-            calculateSummary();
-
-        } catch (err) {
-            alert("Gagal mengirim. Coba lagi.");
-            console.error(err);
-        }
-
+        alert(await result.text());
         btn.disabled = false;
         btn.textContent = "Kirim Order";
+        location.reload();
     });
 
-    /* ------------------------ INIT ------------------------ */
-    loadDropdowns();
-
-    Sortable.create(orderBody, {
-        handle: ".col-drag",
-        animation: 150
-    });
+    loadData();
 };
