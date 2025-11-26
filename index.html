@@ -1,80 +1,101 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 <meta charset="UTF-8">
-<title>Form Pemesanan – EXACT Xero Clone (A)</title>
+<title>Order Form – Xero Ultra Modern</title>
 
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <style>
+/* --------------------------------------------------
+      XERO COLOR SYSTEM (2024 ULTRA MODERN)
+-------------------------------------------------- */
 :root {
-  --bg: #F5F6F7;
-  --card-border: #E3E6E8;
-  --header-bg: #F3F4F5;
-  --border-color: #D9DCE0;
-  --cell-border: #E5E7EB;
-  --text-dark: #253858;
-  --text-muted: #6B778C;
-  --blue: #1F6EF3;
+  --xero-blue: #1F6FF2;
+  --xero-blue-light: #E8F0FE;
+  --text-dark: #1A1F36;
+  --text-muted: #6B7280;
+  --border: #E5E7EB;
+  --bg: #F5F7FA;
+  --row-hover: #F9FAFB;
+  --input-border: #D1D5DB;
 }
 
 * { box-sizing: border-box; }
 
+/* --------------------------------------------------
+      BODY LAYOUT
+-------------------------------------------------- */
 body {
+  background: var(--bg);
   margin: 0;
   padding: 30px 0;
-  background: var(--bg);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: var(--text-dark);
 }
 
 /* CARD */
 .xero-card {
-  background: #ffffff;
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  max-width: 1300px;
+  background: #fff;
+  width: 1320px;
   margin: auto;
-  padding: 30px 35px;
+  padding: 34px 38px;
+  border-radius: 10px;
+  border: 1px solid #E1E4E8;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 /* TITLE */
 .card-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
-  margin-bottom: 26px;
+  color: var(--text-dark);
+  margin-bottom: 30px;
 }
 
-/* TOP GRID (5 col) */
+/* --------------------------------------------------
+      TOP GRID (Xero style 2 rows)
+-------------------------------------------------- */
 .top-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(4, 1fr) 100px;
+  gap: 24px;
+  margin-bottom: 30px;
 }
 
 label {
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: 4px;
-  display: inline-block;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: block;
 }
 
 input, select {
   width: 100%;
-  height: 40px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  border: 1px solid #C4C7CC;
+  height: 42px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
   font-size: 14px;
-  background: #ffffff;
 }
 
-/* TABLE */
+/* Focus effect mirip Xero */
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid rgba(31,111,242,0.25);
+  border-color: var(--xero-blue);
+  box-shadow: 0 0 0 3px rgba(31,111,242,0.12);
+}
+
+/* --------------------------------------------------
+      TABLE
+-------------------------------------------------- */
 .table-wrapper {
-  margin-top: 10px;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .xero-table {
@@ -85,49 +106,50 @@ input, select {
 
 /* HEADER */
 .xero-table thead th {
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
-  padding: 10px 8px;
+  background: var(--xero-blue-light);
+  padding: 12px 10px;
   font-size: 13px;
-  font-weight: 600;
-  text-align: left;
+  font-weight: 700;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
-  color: #4A4F59;
 }
 
-/* ROW CELL */
+/* BODY */
 .xero-table td {
-  border-bottom: 1px solid var(--cell-border);
-  padding: 8px 8px;
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
 }
 
+.xero-table tr:hover td {
+  background: var(--row-hover);
+}
+
+/* Inputs inside table */
 .xero-table input {
-  width: 100%;
-  height: 34px;
-  padding: 5px 6px;
-  border-radius: 4px;
-  border: 1px solid #D2D6DB;
+  height: 36px;
   font-size: 14px;
+  border-radius: 6px;
 }
 
-/* COLUMN WIDTHS */
+/* Column Widths */
 .xero-table th:nth-child(1),
-.xero-table td:nth-child(1) { width: 8%; }
+.xero-table td:nth-child(1) { width: 6%; }
 
 .xero-table th:nth-child(2),
 .xero-table td:nth-child(2) { width: 23%; }
 
 .xero-table th:nth-child(3),
-.xero-table td:nth-child(3) { width: 8%; }
+.xero-table td:nth-child(3) { width: 10%; }
 
 .xero-table th:nth-child(4),
-.xero-table td:nth-child(4) { width: 8%; }
+.xero-table td:nth-child(4) { width: 9%; }
 
 .xero-table th:nth-child(5),
 .xero-table td:nth-child(5) { width: 10%; }
 
 .xero-table th:nth-child(6),
-.xero-table td:nth-child(6) { width: 10%; }
+.xero-table td:nth-child(6) { width: 11%; }
 
 .xero-table th:nth-child(7),
 .xero-table td:nth-child(7) { width: 10%; }
@@ -136,93 +158,95 @@ input, select {
 .xero-table td:nth-child(8) { width: 9%; }
 
 .xero-table th:nth-child(9),
-.xero-table td:nth-child(9) { width: 8%; }
+.xero-table td:nth-child(9) { width: 10%; }
 
 .xero-table th:nth-child(10),
-.xero-table td:nth-child(10) { width: 10%; }
+.xero-table td:nth-child(10) { width: 3%; }
 
-.xero-table th:nth-child(11),
-.xero-table td:nth-child(11) { width: 30px; }
-
-/* DELETE BUTTON */
-.delete-btn {
-  background: none;
-  border: none;
-  color: #B00020;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-/* ADD ROW BUTTON */
+/* --------------------------------------------------
+      ADD ROW BUTTON
+-------------------------------------------------- */
 #addLine {
   margin-top: 16px;
+  padding: 10px 16px;
   background: white;
-  border: 1px solid #C5C7D0;
-  padding: 8px 14px;
-  border-radius: 4px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  color: #2F3F52;
-  cursor: pointer;
+  color: var(--text-dark);
 }
 
-/* SUMMARY BOX */
+#addLine:hover {
+  background: #F3F4F6;
+}
+
+/* --------------------------------------------------
+      NOTES
+-------------------------------------------------- */
+textarea {
+  width: 100%;
+  min-height: 130px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  padding: 12px;
+  font-size: 14px;
+  margin-top: 18px;
+}
+
+/* --------------------------------------------------
+      SUMMARY BOX (Right Align)
+-------------------------------------------------- */
 .summary-area {
-  margin-top: 30px;
-  text-align: right;
-  margin-right: 10px;
+  margin-top: 34px;
+  float: right;
 }
 
 .summary-area table {
   width: 260px;
-  float: right;
 }
 
 .summary-area td {
-  padding: 6px;
+  padding: 8px 4px;
   font-size: 14px;
 }
 
 .summary-area input {
-  width: 140px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #C4C7CC;
-  padding: 4px 6px;
-  background: #FAFAFA;
+  width: 150px;
   text-align: right;
+  background: #F9FAFB;
+  border: 1px solid #D0D4D9;
+  height: 36px;
+  border-radius: 6px;
+  padding-right: 8px;
   font-weight: 600;
 }
 
-/* NOTES */
-textarea {
-  width: 100%;
-  min-height: 130px;
-  border-radius: 4px;
-  border: 1px solid #C4C7CC;
-  padding: 10px;
-  font-size: 14px;
-  resize: vertical;
-  margin-top: 10px;
-}
-
-/* BUTTON SUBMIT (kanan bawah) */
+/* --------------------------------------------------
+      SUBMIT BUTTON (Xero Blue Big)
+-------------------------------------------------- */
 .submit-box {
+  margin-top: 60px;
   text-align: right;
-  margin-top: 22px;
+  clear: both;
 }
 
 button[type="submit"] {
-  background: var(--blue);
+  background: var(--xero-blue);
   color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 9px 20px;
+  padding: 12px 26px;
   font-size: 14px;
   font-weight: 600;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
+  transition: 0.2s;
 }
 
+button[type="submit"]:hover {
+  background: #0D55D8;
+}
 </style>
 </head>
 
@@ -237,12 +261,12 @@ button[type="submit"] {
     <div class="top-grid">
       <div>
         <label>Customer</label>
-        <select id="customer" required></select>
+        <select id="customer"></select>
       </div>
 
       <div>
         <label>Date</label>
-        <input type="date" id="date" required>
+        <input type="date" id="date">
       </div>
 
       <div>
@@ -255,7 +279,7 @@ button[type="submit"] {
         <input id="reference">
       </div>
 
-      <div></div> <!-- empty for alignment -->
+      <div></div>
     </div>
 
     <!-- TABLE -->
@@ -272,7 +296,6 @@ button[type="submit"] {
             <th>Discount</th>
             <th>Subtotal</th>
             <th>Tax</th>
-            <th>Total</th>
             <th></th>
           </tr>
         </thead>
@@ -283,8 +306,7 @@ button[type="submit"] {
 
     <button type="button" id="addLine">Add row</button>
 
-    <!-- NOTES -->
-    <label style="margin-top:20px;">Catatan:</label>
+    <label style="margin-top:25px;">Catatan:</label>
     <textarea id="catatan"></textarea>
 
     <!-- SUMMARY -->
@@ -307,7 +329,6 @@ button[type="submit"] {
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="./script.js"></script>
 
-<!-- DEFAULT 3 ROWS -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof addRow === "function") {
