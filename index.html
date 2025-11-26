@@ -1,287 +1,295 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Order – Xero Ultra Modern</title>
+  <meta charset="UTF-8">
+  <title>Order – Xero Ultra Modern</title>
 
-<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-<style>
-/* ============================================================
-   GLOBAL FONT — HELVETICA NEUE (XERO STYLE)
-============================================================ */
-* {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
-  box-sizing: border-box;
-}
+  <style>
+    /* ============================================================
+       GLOBAL FONT — HELVETICA NEUE (XERO STYLE)
+    ============================================================ */
+    * {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+      -webkit-font-smoothing: antialiased !important;
+      box-sizing: border-box;
+    }
 
-:root {
-  --blue: #1f6ff2;
-  --blue-dark: #1854c9;
-  --bg: #f4f6f8;
-  --text-dark: #1f2933;
-  --text-muted: #6b778c;
-  --border: #d0d7e2;
-  --border-light: #e4e7eb;
-  --header-bg: #eef0f3;
-  --row-hover: #f7f9fc;
-}
+    :root {
+      --blue: #1f6ff2;
+      --blue-dark: #1854c9;
+      --bg: #f4f6f8;
+      --text-dark: #1f2933;
+      --text-muted: #6b778c;
+      --border: #d0d7e2;
+      --border-light: #e4e7eb;
+      --header-bg: #eef0f3;
+      --row-hover: #f7f9fc;
+    }
 
-/* ============================================================
-   PAGE LAYOUT
-============================================================ */
-body {
-  margin: 0;
-  padding: 32px 0 60px;
-  background: var(--bg);
-  color: var(--text-dark);
-}
+    /* ============================================================
+       PAGE LAYOUT
+    ============================================================ */
+    body {
+      margin: 0;
+      padding: 32px 0 60px;
+      background: var(--bg);
+      color: var(--text-dark);
+    }
 
-/* Card hampir full-width (mirip Xero) */
-.xero-card {
-  width: calc(100% - 80px);  /* margin kiri-kanan 40px */
-  margin: 0 auto;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 32px 36px 40px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
+    /* Card hampir full-width (mirip Xero) */
+    .xero-card {
+      width: calc(100% - 80px);  /* margin kiri-kanan 40px */
+      margin: 0 auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 36px 40px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
 
-.section-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 26px;
-}
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 26px;
+    }
 
-/* ============================================================
-   TOP GRID
-============================================================ */
-.top-grid {
-  display: grid;
-  grid-template-columns: 2fr 1.1fr 1.1fr 1.1fr;
-  gap: 22px 32px;
-  margin-bottom: 32px;
-}
+    /* ============================================================
+       TOP GRID
+    ============================================================ */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr 1.1fr; /* Customer, Date, Invoice */
+      gap: 22px 32px;
+      margin-bottom: 32px;
+    }
 
-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
+    label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
 
-input, select {
-  width: 100%;
-  height: 42px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 14px;
-}
+    input, select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
 
-/* ============================================================
-   TABLE WRAPPER + TABLE
-============================================================ */
-.table-wrapper {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: visible !important;   /* dropdown tidak tergunting */
-  position: relative;
-  margin-bottom: 12px;
-}
+    input[readonly] {
+      background: #f5f7fa;
+      color: #4b5563;
+      cursor: default;
+    }
 
-table.xero-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
+    /* ============================================================
+       TABLE WRAPPER + TABLE
+    ============================================================ */
+    .table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: visible !important;   /* dropdown tidak tergunting */
+      position: relative;
+      margin-bottom: 12px;
+    }
 
-.xero-table thead th {
-  background: var(--header-bg);
-  padding: 10px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #4b5568;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--border-light);
-}
+    table.xero-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
 
-.xero-table td {
-  border-bottom: 1px solid var(--border-light);
-  padding: 10px 8px;
-}
+    .xero-table thead th {
+      background: var(--header-bg);
+      padding: 10px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5568;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-light);
+    }
 
-.xero-table input {
-  height: 36px;
-  border-radius: 5px;
-  border: 1px solid var(--border);
-}
+    .xero-table td {
+      border-bottom: 1px solid var(--border-light);
+      padding: 10px 8px;
+    }
 
-/* Column widths */
-.xero-table th:nth-child(1),
-.xero-table td:nth-child(1) { width: 4%; }
+    .xero-table input {
+      height: 36px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+    }
 
-.xero-table th:nth-child(2),
-.xero-table td:nth-child(2) { width: 22%; }
+    /* Column widths */
+    .xero-table th:nth-child(1),
+    .xero-table td:nth-child(1) { width: 4%; }
 
-.xero-table th:nth-child(3),
-.xero-table td:nth-child(3) { width: 9%; }
+    .xero-table th:nth-child(2),
+    .xero-table td:nth-child(2) { width: 26%; }
 
-.xero-table th:nth-child(4),
-.xero-table td:nth-child(4) { width: 7%; }
+    .xero-table th:nth-child(3),
+    .xero-table td:nth-child(3) { width: 10%; }
 
-.xero-table th:nth-child(5),
-.xero-table td:nth-child(5) { width: 11%; }
+    .xero-table th:nth-child(4),
+    .xero-table td:nth-child(4) { width: 7%; }
 
-.xero-table th:nth-child(6),
-.xero-table td:nth-child(6) { width: 11%; }
+    .xero-table th:nth-child(5),
+    .xero-table td:nth-child(5) { width: 13%; }
 
-.xero-table th:nth-child(7),
-.xero-table td:nth-child(7) { width: 9%; }
+    .xero-table th:nth-child(6),
+    .xero-table td:nth-child(6) { width: 13%; }
 
-.xero-table th:nth-child(8),
-.xero-table td:nth-child(8) { width: 11%; }
+    .xero-table th:nth-child(7),
+    .xero-table td:nth-child(7) { width: 10%; }
 
-.xero-table th:nth-child(9),
-.xero-table td:nth-child(9) { width: 10%; }
+    .xero-table th:nth-child(8),
+    .xero-table td:nth-child(8) { width: 13%; }
 
-.xero-table th:nth-child(10),
-.xero-table td:nth-child(10) { width: 11%; }
+    .xero-table th:nth-child(9),
+    .xero-table td:nth-child(9) { width: 34px; }
 
-.xero-table th:nth-child(11),
-.xero-table td:nth-child(11) { width: 34px; }
+    /* Drag column */
+    .col-drag {
+      cursor: grab;
+      font-size: 18px;
+      color: #9aa5b1;
+      text-align: center;
+    }
 
-/* Drag column */
-.col-drag {
-  cursor: grab;
-  font-size: 18px;
-  color: #9aa5b1;
-  text-align: center;
-}
+    /* Delete */
+    .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #d11a2a;
+      font-size: 16px;
+    }
 
-/* Delete */
-.delete-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #d11a2a;
-  font-size: 16px;
-}
+    /* ============================================================
+       ADD ROW BUTTON
+    ============================================================ */
+    #addLine {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border-radius: 5px;
+      border: 1px solid #ccd3dd;
+      background: white;
+      cursor: pointer;
+    }
 
-/* ============================================================
-   ADD ROW BUTTON
-============================================================ */
-#addLine {
-  margin-top: 10px;
-  padding: 8px 14px;
-  border-radius: 5px;
-  border: 1px solid #ccd3dd;
-  background: white;
-  cursor: pointer;
-}
+    /* ============================================================
+       NOTES FIELD
+    ============================================================ */
+    textarea {
+      width: 100%;
+      height: 140px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 8px;
+    }
 
-/* ============================================================
-   NOTES FIELD
-============================================================ */
-textarea {
-  width: 100%;
-  height: 140px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  padding: 10px;
-  font-size: 14px;
-  margin-top: 8px;
-}
+    /* ============================================================
+       SUMMARY (DPP / PPN / GRAND TOTAL) — Xero style
+    ============================================================ */
+    .summary-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
 
-/* ============================================================
-   SUMMARY + BUTTON (semua di dalam box putih kanan)
-============================================================ */
-.summary-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
+    .summary-box {
+      width: 260px;
+    }
 
-.summary-box {
-  width: 260px;
-  background: white;
-  padding: 15px 12px 14px;
-  border-radius: 6px;
-  border: 1px solid #e3e6ea;
-}
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
 
-.summary-box table {
-  width: 100%;
-}
+    .summary-row span:first-child {
+      color: #4b5563;
+    }
 
-.summary-box td {
-  padding: 4px 2px;
-  font-size: 13px;
-}
+    .summary-row span:last-child {
+      color: #111827;
+    }
 
-.summary-box input {
-  width: 130px;
-  height: 34px;
-  background: #f9fafb;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  text-align: right;
-  padding-right: 8px;
-  font-weight: 600;
-}
+    .summary-total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 16px;
+    }
 
-/* tombol di dalam summary */
-.summary-actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-}
+    .summary-total-row span:first-child {
+      color: #1f2933;
+    }
 
-#submitBtn {
-  background: var(--blue);
-  border: none;
-  padding: 9px 22px;
-  border-radius: 50px;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-}
+    .summary-total-row span:last-child {
+      color: #111827;
+    }
 
-#submitBtn:hover {
-  background: var(--blue-dark);
-}
+    .summary-actions {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
 
-/* ============================================================
-   CHOICES DROPDOWN (Xero-ish)
-============================================================ */
-.choices__inner {
-  min-height: 36px !important;
-  padding: 6px 8px !important;
-  border-radius: 5px !important;
-  border: 1px solid var(--border) !important;
-}
+    #submitBtn {
+      background: var(--blue);
+      border: none;
+      padding: 9px 22px;
+      border-radius: 50px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
 
-.choices__list--dropdown {
-  position: absolute !important;
-  width: 100% !important;
-  z-index: 99999 !important;
-  max-height: 260px !important;
-  overflow-y: auto !important;
-  border-radius: 6px;
-  background: white;
-  border: 1px solid #c9d2df;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
+    #submitBtn:hover {
+      background: var(--blue-dark);
+    }
 
-.choices__item--selectable:hover {
-  background: var(--row-hover) !important;
-}
-</style>
+    /* ============================================================
+       CHOICES DROPDOWN (Xero-ish)
+    ============================================================ */
+    .choices__inner {
+      min-height: 36px !important;
+      padding: 6px 8px !important;
+      border-radius: 5px !important;
+      border: 1px solid var(--border) !important;
+    }
+
+    .choices__list--dropdown {
+      position: absolute !important;
+      width: 100% !important;
+      z-index: 99999 !important;
+      max-height: 260px !important;
+      overflow-y: auto !important;
+      border-radius: 6px;
+      background: white;
+      border: 1px solid #c9d2df;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .choices__item--selectable:hover {
+      background: var(--row-hover) !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -301,17 +309,12 @@ textarea {
 
       <div>
         <label>Date</label>
-        <input type="date" id="date">
+        <input type="date" id="date" name="date">
       </div>
 
       <div>
         <label>Invoice Number</label>
-        <input id="invnum" placeholder="Auto">
-      </div>
-
-      <div>
-        <label>Reference</label>
-        <input id="reference">
+        <input id="invnum" name="invnum" readonly>
       </div>
     </div>
 
@@ -326,9 +329,7 @@ textarea {
             <th>Qty</th>
             <th>Unit Price</th>
             <th>Price/Qty</th>
-            <th>Discount</th>
-            <th>Subtotal</th>
-            <th>Tax</th>
+            <th>Discount/Qty</th>
             <th>Total</th>
             <th></th>
           </tr>
@@ -343,17 +344,24 @@ textarea {
     <!-- CATATAN -->
     <div style="margin-top:26px;">
       <label>Catatan</label>
-      <textarea id="catatan"></textarea>
+      <textarea id="catatan" name="catatan"></textarea>
     </div>
 
-    <!-- SUMMARY + BUTTON DI DALAM BOX PUTIH -->
+    <!-- SUMMARY (DPP / PPN / GRAND TOTAL) + BUTTON -->
     <div class="summary-wrapper">
       <div class="summary-box">
-        <table>
-          <tr><td>Subtotal</td><td><input id="subTotal" readonly></td></tr>
-          <tr><td>Total tax</td><td><input id="ppn" readonly></td></tr>
-          <tr><td><strong>Total</strong></td><td><input id="grandTotal" readonly></td></tr>
-        </table>
+        <div class="summary-row">
+          <span>DPP</span>
+          <span id="dppVal">0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>PPN 11%</span>
+          <span id="ppnVal">0.00</span>
+        </div>
+        <div class="summary-total-row">
+          <span>Grand Total</span>
+          <span id="grandVal">0.00</span>
+        </div>
 
         <div class="summary-actions">
           <button type="submit" id="submitBtn">Kirim Order</button>
