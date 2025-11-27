@@ -1,4 +1,4 @@
-const baseURL = "https://script.google.com/macros/s/AKfycbw8105MSJQsOG0PyNQAQviOec1OZN_7_B-8fbNdGcjfsLe6sYbn5n9cpjF9OS2gGVsE/exec";
+const baseURL = "https://script.google.com/macros/s/AKfycbwExwntX5JjyQqMXij6aBoBQRc7FmcZI6qNa3EiBuOB7ljFDv_WTCmwoCSZYsdcoU2Z/exec";
 
 let productList = [];
 let customerList = [];
