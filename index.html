@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan - Xero Style</title>
 
-  <!-- Choices.js -->
+  <!-- Choices & Sortable -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
     :root {
@@ -23,11 +24,11 @@
 
     * {
       box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--page-bg);
       color: var(--text-main);
     }
@@ -57,7 +58,7 @@
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--card-radius);
-      padding: 24px 24px 28px 24px;
+      padding: 24px 24px 28px;
     }
 
     h2.card-title {
@@ -86,10 +87,6 @@
       color: var(--text-muted);
     }
 
-    .field-input-wrapper {
-      position: relative;
-    }
-
     input[type="text"],
     input[type="date"],
     textarea {
@@ -98,7 +95,6 @@
       border: 1px solid var(--border);
       padding: 8px 10px;
       font-size: 13px;
-      line-height: 1.4;
       outline: none;
       background: #ffffff;
     }
@@ -110,7 +106,7 @@
       box-shadow: 0 0 0 1px rgba(0,117,201,0.1);
     }
 
-    /* Choices.js container tweak */
+    /* Choices styling */
     .choices__inner {
       border-radius: var(--input-radius) !important;
       border-color: var(--border) !important;
@@ -127,6 +123,7 @@
 
     .choices__list--dropdown {
       border-color: var(--border);
+      z-index: 9999;
     }
 
     /* TABLE */
@@ -161,76 +158,60 @@
       text-align: left;
     }
 
-    .items-table th:first-child,
-    .items-table td:first-child {
-      width: 26%;
-    }
+    .items-table th:nth-child(1),
+    .items-table td:nth-child(1) { width: 4%; text-align:center; }
     .items-table th:nth-child(2),
-    .items-table td:nth-child(2) {
-      width: 10%;
-    }
+    .items-table td:nth-child(2) { width: 10%; }
     .items-table th:nth-child(3),
-    .items-table td:nth-child(3) {
-      width: 8%;
-    }
+    .items-table td:nth-child(3) { width: 26%; }
     .items-table th:nth-child(4),
-    .items-table td:nth-child(4) {
-      width: 12%;
-    }
+    .items-table td:nth-child(4) { width: 8%; }
     .items-table th:nth-child(5),
-    .items-table td:nth-child(5) {
-      width: 14%;
-    }
+    .items-table td:nth-child(5) { width: 8%; }
     .items-table th:nth-child(6),
-    .items-table td:nth-child(6) {
-      width: 12%;
-    }
+    .items-table td:nth-child(6) { width: 12%; }
     .items-table th:nth-child(7),
-    .items-table td:nth-child(7) {
-      width: 14%;
-    }
-    .items-table th:last-child,
-    .items-table td:last-child {
-      width: 4%;
-      text-align: center;
-    }
+    .items-table td:nth-child(7) { width: 12%; }
+    .items-table th:nth-child(8),
+    .items-table td:nth-child(8) { width: 12%; }
+    .items-table th:nth-child(9),
+    .items-table td:nth-child(9) { width: 12%; }
+    .items-table th:nth-child(10),
+    .items-table td:nth-child(10){ width: 4%; text-align:center;}
 
+    .items-table input[type="number"],
     .items-table input[type="text"],
-    .items-table input[type="number"] {
+    .items-table select {
+      width: 100%;
       border-radius: var(--input-radius);
       border: 1px solid var(--border-light);
       padding: 6px 6px;
       font-size: 12px;
-      width: 100%;
     }
 
     .items-table input[type="number"] {
       text-align: right;
     }
 
-    .items-table input:focus {
-      border-color: var(--xero-blue);
-      box-shadow: 0 0 0 1px rgba(0,117,201,0.08);
+    .drag-handle {
+      cursor: grab;
+      color: #9aa5b1;
+      font-size: 16px;
     }
 
     .delete-row {
       cursor: pointer;
       color: #b4b4b4;
       font-size: 16px;
-      vertical-align: middle;
     }
-
     .delete-row:hover {
       color: #d64541;
     }
 
-    /* ADD ROW */
     .add-row-bar {
       padding: 6px 10px;
       background: #f8fafb;
       border-top: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
     }
 
     .add-row-btn {
@@ -245,27 +226,17 @@
       gap: 4px;
     }
 
-    .add-row-btn:hover {
-      border-color: var(--xero-blue);
-      color: var(--xero-blue);
-    }
-
     /* NOTES + TOTALS */
     .notes-and-totals {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
       gap: 16px;
       margin-top: 14px;
-      align-items: flex-start;
     }
 
     .notes-box textarea {
       min-height: 110px;
       resize: vertical;
-    }
-
-    .notes-box .field-label {
-      margin-bottom: 4px;
     }
 
     .totals-box {
@@ -278,18 +249,15 @@
       padding: 3px 0;
     }
 
-    .totals-row strong {
-      font-weight: 600;
-    }
-
     .totals-row.total-line {
       margin-top: 4px;
       border-top: 1px solid var(--border);
       padding-top: 6px;
       font-size: 16px;
+      font-weight: 600;
     }
 
-    /* BUTTON */
+    /* FOOTER BUTTON */
     .footer-actions {
       display: flex;
       justify-content: flex-end;
@@ -312,7 +280,7 @@
       border-color: var(--xero-blue-dark);
     }
 
-    /* MODAL ADD CUSTOMER */
+    /* MODAL */
     .modal-bg {
       position: fixed;
       inset: 0;
@@ -366,18 +334,6 @@
     .btn-cancel:hover {
       background: #d5d9de;
     }
-
-    @media (max-width: 960px) {
-      .invoice-card {
-        padding: 16px;
-      }
-      .header-grid {
-        grid-template-columns: 1fr;
-      }
-      .notes-and-totals {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 </head>
 <body>
@@ -395,68 +351,54 @@
       <div class="header-grid">
         <div class="field-group">
           <span class="field-label">Contact</span>
-          <div class="field-input-wrapper">
-            <select id="customerSelect">
-              <option value="add_new">➕ Add New Customer</option>
-              <!-- existing customers bisa diappend dari JS / server -->
-            </select>
-          </div>
+          <select id="customerSelect">
+            <option value="add_new">➕ Add New Customer</option>
+          </select>
         </div>
+
         <div class="field-group">
           <span class="field-label">Issue date</span>
-          <div class="field-input-wrapper">
-            <input type="date" id="issueDate">
-          </div>
+          <input type="date" id="issueDate">
         </div>
+
         <div class="field-group">
           <span class="field-label">Order number</span>
-          <div class="field-input-wrapper">
-            <input type="text" id="orderNumber" placeholder="ORD-0001">
-          </div>
+          <input type="text" id="orderNumber">
         </div>
       </div>
 
       <!-- TABLE -->
       <div class="items-table-wrap">
-        <table class="items-table" id="itemsTable">
+        <table class="items-table">
           <thead>
           <tr>
+            <th></th>
+            <th>Type</th>
             <th>Item</th>
             <th>Meter</th>
             <th>Qty</th>
             <th>Unit Price</th>
-            <th>Discount / Unit Price</th>
+            <th>Discount / Unit</th>
             <th>Price/Qty</th>
             <th>Total</th>
             <th></th>
           </tr>
           </thead>
           <tbody id="itemsBody">
-          <tr>
-            <td><input type="text" class="item-name"></td>
-            <td><input type="number" step="0.01" class="meter-input"></td>
-            <td><input type="number" step="0.01" class="qty-input"></td>
-            <td><input type="number" step="0.01" class="unit-price-input"></td>
-            <td><input type="number" step="0.01" class="discount-input" value="0"></td>
-            <td><input type="number" step="0.01" class="priceqty-input" readonly></td>
-            <td><input type="number" step="0.01" class="line-total-input" readonly></td>
-            <td class="delete-row" onclick="deleteRow(this)">🗑</td>
-          </tr>
           </tbody>
         </table>
         <div class="add-row-bar">
-          <button type="button" class="add-row-btn" onclick="addRow()">
-            Add row ▾
-          </button>
+          <button type="button" class="add-row-btn" onclick="addRow()">Add row ▾</button>
         </div>
       </div>
 
-      <!-- NOTES & TOTALS -->
+      <!-- NOTES + TOTALS -->
       <div class="notes-and-totals">
         <div class="notes-box">
           <span class="field-label">Catatan:</span>
           <textarea id="notes"></textarea>
         </div>
+
         <div class="totals-box">
           <div class="totals-row">
             <span>DPP</span>
@@ -467,13 +409,12 @@
             <span id="ppnDisplay">0.00</span>
           </div>
           <div class="totals-row total-line">
-            <strong>Grand Total</strong>
-            <strong id="grandTotalDisplay">0.00</strong>
+            <span>Grand Total</span>
+            <span id="grandTotalDisplay">0.00</span>
           </div>
         </div>
       </div>
 
-      <!-- BUTTON -->
       <div class="footer-actions">
         <button type="button" class="btn-primary">Approve</button>
       </div>
@@ -497,124 +438,9 @@
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- JS LIBS -->
   <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-  <script>
-    let choiceCustomer;
-
-    document.addEventListener("DOMContentLoaded", function () {
-      // init Choices.js
-      choiceCustomer = new Choices("#customerSelect", {
-        searchEnabled: true,
-        shouldSort: true,
-        placeholder: true,
-        itemSelectText: '',
-      });
-
-      // tanggal default hari ini
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("issueDate").value = today;
-
-      // event add new customer
-      document.getElementById("customerSelect").addEventListener("change", function () {
-        if (this.value === "add_new") {
-          openModal();
-        }
-      });
-
-      // save customer
-      document.getElementById("saveCustomerBtn").addEventListener("click", function () {
-        const name = document.getElementById("newCustomerName").value.trim();
-        if (!name) return;
-        // tambah ke dropdown & select
-        choiceCustomer.setChoiceByValue("add_new"); // reset
-        choiceCustomer.setValue([{ value: name, label: name }]);
-        closeModal();
-      });
-
-      attachRowListeners();
-      recalcTotals();
-    });
-
-    function openModal() {
-      document.getElementById("modal-bg").style.display = "flex";
-      document.getElementById("newCustomerName").focus();
-    }
-
-    function closeModal() {
-      document.getElementById("modal-bg").style.display = "none";
-      document.getElementById("newCustomerName").value = "";
-      document.getElementById("newCustomerPhone").value = "";
-      document.getElementById("newCustomerAddress").value = "";
-    }
-
-    function addRow() {
-      const body = document.getElementById("itemsBody");
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><input type="text" class="item-name"></td>
-        <td><input type="number" step="0.01" class="meter-input"></td>
-        <td><input type="number" step="0.01" class="qty-input"></td>
-        <td><input type="number" step="0.01" class="unit-price-input"></td>
-        <td><input type="number" step="0.01" class="discount-input" value="0"></td>
-        <td><input type="number" step="0.01" class="priceqty-input" readonly></td>
-        <td><input type="number" step="0.01" class="line-total-input" readonly></td>
-        <td class="delete-row" onclick="deleteRow(this)">🗑</td>
-      `;
-      body.appendChild(tr);
-      attachRowListeners();
-    }
-
-    function deleteRow(el) {
-      const row = el.closest("tr");
-      row.parentNode.removeChild(row);
-      recalcTotals();
-    }
-
-    function attachRowListeners() {
-      const body = document.getElementById("itemsBody");
-      const inputs = body.querySelectorAll(".meter-input, .qty-input, .unit-price-input, .discount-input");
-      inputs.forEach(input => {
-        input.oninput = function () {
-          const row = this.closest("tr");
-          recalcRow(row);
-          recalcTotals();
-        };
-      });
-    }
-
-    // simple calc:
-    // price/qty = unit price - discount per unit
-    // total = qty * price/qty (meter bisa kamu adjust kalau mau pakai)
-    function recalcRow(row) {
-      const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
-      const unitPrice = parseFloat(row.querySelector(".unit-price-input").value) || 0;
-      const discount = parseFloat(row.querySelector(".discount-input").value) || 0;
-
-      const pricePerQty = unitPrice - discount;
-      const total = qty * pricePerQty;
-
-      const priceQtyInput = row.querySelector(".priceqty-input");
-      const totalInput = row.querySelector(".line-total-input");
-
-      priceQtyInput.value = pricePerQty ? pricePerQty.toFixed(2) : "";
-      totalInput.value = total ? total.toFixed(2) : "";
-    }
-
-    function recalcTotals() {
-      const rows = document.querySelectorAll("#itemsBody tr");
-      let dpp = 0;
-      rows.forEach(row => {
-        const val = parseFloat(row.querySelector(".line-total-input").value) || 0;
-        dpp += val;
-      });
-      const ppn = dpp * 0.11;
-      const grand = dpp + ppn;
-
-      document.getElementById("dppDisplay").textContent = dpp.toFixed(2);
-      document.getElementById("ppnDisplay").textContent = ppn.toFixed(2);
-      document.getElementById("grandTotalDisplay").textContent = grand.toFixed(2);
-    }
-  </script>
+  <!-- MAIN SCRIPT -->
+  <script src="script.js"></script>
 </body>
 </html>
