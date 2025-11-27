@@ -1,5 +1,5 @@
 /* ============================================================
-   GLOBALS
+   GLOBAL CONFIG
 ============================================================ */
 const baseURL = "https://script.google.com/macros/s/AKfycbw8105MSJQsOG0PyNQAQviOec1OZN_7_B-8fbNdGcjfsLe6sYbn5n9cpjF9OS2gGVsE/exec";
 
@@ -12,44 +12,44 @@ let choiceCustomer;
 ============================================================ */
 window.onload = function () {
 
-    // Init Customer Choices.js
+    // init customer dropdown
     choiceCustomer = new Choices("#customerSelect", {
         searchEnabled: true,
         itemSelectText: "",
-        shouldSort: false
+        shouldSort: false,
     });
 
-    // Load data
     loadDropdowns();
 
-    // Set Issue Date today
+    // set issue date
     document.getElementById("issueDate").value =
         new Date().toISOString().split("T")[0];
 
-    // Auto Order Number
+    // order number
     setOrderNumber();
 
-    // Add default 5 rows like screenshot
+    // default 5 rows
     for (let i = 0; i < 5; i++) addRow();
 
-    // Prevent Enter submit
+    // modal handling
+    document.getElementById("saveCustomerBtn").onclick = saveCustomer;
+    document.querySelector(".btn-cancel").onclick = closeModal;
+
+    // prevent Enter submit
     document.addEventListener("keydown", e => {
         if (e.key === "Enter") e.preventDefault();
     });
-
-    // Modal buttons
-    document.getElementById("saveCustomerBtn").onclick = saveCustomer;
-    document.querySelector(".btn-cancel").onclick = closeModal;
 };
 
 /* ============================================================
-   ORDER NUMBER AUTOGENERATE 1xxxxxx
+   ORDER NUMBER AUTOGENERATE 1XXXXXX
 ============================================================ */
 const ORDER_KEY = "ORDERFORM_LAST_ORDER";
 
 function generateOrderNumber() {
     let last = localStorage.getItem(ORDER_KEY);
-    if (!last) last = "1000000";
+
+    if (!last) last = "1000000"; // first number
 
     let next = parseInt(last) + 1;
     localStorage.setItem(ORDER_KEY, next);
@@ -58,11 +58,16 @@ function generateOrderNumber() {
 }
 
 function setOrderNumber() {
-    document.getElementById("orderNumber").value = generateOrderNumber();
+    const order = generateOrderNumber();
+    const input = document.getElementById("orderNumber");
+    input.value = order;
+    input.setAttribute("readonly", true);
+    input.style.background = "#f1f3f5";
+    input.style.cursor = "not-allowed";
 }
 
 /* ============================================================
-   LOAD CUSTOMER + PRODUCT LIST
+   LOAD DROPDOWNS (CUSTOMER + PRODUCT)
 ============================================================ */
 async function loadDropdowns() {
     const res = await fetch(baseURL + "?action=getdata");
@@ -71,7 +76,6 @@ async function loadDropdowns() {
     productList = data.products || [];
     customerList = data.customers || [];
 
-    // Load Customers
     choiceCustomer.clearChoices();
     choiceCustomer.setChoices(
         [
@@ -81,9 +85,10 @@ async function loadDropdowns() {
         "value", "label", true
     );
 
-    document.getElementById("customerSelect").addEventListener("change", function () {
-        if (this.value === "add_new") openModal();
-    });
+    document.getElementById("customerSelect")
+        .addEventListener("change", function () {
+            if (this.value === "add_new") openModal();
+        });
 }
 
 /* ============================================================
@@ -105,10 +110,8 @@ async function saveCustomer() {
     const name = document.getElementById("newCustomerName").value.trim();
     if (!name) return;
 
-    // Save to DB (optional)
     await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
 
-    // Add to dropdown
     choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
     choiceCustomer.setChoiceByValue(name);
 
@@ -116,33 +119,66 @@ async function saveCustomer() {
 }
 
 /* ============================================================
-   ADD ROW (MATCH EXACT HTML UI)
+   ADD ROW (WITH TYPE COLUMN + DRAG ICON)
 ============================================================ */
 function addRow() {
     const body = document.getElementById("itemsBody");
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
+        <td class="drag-handle">⋮⋮</td>
+
+        <td>
+          <select class="type-select">
+            <option value="spandek">Spandek</option>
+            <option value="non">Non Spandek</option>
+          </select>
+        </td>
+
         <td><select class="item-name"></select></td>
+
         <td><input type="number" class="meter-input"></td>
+
         <td><input type="number" class="qty-input"></td>
+
         <td><input type="number" class="unit-price-input"></td>
+
         <td><input type="number" class="discount-input" value="0"></td>
+
         <td><input type="number" class="priceqty-input" readonly></td>
+
         <td><input type="number" class="line-total-input" readonly></td>
+
         <td class="delete-row" onclick="deleteRow(this)">🗑</td>
     `;
 
     body.appendChild(tr);
 
-    // Load product dropdown
+    // fill product dropdown
     new Choices(tr.querySelector(".item-name"), {
         searchEnabled: true,
         itemSelectText: "",
         choices: productList.map(p => ({ value: p, label: p }))
     });
 
-    // Add listeners
+    // TYPE LOGIC
+    const typeSel = tr.querySelector(".type-select");
+    const meterInput = tr.querySelector(".meter-input");
+
+    typeSel.onchange = () => {
+        if (typeSel.value === "spandek") {
+            meterInput.disabled = false;
+            meterInput.style.background = "#ffffff";
+        } else {
+            meterInput.disabled = true;
+            meterInput.value = "";
+            meterInput.style.background = "#f0f0f0";
+        }
+        recalcRow(tr);
+        recalcTotals();
+    };
+
+    // event listeners
     tr.querySelectorAll("input").forEach(inp => {
         inp.oninput = () => {
             recalcRow(tr);
@@ -150,6 +186,7 @@ function addRow() {
         };
     });
 
+    // enable drag reorder
     enableDrag();
 }
 
@@ -167,7 +204,7 @@ function deleteRow(el) {
 function enableDrag() {
     new Sortable(document.getElementById("itemsBody"), {
         animation: 150,
-        handle: "td:first-child"
+        handle: ".drag-handle"
     });
 }
 
@@ -175,31 +212,37 @@ function enableDrag() {
    CALCULATE PER ROW
 ============================================================ */
 function recalcRow(row) {
+    const type = row.querySelector(".type-select").value;
+    const meter = type === "spandek"
+        ? parseFloat(row.querySelector(".meter-input").value) || 0
+        : 1; // non-spandek treat meter as 1
+
     const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
     const unit = parseFloat(row.querySelector(".unit-price-input").value) || 0;
     const disc = parseFloat(row.querySelector(".discount-input").value) || 0;
 
     const netUnit = unit - disc;
-    const total = qty * netUnit;
+    const priceQty = netUnit * meter;
+    const total = priceQty * qty;
 
-    row.querySelector(".priceqty-input").value = netUnit ? netUnit.toFixed(2) : "";
+    row.querySelector(".priceqty-input").value = priceQty ? priceQty.toFixed(2) : "";
     row.querySelector(".line-total-input").value = total ? total.toFixed(2) : "";
 }
 
 /* ============================================================
-   CALCULATE TOTALS (DPP + PPN + GT)
+   CALCULATE TOTALS
 ============================================================ */
 function recalcTotals() {
-    let total = 0;
+    let final = 0;
 
     document.querySelectorAll(".line-total-input").forEach(el => {
-        total += parseFloat(el.value) || 0;
+        final += parseFloat(el.value) || 0;
     });
 
-    const dpp = total / 1.11;
-    const ppn = total - dpp;
+    let dpp = final / 1.11;
+    let ppn = final - dpp;
 
     document.getElementById("dppDisplay").textContent = dpp.toFixed(2);
     document.getElementById("ppnDisplay").textContent = ppn.toFixed(2);
-    document.getElementById("grandTotalDisplay").textContent = total.toFixed(2);
+    document.getElementById("grandTotalDisplay").textContent = final.toFixed(2);
 }
