@@ -7,14 +7,14 @@
   <!-- Choices.js -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 
-  <!-- Sortable (drag handle) -->
+  <!-- Sortable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
   <style>
     :root {
       --border: #d6dce1;
       --border-light: #e3e7eb;
-      --header-bg: #f4f6f8;
+      --header-bg: #f5f7fa;
       --text-muted: #697386;
       --blue: #0075c9;
       --bg: #f5f7fa;
@@ -55,15 +55,15 @@
       padding: 32px 0 56px;
     }
 
-    /* ================= MAIN CARD ================= */
+    /* ================= MAIN CARD (diperkecil) ================= */
     .invoice-card {
-      width: 1380px;
-      max-width: 94vw;
+      width: 1150px;               /* <— lebih kecil dari sebelumnya */
+      max-width: 92vw;
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 40px 42px 52px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      padding: 32px 34px 44px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     h2.card-title {
@@ -75,9 +75,9 @@
     /* ================= HEADER FORM GRID ================= */
     .header-grid {
       display: grid;
-      grid-template-columns: 2.1fr 1.2fr 1.2fr;
-      gap: 20px;
-      margin-bottom: 24px;
+      grid-template-columns: 2.1fr 1.1fr 1.1fr;
+      gap: 18px;
+      margin-bottom: 22px;
     }
 
     .field-label {
@@ -122,7 +122,6 @@
     .choices {
       margin-bottom: 0;
     }
-
     .choices__inner {
       min-height: 36px !important;
       padding: 6px 10px !important;
@@ -131,14 +130,8 @@
       border: 1px solid var(--border) !important;
       background-color: #ffffff !important;
     }
-
     .choices__list--single {
       padding: 0 !important;
-    }
-
-    .choices__placeholder {
-      opacity: 1;
-      color: #111827;
     }
 
     /* ================= TABLE WRAPPER ================= */
@@ -147,7 +140,7 @@
       border-radius: 6px;
       overflow: hidden;
       background: #ffffff;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     table.items-table {
@@ -156,16 +149,25 @@
       table-layout: fixed;
     }
 
-    .items-table col:nth-child(1) { width: 34px; }
-    .items-table col:nth-child(2) { width: 120px; }
-    .items-table col:nth-child(3) { width: 34%; }
-    .items-table col:nth-child(4) { width: 80px; }
-    .items-table col:nth-child(5) { width: 70px; }
-    .items-table col:nth-child(6) { width: 120px; }
-    .items-table col:nth-child(7) { width: 110px; }
-    .items-table col:nth-child(8) { width: 110px; }
-    .items-table col:nth-child(9) { width: 120px; }
-    .items-table col:nth-child(10){ width: 32px; }
+    /*  Kolom diatur mirip Xero:
+        1 handle   : sangat kecil
+        2 type     : kecil
+        3 item     : lebar
+        4 meter    : sempit
+        5 qty      : sempit
+        6–9 harga  : seragam
+        10 delete  : kecil
+    */
+    .items-table col:nth-child(1) { width: 3%; }
+    .items-table col:nth-child(2) { width: 9%; }
+    .items-table col:nth-child(3) { width: 30%; }
+    .items-table col:nth-child(4) { width: 7%; }
+    .items-table col:nth-child(5) { width: 7%; }
+    .items-table col:nth-child(6) { width: 11%; }
+    .items-table col:nth-child(7) { width: 11%; }
+    .items-table col:nth-child(8) { width: 11%; }
+    .items-table col:nth-child(9) { width: 11%; }
+    .items-table col:nth-child(10){ width: 3%; }
 
     .items-table th {
       background: var(--header-bg);
@@ -181,7 +183,7 @@
 
     .items-table td {
       padding: 8px 8px;
-      height: 42px;
+      height: 40px;
       border-bottom: 1px solid var(--border-light);
       background: #ffffff;
     }
@@ -190,6 +192,7 @@
       border-bottom: none;
     }
 
+    /* angka rata kanan */
     .items-table th:nth-child(4),
     .items-table th:nth-child(5),
     .items-table th:nth-child(6),
@@ -232,8 +235,8 @@
 
     /* ================= ADD ROW BUTTON ================= */
     .add-row-btn {
-      margin-top: 4px;
-      margin-bottom: 24px;
+      margin-top: 6px;
+      margin-bottom: 26px;
       padding: 4px 10px;
       font-size: 12px;
       border: 1px solid var(--border);
@@ -241,7 +244,6 @@
       border-radius: 4px;
       cursor: pointer;
     }
-
     .add-row-btn:hover {
       background: #f4f5f7;
     }
@@ -250,7 +252,7 @@
     .notes-and-totals {
       display: grid;
       grid-template-columns: 2.1fr 1fr;
-      gap: 32px;
+      gap: 30px;
       align-items: flex-start;
     }
 
@@ -294,7 +296,7 @@
     /* ================= APPROVE BUTTON ================= */
     .footer-actions {
       text-align: right;
-      margin-top: 28px;
+      margin-top: 26px;
     }
 
     .btn-primary {
