@@ -44,10 +44,6 @@
       gap: 8px;
     }
 
-    .top-bar span.logo-text {
-      letter-spacing: 2px;
-    }
-
     .page-wrap {
       padding: 32px 40px;
     }
@@ -67,7 +63,6 @@
       font-weight: 600;
     }
 
-    /* HEADER GRID */
     .header-grid {
       display: grid;
       grid-template-columns: 2.2fr 1.2fr 1.4fr;
@@ -95,42 +90,13 @@
       border: 1px solid var(--border);
       padding: 8px 10px;
       font-size: 13px;
-      outline: none;
-      background: #ffffff;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    textarea:focus {
-      border-color: var(--xero-blue);
-      box-shadow: 0 0 0 1px rgba(0,117,201,0.1);
-    }
-
-    /* Choices styling */
-    .choices__inner {
-      border-radius: var(--input-radius) !important;
-      border-color: var(--border) !important;
-      min-height: 34px !important;
-      padding: 4px 8px !important;
-      font-size: 13px;
-    }
-
-    .choices__inner.is-focused,
-    .choices.is-open .choices__inner {
-      border-color: var(--xero-blue) !important;
-      box-shadow: 0 0 0 1px rgba(0,117,201,0.1);
-    }
-
-    .choices__list--dropdown {
-      border-color: var(--border);
-      z-index: 9999;
     }
 
     /* TABLE */
     .items-table-wrap {
       border: 1px solid var(--border);
       border-radius: var(--card-radius);
-      overflow: hidden;
+      overflow: visible !important; /* FIX DROPDOWN CLIPPING */
       margin-top: 12px;
     }
 
@@ -152,60 +118,9 @@
       border-bottom: 1px solid var(--border-light);
     }
 
-    .items-table th {
-      font-weight: 600;
-      color: var(--text-muted);
-      text-align: left;
-    }
-
-    .items-table th:nth-child(1),
-    .items-table td:nth-child(1) { width: 4%; text-align:center; }
-    .items-table th:nth-child(2),
-    .items-table td:nth-child(2) { width: 10%; }
-    .items-table th:nth-child(3),
-    .items-table td:nth-child(3) { width: 26%; }
-    .items-table th:nth-child(4),
-    .items-table td:nth-child(4) { width: 8%; }
-    .items-table th:nth-child(5),
-    .items-table td:nth-child(5) { width: 8%; }
-    .items-table th:nth-child(6),
-    .items-table td:nth-child(6) { width: 12%; }
-    .items-table th:nth-child(7),
-    .items-table td:nth-child(7) { width: 12%; }
-    .items-table th:nth-child(8),
-    .items-table td:nth-child(8) { width: 12%; }
-    .items-table th:nth-child(9),
-    .items-table td:nth-child(9) { width: 12%; }
-    .items-table th:nth-child(10),
-    .items-table td:nth-child(10){ width: 4%; text-align:center;}
-
-    .items-table input[type="number"],
-    .items-table input[type="text"],
-    .items-table select {
-      width: 100%;
-      border-radius: var(--input-radius);
-      border: 1px solid var(--border-light);
-      padding: 6px 6px;
-      font-size: 12px;
-    }
-
-    .items-table input[type="number"] {
-      text-align: right;
-    }
-
-    .drag-handle {
-      cursor: grab;
-      color: #9aa5b1;
-      font-size: 16px;
-    }
-
-    .delete-row {
-      cursor: pointer;
-      color: #b4b4b4;
-      font-size: 16px;
-    }
-    .delete-row:hover {
-      color: #d64541;
+    .choices__list--dropdown {
+      z-index: 99999 !important; /* FIX DROPDOWN OVER TABLE */
+      position: absolute !important;
     }
 
     .add-row-bar {
@@ -221,12 +136,8 @@
       padding: 4px 8px;
       font-size: 12px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    /* NOTES + TOTALS */
     .notes-and-totals {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
@@ -234,30 +145,6 @@
       margin-top: 14px;
     }
 
-    .notes-box textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .totals-box {
-      font-size: 13px;
-    }
-
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 3px 0;
-    }
-
-    .totals-row.total-line {
-      margin-top: 4px;
-      border-top: 1px solid var(--border);
-      padding-top: 6px;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    /* FOOTER BUTTON */
     .footer-actions {
       display: flex;
       justify-content: flex-end;
@@ -273,11 +160,6 @@
       border-radius: 4px;
       font-weight: 600;
       cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background: var(--xero-blue-dark);
-      border-color: var(--xero-blue-dark);
     }
 
     /* MODAL */
@@ -296,46 +178,10 @@
       background: #ffffff;
       padding: 24px 24px 20px;
       border-radius: 8px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-    }
-
-    .modal-box h3 {
-      margin: 0 0 12px;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .modal-box label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      display: block;
-      margin: 10px 0 4px;
-    }
-
-    .modal-actions {
-      margin-top: 16px;
-      text-align: right;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .btn-cancel {
-      background: #e4e7eb;
-      border: 1px solid #d2d7dd;
-      color: #333;
-      padding: 7px 16px;
-      font-size: 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .btn-cancel:hover {
-      background: #d5d9de;
     }
   </style>
 </head>
+
 <body>
 
   <div class="top-bar">
@@ -347,11 +193,9 @@
     <div class="invoice-card">
       <h2 class="card-title">Form Pemesanan</h2>
 
-      <!-- HEADER -->
       <div class="header-grid">
         <div class="field-group">
           <span class="field-label">Contact</span>
-          <!-- TANPA OPTION DEFAULT, DIISI DARI JS -->
           <select id="customerSelect"></select>
         </div>
 
@@ -383,63 +227,55 @@
             <th></th>
           </tr>
           </thead>
-          <tbody id="itemsBody">
-          </tbody>
+          <tbody id="itemsBody"></tbody>
         </table>
+
         <div class="add-row-bar">
           <button type="button" class="add-row-btn" onclick="addRow()">Add row ▾</button>
         </div>
       </div>
 
-      <!-- NOTES + TOTALS -->
+      <!-- TOTAL -->
       <div class="notes-and-totals">
-        <div class="notes-box">
+        <div>
           <span class="field-label">Catatan:</span>
           <textarea id="notes"></textarea>
         </div>
 
         <div class="totals-box">
-          <div class="totals-row">
-            <span>DPP</span>
-            <span id="dppDisplay">0.00</span>
-          </div>
-          <div class="totals-row">
-            <span>PPN 11%</span>
-            <span id="ppnDisplay">0.00</span>
-          </div>
-          <div class="totals-row total-line">
-            <span>Grand Total</span>
-            <span id="grandTotalDisplay">0.00</span>
-          </div>
+          <div class="totals-row"><span>DPP</span> <span id="dppDisplay">0,00</span></div>
+          <div class="totals-row"><span>PPN 11%</span> <span id="ppnDisplay">0,00</span></div>
+          <div class="totals-row total-line"><span>Grand Total</span> <span id="grandTotalDisplay">0,00</span></div>
         </div>
       </div>
 
       <div class="footer-actions">
-        <button type="button" class="btn-primary">Approve</button>
+        <button class="btn-primary">Approve</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL ADD CUSTOMER -->
+  <!-- MODAL -->
   <div id="modal-bg" class="modal-bg">
     <div class="modal-box">
       <h3>Add New Customer</h3>
-      <label for="newCustomerName">Customer Name</label>
-      <input type="text" id="newCustomerName" placeholder="Enter customer name">
-      <label for="newCustomerPhone">Phone</label>
-      <input type="text" id="newCustomerPhone" placeholder="Optional">
-      <label for="newCustomerAddress">Address</label>
-      <textarea id="newCustomerAddress" rows="3" placeholder="Optional"></textarea>
+      <label>Customer Name</label>
+      <input type="text" id="newCustomerName">
+
+      <label>Phone</label>
+      <input type="text" id="newCustomerPhone">
+
+      <label>Address</label>
+      <textarea id="newCustomerAddress"></textarea>
+
       <div class="modal-actions">
-        <button class="btn-cancel" type="button" onclick="closeModal()">Cancel</button>
-        <button class="btn-primary" type="button" id="saveCustomerBtn">Save</button>
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" id="saveCustomerBtn">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- JS LIBS -->
   <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
-  <!-- MAIN SCRIPT -->
   <script src="script.js"></script>
 </body>
 </html>
