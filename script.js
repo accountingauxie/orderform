@@ -2,7 +2,7 @@
    CONFIG
 ============================================================ */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbxALt0Mi8bblQu7Zle70LLgFerBhUvfdAHJNZvPbB5i_hACp2MbPhzj56BRo3Emdk45Gw/exec";
+  "https://script.google.com/macros/s/AKfycbwExwntX5JjyQqMXij6aBoBQRc7FmcZI6qNa3EiBuOB7ljFDv_WTCmwoCSZYsdcoU2Z/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -12,7 +12,7 @@ let choiceCustomer;
 
 
 /* ============================================================
-   RUPIAH FORMATTER
+   FORMAT RUPIAH (TANPA UBAH UI)
 ============================================================ */
 function formatNumber(num) {
   return Number(num).toLocaleString("id-ID", {
@@ -21,13 +21,19 @@ function formatNumber(num) {
   });
 }
 
+/* Convert string "37.000,00" → number 37000 */
+function unformatNumber(str) {
+  if (!str) return 0;
+  return parseFloat(str.replace(/\./g, "").replace(",", "."));
+}
+
 
 /* ============================================================
    ON LOAD
 ============================================================ */
 window.onload = function () {
 
-  // init customer dropdown
+  // init dropdown customer
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
@@ -71,22 +77,22 @@ function setOrderNumber() {
 
 
 /* ============================================================
-   LOAD DROPDOWNS (GAS)
+   LOAD DROPDOWNS
 ============================================================ */
 async function loadDropdowns() {
+
   const res = await fetch(baseURL + "?action=getdata");
   const data = await res.json();
 
   listSpandek = data.spandek || [];
   listNonSpandek = data.nonspandek || [];
-  customerList = data.customers || [];
 
-  // Fill customer dropdown
+  /* CUSTOMER DROPDOWN */
   choiceCustomer.clearChoices();
   choiceCustomer.setChoices(
     [
       { value: "add_new", label: "➕ Add New Customer" },
-      ...customerList.map(c => ({ value: c, label: c })),
+      ...data.customers.map(c => ({ value: c, label: c })),
     ],
     "value",
     "label",
@@ -97,13 +103,13 @@ async function loadDropdowns() {
     if (this.value === "add_new") openModal();
   };
 
-  // Create 3 default rows
+  // default rows = 3
   for (let i = 0; i < 3; i++) addRow();
 }
 
 
 /* ============================================================
-   CUSTOMER MODAL
+   CUSTOMER MODAL HANDLER
 ============================================================ */
 function openModal() {
   document.getElementById("modal-bg").style.display = "flex";
@@ -164,12 +170,13 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
 
-  /* Initialize dropdown */
+  /* INIT item dropdown */
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false,
   });
+
 
   function loadItemChoices() {
     const list = typeSel.value === "spandek" ? listSpandek : listNonSpandek;
@@ -186,9 +193,7 @@ function addRow() {
   loadItemChoices();
 
 
-  /* ============================================================
-     TYPE CHANGE
-  ============================================================= */
+  /* CHANGE TYPE */
   typeSel.onchange = () => {
     const isSpan = typeSel.value === "spandek";
 
@@ -202,10 +207,9 @@ function addRow() {
   };
 
 
-  /* ============================================================
-     ITEM → GET PRICE
-  ============================================================= */
+  /* WHEN ITEM SELECTED → GET PRICE */
   itemSel.addEventListener("change", async () => {
+
     const product = itemSel.value;
     if (!product) return;
 
@@ -221,16 +225,14 @@ function addRow() {
     const price = parseFloat(await r.text()) || 0;
 
     tr.querySelector(".unit-price-input").value =
-      price > 0 ? formatNumber(price) : "";
+      price ? formatNumber(price) : "";
 
     recalcRow(tr);
     recalcTotals();
   });
 
 
-  /* ============================================================
-     INPUT EVENTS
-  ============================================================= */
+  /* RECALC ON INPUT */
   tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
@@ -252,7 +254,7 @@ function deleteRow(el) {
 
 
 /* ============================================================
-   DRAG SORT
+   ENABLE DRAG SORT
 ============================================================ */
 function enableDrag() {
   new Sortable(document.getElementById("itemsBody"), {
@@ -266,6 +268,7 @@ function enableDrag() {
    ROW CALCULATION
 ============================================================ */
 function recalcRow(row) {
+
   const isSpan = row.querySelector(".type-select").value === "spandek";
 
   const meter = isSpan
@@ -273,7 +276,8 @@ function recalcRow(row) {
     : 1;
 
   const qty = Math.max(0, parseFloat(row.querySelector(".qty-input").value) || 0);
-  const unit = Math.max(0, parseFloat(row.querySelector(".unit-price-input").value.replace(/\./g, "").replace(",", ".")) || 0);
+
+  const unit = unformatNumber(row.querySelector(".unit-price-input").value);
   const disc = Math.max(0, parseFloat(row.querySelector(".discount-input").value) || 0);
 
   const net = unit - disc;
@@ -281,10 +285,10 @@ function recalcRow(row) {
   const total = ppq * qty;
 
   row.querySelector(".priceqty-input").value =
-    ppq > 0 ? formatNumber(ppq) : "";
+    ppq ? formatNumber(ppq) : "";
 
   row.querySelector(".line-total-input").value =
-    total > 0 ? formatNumber(total) : "";
+    total ? formatNumber(total) : "";
 }
 
 
@@ -292,13 +296,11 @@ function recalcRow(row) {
    TOTAL CALC
 ============================================================ */
 function recalcTotals() {
+
   let grand = 0;
 
   document.querySelectorAll(".line-total-input").forEach(el => {
-    const num = parseFloat(
-      el.value.replace(/\./g, "").replace(",", ".")
-    );
-    grand += num || 0;
+    grand += unformatNumber(el.value);
   });
 
   const dpp = grand / 1.11;
