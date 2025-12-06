@@ -2,7 +2,7 @@
    CONFIG
 ============================================================ */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbwExwntX5JjyQqMXij6aBoBQRc7FmcZI6qNa3EiBuOB7ljFDv_WTCmwoCSZYsdcoU2Z/exec";
+  "https://script.google.com/macros/s/AKfycbyhdQvKFZGgREpDZ4WLW9Vj-gUuDz8k2VU41H8gO4aJukebKIBl7mXvqjY9Ay_WijTPfg/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
