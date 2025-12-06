@@ -23,43 +23,40 @@ function formatMoney(num) {
   );
 }
 
-// "Rp 12.345,67" -> 12345.67
 function parseMoney(str) {
   if (!str) return 0;
   return parseFloat(
-    str.replace(/Rp\s*/gi, "").replace(/\./g, "").replace(",", ".")
+    str.replace(/Rp\s*/gi, "")
+      .replace(/\./g, "")
+      .replace(",", ".")
   );
 }
 
 /* ================= ON LOAD ================= */
 
 window.onload = function () {
-  // Contact dropdown pakai Choices
+
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
-    shouldSort: false,
-    position: "bottom"
+    shouldSort: false
   });
 
-  // Tanggal hari ini
   document.getElementById("issueDate").value =
     new Date().toISOString().split("T")[0];
 
   loadDropdowns();
   setOrderNumber();
 
-  // Default 3 baris
   for (let i = 0; i < 3; i++) addRow();
 
-  // Drag & drop
   new Sortable(document.getElementById("itemsBody"), {
     handle: ".drag-handle",
     animation: 150
   });
 };
 
-/* ================= ORDER NUMBER AUTO ================= */
+/* ================= ORDER NUMBER ================= */
 
 function setOrderNumber() {
   const key = "ORDERFORM_LAST_ORDER";
@@ -72,7 +69,7 @@ function setOrderNumber() {
   document.getElementById("orderNumber").value = next;
 }
 
-/* ================= LOAD DATA APPS SCRIPT ================= */
+/* ================= LOAD DATA ================= */
 
 async function loadDropdowns() {
   try {
@@ -85,7 +82,6 @@ async function loadDropdowns() {
     spandekPrice = data.priceSpan || {};
     nonSpandekPrice = data.priceNon || {};
 
-    // Contact
     choiceCustomer.clearChoices();
     choiceCustomer.setChoices(
       [
@@ -96,6 +92,7 @@ async function loadDropdowns() {
       "label",
       true
     );
+
   } catch (err) {
     console.error("loadDropdowns error:", err);
   }
@@ -113,8 +110,8 @@ function addRow() {
     <td>
       <select class="type-select">
         <option value="">-- Pilih --</option>
-        <option value="spandek">Spand</option>
-        <option value="non">Non S</option>
+        <option value="Spandek">Spandek</option>
+        <option value="Non Spandek">Non Spandek</option>
       </select>
     </td>
 
@@ -122,31 +119,16 @@ function addRow() {
       <select class="item-select"></select>
     </td>
 
-    <td>
-      <input type="number" class="meter-input" min="0" step="0.001">
-    </td>
+    <td><input type="number" class="meter-input" step="0.001"></td>
+    <td><input type="number" class="qty-input" step="1"></td>
 
-    <td>
-      <input type="number" class="qty-input" min="0" step="1">
-    </td>
+    <td><input type="text" class="unit-price-input" readonly></td>
+    <td><input type="number" class="discount-input" step="1" value="0"></td>
 
-    <td>
-      <input type="text" class="unit-price-input" readonly>
-    </td>
+    <td><input type="text" class="priceqty-input" readonly></td>
+    <td><input type="text" class="line-total-input" readonly></td>
 
-    <td>
-      <input type="number" class="discount-input" min="0" step="1" value="0">
-    </td>
-
-    <td>
-      <input type="text" class="priceqty-input" readonly>
-    </td>
-
-    <td>
-      <input type="text" class="line-total-input" readonly>
-    </td>
-
-    <td class="delete-row" title="Delete" onclick="deleteRow(this)">🗑</td>
+    <td class="delete-row" onclick="deleteRow(this)">🗑</td>
   `;
 
   body.appendChild(tr);
@@ -155,43 +137,31 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
 
-  // 🔒 PAKSA DEFAULT KOSONG (override auto-fill browser)
-  typeSel.selectedIndex = 0;
-  typeSel.value = "";
-  meterInput.value = "";
-  meterInput.disabled = true; // aktif hanya untuk Spandek
+  typeSel.value = ""; // force reset
+  meterInput.disabled = true;
 
-  // Item pakai Choices
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
-    shouldSort: false,
-    position: "bottom"
+    shouldSort: false
   });
 
   function loadItemsForType() {
     let list = [];
-    if (typeSel.value === "spandek") list = listSpandek;
-    else if (typeSel.value === "non") list = listNonSpandek;
+    if (typeSel.value === "Spandek") list = listSpandek;
+    if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
     choiceItem.clearChoices();
-
-    if (list && list.length) {
-      choiceItem.setChoices(
-        list.map((v) => ({ value: v, label: v })),
-        "value",
-        "label",
-        true
-      );
-    }
+    choiceItem.setChoices(
+      list.map(i => ({ value: i, label: i })),
+      "value",
+      "label",
+      true
+    );
   }
 
-  // Saat TYPE berubah
   typeSel.addEventListener("change", () => {
-    if (typeSel.value === "non") {
-      meterInput.value = "";
-      meterInput.disabled = true;
-    } else if (typeSel.value === "spandek") {
+    if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
     } else {
       meterInput.value = "";
@@ -199,28 +169,26 @@ function addRow() {
     }
 
     loadItemsForType();
-    // clear harga ketika ganti type
     tr.querySelector(".unit-price-input").value = "";
     tr.querySelector(".priceqty-input").value = "";
     tr.querySelector(".line-total-input").value = "";
-
-    recalcRow(tr);
-    recalcTotals();
   });
 
-  // Saat ITEM berubah → ambil harga
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
     let price = 0;
 
-    if (typeSel.value === "spandek") {
+    /* 🔥 SUPPORT ARRAY & OBJECT */
+    if (typeSel.value === "Spandek") {
       if (Array.isArray(spandekPrice)) {
         const idx = listSpandek.indexOf(item);
         if (idx >= 0) price = Number(spandekPrice[idx]) || 0;
       } else {
         price = Number(spandekPrice[item]) || 0;
       }
-    } else if (typeSel.value === "non") {
+    }
+
+    if (typeSel.value === "Non Spandek") {
       if (Array.isArray(nonSpandekPrice)) {
         const idx = listNonSpandek.indexOf(item);
         if (idx >= 0) price = Number(nonSpandekPrice[idx]) || 0;
@@ -234,8 +202,7 @@ function addRow() {
     recalcTotals();
   });
 
-  // Input angka di baris ini
-  tr.querySelectorAll("input").forEach((inp) => {
+  tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -243,20 +210,20 @@ function addRow() {
   });
 }
 
-/* ================= DELETE ROW ================= */
+/* ================= DELETE ================= */
 
 function deleteRow(el) {
-  el.closest("tr")?.remove();
+  el.closest("tr").remove();
   recalcTotals();
 }
 
-/* ================= HITUNG PER BARIS ================= */
+/* ================= PER BARIS ================= */
 
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
 
   let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
-  if (type === "non") meter = 1; // non spandek: meter = 1
+  if (type === "Non Spandek") meter = 1;
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
@@ -270,12 +237,12 @@ function recalcRow(row) {
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
-/* ================= HITUNG TOTAL ================= */
+/* ================= TOTAL ================= */
 
 function recalcTotals() {
   let grand = 0;
 
-  document.querySelectorAll(".line-total-input").forEach((el) => {
+  document.querySelectorAll(".line-total-input").forEach(el => {
     grand += parseMoney(el.value);
   });
 
