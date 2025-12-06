@@ -2,7 +2,7 @@
    CONFIG
 ============================================================ */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbyhdQvKFZGgREpDZ4WLW9Vj-gUuDz8k2VU41H8gO4aJukebKIBl7mXvqjY9Ay_WijTPfg/exec";
+  "https://script.google.com/macros/s/AKfycbwExwntX5JjyQqMXij6aBoBQRc7FmcZI6qNa3EiBuOB7ljFDv_WTCmwoCSZYsdcoU2Z/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -15,6 +15,7 @@ let choiceCustomer;
    ON LOAD
 ============================================================ */
 window.onload = function () {
+  // Init Choices untuk customer (tanpa option awal)
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
@@ -25,9 +26,8 @@ window.onload = function () {
     new Date().toISOString().split("T")[0];
 
   setOrderNumber();
-  loadDropdowns();
+  loadDropdowns(); // ROW akan dibuat setelah data dropdown siap
 
-  for (let i = 0; i < 5; i++) addRow();
   document.addEventListener("keydown", e => {
     if (e.key === "Enter") e.preventDefault();
   });
@@ -82,9 +82,13 @@ async function loadDropdowns() {
     true
   );
 
-  document.getElementById("customerSelect").addEventListener("change", function () {
+  const custSelect = document.getElementById("customerSelect");
+  custSelect.addEventListener("change", function () {
     if (this.value === "add_new") openModal();
   });
+
+  // BUAT DEFAULT ROW hanya setelah data product sudah siap
+  for (let i = 0; i < 3; i++) addRow();
 }
 
 
@@ -132,11 +136,11 @@ function addRow() {
 
     <td><select class="item-select"></select></td>
 
-    <td><input type="number" class="meter-input"></td>
-    <td><input type="number" class="qty-input"></td>
+    <td><input type="number" class="meter-input" min="0"></td>
+    <td><input type="number" class="qty-input" min="0"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
-    <td><input type="number" class="discount-input" value="0"></td>
+    <td><input type="number" class="discount-input" value="0" min="0"></td>
 
     <td><input type="text" class="priceqty-input" readonly></td>
     <td><input type="text" class="line-total-input" readonly></td>
@@ -170,6 +174,7 @@ function addRow() {
     );
   }
 
+  // Saat row pertama kali dibuat, langsung load item list
   loadItemChoices();
 
   /* TYPE CHANGE */
@@ -185,15 +190,29 @@ function addRow() {
     recalcTotals();
   };
 
+  // Awal: jika default type = spandek, meter aktif
+  meterInput.disabled = false;
+
   /* ITEM → GET PRICE */
   itemSel.addEventListener("change", async () => {
     const product = itemSel.value;
     if (!product) return;
 
-    const r = await fetch(baseURL + "?action=getprice&product=" + encodeURIComponent(product));
-    const price = parseFloat(await r.text()) || 0;
+    const type = typeSel.value; // 'spandek' atau 'non'
 
-    tr.querySelector(".unit-price-input").value = price.toFixed(2);
+    const r = await fetch(
+      baseURL +
+      "?action=getprice&product=" +
+      encodeURIComponent(product) +
+      "&type=" +
+      encodeURIComponent(type)
+    );
+
+    const priceText = await r.text();
+    const price = parseFloat(priceText) || 0;
+
+    tr.querySelector(".unit-price-input").value =
+      price > 0 ? price.toFixed(2) : "";
 
     recalcRow(tr);
     recalcTotals();
@@ -237,20 +256,28 @@ function enableDrag() {
 function recalcRow(row) {
   const isSpan = row.querySelector(".type-select").value === "spandek";
 
-  const meter = isSpan
-    ? parseFloat(row.querySelector(".meter-input").value) || 0
-    : 1;
+  const rawMeter = parseFloat(row.querySelector(".meter-input").value);
+  const meter = isSpan ? Math.max(0, (rawMeter || 0)) : 1;
 
-  const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
-  const unit = parseFloat(row.querySelector(".unit-price-input").value) || 0;
-  const disc = parseFloat(row.querySelector(".discount-input").value) || 0;
+  const rawQty = parseFloat(row.querySelector(".qty-input").value);
+  const qty = Math.max(0, (rawQty || 0));
+
+  const unit = Math.max(
+    0,
+    parseFloat(row.querySelector(".unit-price-input").value) || 0
+  );
+
+  const rawDisc = parseFloat(row.querySelector(".discount-input").value);
+  const disc = Math.max(0, (rawDisc || 0));
 
   const net = unit - disc;
   const ppq = net * meter;
   const total = ppq * qty;
 
-  row.querySelector(".priceqty-input").value = ppq.toFixed(2);
-  row.querySelector(".line-total-input").value = total.toFixed(2);
+  row.querySelector(".priceqty-input").value =
+    ppq > 0 ? ppq.toFixed(2) : "";
+  row.querySelector(".line-total-input").value =
+    total > 0 ? total.toFixed(2) : "";
 }
 
 
