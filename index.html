@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <title>Form Pemesanan</title>
 
+  <!-- Choices -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 
   <style>
     :root {
       --border: #d6dce1;
       --border-light: #e3e7eb;
-      --header-bg: #f6f7f9;
+      --header-bg: #f3f5f7;
       --text-muted: #64748b;
       --blue: #1976d2;
     }
@@ -25,7 +26,7 @@
     .top-bar {
       background: #ffffff;
       border-bottom: 1px solid #e3e7eb;
-      padding: 14px 38px;
+      padding: 14px 36px;
       font-size: 15px;
       font-weight: 600;
       display: flex;
@@ -45,13 +46,13 @@
       width: 900px;
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      border-radius: 8px;
       padding: 28px 32px 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
     h2.card-title {
-      margin: 0 0 20px;
+      margin: 0 0 24px;
       font-size: 20px;
       font-weight: 600;
     }
@@ -66,8 +67,8 @@
 
     .field-label {
       font-size: 12px;
-      color: var(--text-muted);
       font-weight: 600;
+      color: var(--text-muted);
       margin-bottom: 4px;
       display: block;
     }
@@ -75,39 +76,47 @@
     input, select {
       width: 100%;
       height: 34px;
-      font-size: 13px;
+      padding: 6px 8px;
       border-radius: 4px;
       border: 1px solid var(--border);
-      padding: 6px 8px;
+      font-size: 13px;
       background: #fff;
     }
 
-    /* -------- TABLE ---------- */
+    /* -------- TABLE WRAPPER ---------- */
+    .table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+      margin-top: 10px;
+    }
+
     table.items-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 4px;
     }
 
     .items-table th {
       background: var(--header-bg);
-      padding: 8px 6px;
+      padding: 9px 6px;
       font-size: 12px;
+      font-weight: 600;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border-light);
-      font-weight: 600;
+      text-align: left;
     }
 
     .items-table td {
-      padding: 6px;
+      padding: 7px 6px;
       border-bottom: 1px solid var(--border-light);
     }
 
     .items-table input,
     .items-table select {
       height: 32px;
-      font-size: 13px;
       padding: 4px 6px;
+      font-size: 13px;
     }
 
     .drag-handle {
@@ -120,15 +129,17 @@
       cursor: pointer;
       color: #d33;
       font-size: 14px;
+      padding-left: 4px;
     }
 
+    /* -------- ADD ROW ---------- */
     .add-row-btn {
-      margin-top: 8px;
-      padding: 4px 10px;
+      margin-top: 10px;
+      padding: 5px 12px;
       font-size: 12px;
-      border-radius: 4px;
       border: 1px solid var(--border);
-      background: #fff;
+      background: #ffffff;
+      border-radius: 4px;
       cursor: pointer;
     }
 
@@ -136,12 +147,12 @@
     .choices__inner {
       min-height: 34px !important;
       padding: 4px 6px !important;
-      border-color: var(--border) !important;
       border-radius: 4px !important;
+      border-color: var(--border) !important;
       font-size: 13px !important;
     }
 
-    /* -------- NOTES & TOTAL ---------- */
+    /* -------- NOTES + TOTAL ---------- */
     .notes-and-totals {
       margin-top: 24px;
       display: grid;
@@ -151,9 +162,9 @@
 
     textarea {
       width: 100%;
-      min-height: 120px;
-      border: 1px solid var(--border);
+      min-height: 130px;
       border-radius: 4px;
+      border: 1px solid var(--border);
       padding: 8px;
       font-size: 13px;
       resize: none;
@@ -161,9 +172,9 @@
 
     .totals-box {
       text-align: right;
+      padding-right: 6px;
       font-size: 14px;
       line-height: 1.6rem;
-      padding-right: 6px;
     }
 
     .total-line {
@@ -174,12 +185,12 @@
 
     /* -------- BUTTON ---------- */
     .footer-actions {
-      text-align: right;
       margin-top: 28px;
+      text-align: right;
     }
 
     .btn-primary {
-      padding: 8px 24px;
+      padding: 9px 26px;
       font-size: 14px;
       background: var(--blue);
       color: white;
@@ -189,22 +200,25 @@
     }
 
     .btn-primary:hover {
-      background: #145ca1;
+      background: #155cad;
     }
+
   </style>
 </head>
-
 <body>
 
+<!-- TOP BAR -->
 <div class="top-bar">
   UXILIUM <span style="font-weight:400; color:#9aa5b1;">Accounting Management Services</span>
 </div>
 
+<!-- PAGE -->
 <div class="page-wrap">
   <div class="invoice-card">
 
     <h2 class="card-title">Form Pemesanan</h2>
 
+    <!-- HEADER -->
     <div class="header-grid">
       <div>
         <span class="field-label">Contact</span>
@@ -222,31 +236,37 @@
       </div>
     </div>
 
-    <!-- ITEMS TABLE -->
-    <table class="items-table">
-      <thead>
-      <tr>
-        <th></th>
-        <th>Type</th>
-        <th>Item</th>
-        <th>Meter</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Discount/Unit</th>
-        <th>Price/Qty</th>
-        <th>Total</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody id="itemsBody"></tbody>
-    </table>
+    <!-- TABLE -->
+    <div class="table-wrapper">
+
+      <table class="items-table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Type</th>
+          <th>Item</th>
+          <th>Meter</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Discount/Unit</th>
+          <th>Price/Qty</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+
+    </div>
 
     <button class="add-row-btn" onclick="addRow()">Add row ▾</button>
 
+    <!-- NOTES & TOTAL -->
     <div class="notes-and-totals">
+
       <div>
         <span class="field-label">Catatan:</span>
-        <textarea></textarea>
+        <textarea id="notes"></textarea>
       </div>
 
       <div class="totals-box">
@@ -254,6 +274,7 @@
         <div>PPN 11% 0.00</div>
         <div class="total-line">Grand Total 0.00</div>
       </div>
+
     </div>
 
     <div class="footer-actions">
@@ -264,6 +285,7 @@
 </div>
 
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
