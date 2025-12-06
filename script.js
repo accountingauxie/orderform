@@ -25,8 +25,6 @@ window.onload = function () {
   setOrderNumber();
 
   for (let i = 0; i < 3; i++) addRow(); // default 3 rows
-
-  document.getElementById("saveCustomerBtn").onclick = saveCustomer;
 };
 
 /* AUTO ORDER NUMBER */
@@ -61,26 +59,8 @@ async function loadDropdowns() {
   );
 
   document.getElementById("customerSelect").addEventListener("change", e => {
-    if (e.target.value === "add_new") openModal();
+    if (e.target.value === "add_new") alert("Add new? (modal removed)");
   });
-}
-
-/* ADD CUSTOMER */
-function openModal() {
-  document.getElementById("modal-bg").style.display = "flex";
-}
-function closeModal() {
-  document.getElementById("modal-bg").style.display = "none";
-}
-async function saveCustomer() {
-  const name = document.getElementById("newCustomerName").value.trim();
-  if (!name) return;
-
-  await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
-
-  choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
-  choiceCustomer.setChoiceByValue(name);
-  closeModal();
 }
 
 /* ADD ROW */
@@ -159,22 +139,12 @@ function addRow() {
       recalcTotals();
     });
   });
-
-  enableDrag();
 }
 
 /* DELETE ROW */
 function deleteRow(el) {
   el.closest("tr").remove();
   recalcTotals();
-}
-
-/* ENABLE DRAG */
-function enableDrag() {
-  new Sortable(document.getElementById("itemsBody"), {
-    animation: 120,
-    handle: ".drag-handle"
-  });
 }
 
 /* ROW CALC */
