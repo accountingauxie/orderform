@@ -20,19 +20,16 @@
       --bg: #f5f7fa;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       background: var(--bg);
-      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "Segoe UI", system-ui, sans-serif;
       font-size: 13px;
       color: #1f2933;
     }
 
-    /* ================= TOP BAR ================= */
     .top-bar {
       padding: 14px 36px;
       background: #ffffff;
@@ -48,16 +45,14 @@
       color: #9aa5b1;
     }
 
-    /* ================= PAGE WRAPPER ================= */
     .page-wrap {
       display: flex;
       justify-content: center;
       padding: 32px 0 56px;
     }
 
-    /* ================= MAIN CARD (diperkecil) ================= */
     .invoice-card {
-      width: 1150px;               /* <— lebih kecil dari sebelumnya */
+      width: 1150px;
       max-width: 92vw;
       background: #ffffff;
       border: 1px solid var(--border);
@@ -72,7 +67,6 @@
       font-weight: 600;
     }
 
-    /* ================= HEADER FORM GRID ================= */
     .header-grid {
       display: grid;
       grid-template-columns: 2.1fr 1.1fr 1.1fr;
@@ -100,6 +94,12 @@
       background: #fff;
     }
 
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #9fb3c8;
+      box-shadow: 0 0 0 1px #cbd2e1;
+    }
+
     input[type="number"] {
       width: 100%;
       height: 34px;
@@ -110,31 +110,13 @@
       text-align: right;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #9fb3c8;
-      box-shadow: 0 0 0 1px #cbd2e1;
-    }
-
-    /* ================= CHOICES.JS ================= */
-    .choices {
-      margin-bottom: 0;
-    }
     .choices__inner {
       min-height: 36px !important;
       padding: 6px 10px !important;
-      font-size: 13px !important;
       border-radius: 4px !important;
       border: 1px solid var(--border) !important;
-      background-color: #ffffff !important;
-    }
-    .choices__list--single {
-      padding: 0 !important;
     }
 
-    /* ================= TABLE WRAPPER ================= */
     .table-wrapper {
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -149,15 +131,6 @@
       table-layout: fixed;
     }
 
-    /*  Kolom diatur mirip Xero:
-        1 handle   : sangat kecil
-        2 type     : kecil
-        3 item     : lebar
-        4 meter    : sempit
-        5 qty      : sempit
-        6–9 harga  : seragam
-        10 delete  : kecil
-    */
     .items-table col:nth-child(1) { width: 3%; }
     .items-table col:nth-child(2) { width: 9%; }
     .items-table col:nth-child(3) { width: 30%; }
@@ -167,93 +140,45 @@
     .items-table col:nth-child(7) { width: 11%; }
     .items-table col:nth-child(8) { width: 11%; }
     .items-table col:nth-child(9) { width: 11%; }
-    .items-table col:nth-child(10){ width: 3%; }
+    .items-table col:nth-child(10) { width: 3%; }
 
-    .items-table th {
+    th {
       background: var(--header-bg);
       padding: 9px 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-      height: 36px;
       border-bottom: 1px solid var(--border-light);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
       text-align: left;
       white-space: nowrap;
     }
 
-    .items-table td {
+    td {
       padding: 8px 8px;
-      height: 40px;
       border-bottom: 1px solid var(--border-light);
       background: #ffffff;
+      height: 40px;
     }
 
-    .items-table tbody tr:last-child td {
-      border-bottom: none;
-    }
+    .drag-handle { cursor: grab; text-align: center; color: #8d99a6; }
+    .delete-row { cursor: pointer; color: #d33; text-align: center; }
 
-    /* angka rata kanan */
-    .items-table th:nth-child(4),
-    .items-table th:nth-child(5),
-    .items-table th:nth-child(6),
-    .items-table th:nth-child(7),
-    .items-table th:nth-child(8),
-    .items-table th:nth-child(9),
-    .items-table td:nth-child(4),
-    .items-table td:nth-child(5),
-    .items-table td:nth-child(6),
-    .items-table td:nth-child(7),
-    .items-table td:nth-child(8),
-    .items-table td:nth-child(9) {
-      text-align: right;
-    }
-
-    .items-table td:nth-child(3),
-    .items-table th:nth-child(3) {
-      text-align: left;
-    }
-
-    .items-table select {
-      height: 34px;
-      font-size: 13px;
-    }
-
-    .drag-handle {
-      cursor: grab;
-      font-size: 16px;
-      color: #8d99a6;
-      text-align: center;
-    }
-
-    .delete-row {
-      cursor: pointer;
-      color: #d33;
-      font-size: 16px;
-      text-align: center;
-      user-select: none;
-    }
-
-    /* ================= ADD ROW BUTTON ================= */
     .add-row-btn {
       margin-top: 6px;
       margin-bottom: 26px;
       padding: 4px 10px;
       font-size: 12px;
+      background: #fff;
       border: 1px solid var(--border);
-      background: #ffffff;
       border-radius: 4px;
       cursor: pointer;
     }
-    .add-row-btn:hover {
-      background: #f4f5f7;
-    }
+    .add-row-btn:hover { background: #f4f5f7; }
 
-    /* ================= NOTES + TOTALS ================= */
     .notes-and-totals {
       display: grid;
       grid-template-columns: 2.1fr 1fr;
       gap: 30px;
-      align-items: flex-start;
     }
 
     textarea {
@@ -262,38 +187,15 @@
       border-radius: 4px;
       border: 1px solid var(--border);
       padding: 10px;
-      font-size: 13px;
       resize: none;
     }
 
     .totals-box {
       text-align: right;
       font-size: 13px;
-      padding-top: 4px;
       line-height: 1.7;
-      color: #111827;
     }
 
-    .totals-box .label {
-      margin-right: 10px;
-    }
-
-    .totals-box span.value {
-      min-width: 80px;
-      display: inline-block;
-      text-align: right;
-    }
-
-    .totals-box .grand-label {
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .totals-box .grand-value {
-      font-weight: 700;
-    }
-
-    /* ================= APPROVE BUTTON ================= */
     .footer-actions {
       text-align: right;
       margin-top: 26px;
@@ -302,33 +204,26 @@
     .btn-primary {
       padding: 8px 28px;
       background: var(--blue);
-      color: #ffffff;
-      border-radius: 4px;
-      font-size: 13px;
+      color: #fff;
       border: none;
+      border-radius: 4px;
       cursor: pointer;
     }
-
-    .btn-primary:hover {
-      background: #005da0;
-    }
+    .btn-primary:hover { background: #005da0; }
   </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
 <div class="top-bar">
   UXILIUM <span>Accounting Management Services</span>
 </div>
 
-<!-- PAGE -->
 <div class="page-wrap">
   <div class="invoice-card">
 
     <h2 class="card-title">Form Pemesanan</h2>
 
-    <!-- HEADER FORM -->
     <div class="header-grid">
       <div>
         <span class="field-label">Contact</span>
@@ -346,7 +241,6 @@
       </div>
     </div>
 
-    <!-- TABLE SECTION -->
     <div class="table-wrapper">
       <table class="items-table">
         <colgroup>
@@ -372,7 +266,6 @@
 
     <button class="add-row-btn" type="button" onclick="addRow()">Add row ▾</button>
 
-    <!-- NOTES + TOTAL -->
     <div class="notes-and-totals">
       <div>
         <span class="field-label">Catatan:</span>
@@ -380,17 +273,11 @@
       </div>
 
       <div class="totals-box">
-        <div>
-          <span class="label">DPP</span>
-          <span class="value" id="dppDisplay">0.00</span>
-        </div>
-        <div>
-          <span class="label">PPN 11%</span>
-          <span class="value" id="ppnDisplay">0.00</span>
-        </div>
-        <div style="margin-top: 6px;">
-          <span class="label grand-label">Grand Total</span>
-          <span class="value grand-value" id="grandTotalDisplay">0.00</span>
+        <div><span>DPP</span> <span id="dppDisplay">Rp 0,00</span></div>
+        <div><span>PPN 11%</span> <span id="ppnDisplay">Rp 0,00</span></div>
+        <div style="margin-top:6px;">
+          <span style="font-weight:600">Grand Total</span>
+          <span id="grandTotalDisplay" style="font-weight:700">Rp 0,00</span>
         </div>
       </div>
     </div>
@@ -402,7 +289,6 @@
   </div>
 </div>
 
-<!-- SCRIPTS -->
 <script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="script.js"></script>
 
