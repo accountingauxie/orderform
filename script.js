@@ -2,7 +2,7 @@
    CONFIG
 ============================================================ */
 const baseURL =
-  "https://script.google.com/macros/s/AKfycbwExwntX5JjyQqMXij6aBoBQRc7FmcZI6qNa3EiBuOB7ljFDv_WTCmwoCSZYsdcoU2Z/exec";
+  "https://script.google.com/macros/s/AKfycbxALt0Mi8bblQu7Zle70LLgFerBhUvfdAHJNZvPbB5i_hACp2MbPhzj56BRo3Emdk45Gw/exec";
 
 let listSpandek = [];
 let listNonSpandek = [];
@@ -15,7 +15,7 @@ let choiceCustomer;
    ON LOAD
 ============================================================ */
 window.onload = function () {
-  // Init Choices untuk customer (tanpa option awal)
+
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
@@ -26,13 +26,13 @@ window.onload = function () {
     new Date().toISOString().split("T")[0];
 
   setOrderNumber();
-  loadDropdowns(); // ROW akan dibuat setelah data dropdown siap
+  loadDropdowns();
+
+  document.getElementById("saveCustomerBtn").onclick = saveCustomer;
 
   document.addEventListener("keydown", e => {
     if (e.key === "Enter") e.preventDefault();
   });
-
-  document.getElementById("saveCustomerBtn").onclick = saveCustomer;
 };
 
 
@@ -44,7 +44,6 @@ const ORDER_KEY = "ORDERFORM_LAST_ORDER";
 function generateOrderNumber() {
   let last = localStorage.getItem(ORDER_KEY);
   if (!last) last = "1000000";
-
   const next = parseInt(last, 10) + 1;
   localStorage.setItem(ORDER_KEY, next);
   return next;
@@ -70,7 +69,7 @@ async function loadDropdowns() {
   listNonSpandek = data.nonspandek || [];
   customerList = data.customers || [];
 
-  /* CONTACT DROPDOWN */
+  // CUSTOMER LIST
   choiceCustomer.clearChoices();
   choiceCustomer.setChoices(
     [
@@ -82,12 +81,11 @@ async function loadDropdowns() {
     true
   );
 
-  const custSelect = document.getElementById("customerSelect");
-  custSelect.addEventListener("change", function () {
+  document.getElementById("customerSelect").onchange = function () {
     if (this.value === "add_new") openModal();
-  });
+  };
 
-  // BUAT DEFAULT ROW hanya setelah data product sudah siap
+  // DEFAULT ROWS = 3
   for (let i = 0; i < 3; i++) addRow();
 }
 
@@ -108,7 +106,7 @@ async function saveCustomer() {
   const name = document.getElementById("newCustomerName").value.trim();
   if (!name) return;
 
-  await fetch(baseURL + "?action=addCustomer&name=" + encodeURIComponent(name));
+  await fetch(baseURL + "?action=addcustomer&name=" + encodeURIComponent(name));
 
   choiceCustomer.setChoices([{ value: name, label: name }], "value", "label", false);
   choiceCustomer.setChoiceByValue(name);
@@ -154,7 +152,7 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
 
-  /* INIT ITEM DROPDOWN */
+  // INIT ITEM DROPDOWN
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
@@ -162,8 +160,7 @@ function addRow() {
   });
 
   function loadItemChoices() {
-    const list =
-      typeSel.value === "spandek" ? listSpandek : listNonSpandek;
+    const list = typeSel.value === "spandek" ? listSpandek : listNonSpandek;
 
     choiceItem.clearChoices();
     choiceItem.setChoices(
@@ -174,11 +171,14 @@ function addRow() {
     );
   }
 
-  // Saat row pertama kali dibuat, langsung load item list
   loadItemChoices();
 
-  /* TYPE CHANGE */
+
+  /* ============================================================
+     TYPE CHANGE
+  ============================================================= */
   typeSel.onchange = () => {
+
     const isSpan = typeSel.value === "spandek";
 
     meterInput.disabled = !isSpan;
@@ -190,26 +190,24 @@ function addRow() {
     recalcTotals();
   };
 
-  // Awal: jika default type = spandek, meter aktif
-  meterInput.disabled = false;
 
-  /* ITEM → GET PRICE */
+  /* ============================================================
+     ITEM → GET PRICE
+  ============================================================= */
   itemSel.addEventListener("change", async () => {
     const product = itemSel.value;
     if (!product) return;
 
-    const type = typeSel.value; // 'spandek' atau 'non'
+    const type = typeSel.value; // "spandek" / "non"
 
     const r = await fetch(
       baseURL +
-      "?action=getprice&product=" +
-      encodeURIComponent(product) +
-      "&type=" +
-      encodeURIComponent(type)
+      "?action=getprice" +
+      "&product=" + encodeURIComponent(product) +
+      "&type=" + encodeURIComponent(type)
     );
 
-    const priceText = await r.text();
-    const price = parseFloat(priceText) || 0;
+    const price = parseFloat(await r.text()) || 0;
 
     tr.querySelector(".unit-price-input").value =
       price > 0 ? price.toFixed(2) : "";
@@ -218,7 +216,10 @@ function addRow() {
     recalcTotals();
   });
 
-  /* CALC ON INPUT */
+
+  /* ============================================================
+     INPUT EVENTS
+  ============================================================= */
   tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
@@ -256,28 +257,20 @@ function enableDrag() {
 function recalcRow(row) {
   const isSpan = row.querySelector(".type-select").value === "spandek";
 
-  const rawMeter = parseFloat(row.querySelector(".meter-input").value);
-  const meter = isSpan ? Math.max(0, (rawMeter || 0)) : 1;
+  const meter = isSpan
+    ? Math.max(0, parseFloat(row.querySelector(".meter-input").value) || 0)
+    : 1;
 
-  const rawQty = parseFloat(row.querySelector(".qty-input").value);
-  const qty = Math.max(0, (rawQty || 0));
-
-  const unit = Math.max(
-    0,
-    parseFloat(row.querySelector(".unit-price-input").value) || 0
-  );
-
-  const rawDisc = parseFloat(row.querySelector(".discount-input").value);
-  const disc = Math.max(0, (rawDisc || 0));
+  const qty = Math.max(0, parseFloat(row.querySelector(".qty-input").value) || 0);
+  const unit = Math.max(0, parseFloat(row.querySelector(".unit-price-input").value) || 0);
+  const disc = Math.max(0, parseFloat(row.querySelector(".discount-input").value) || 0);
 
   const net = unit - disc;
   const ppq = net * meter;
   const total = ppq * qty;
 
-  row.querySelector(".priceqty-input").value =
-    ppq > 0 ? ppq.toFixed(2) : "";
-  row.querySelector(".line-total-input").value =
-    total > 0 ? total.toFixed(2) : "";
+  row.querySelector(".priceqty-input").value = ppq > 0 ? ppq.toFixed(2) : "";
+  row.querySelector(".line-total-input").value = total > 0 ? total.toFixed(2) : "";
 }
 
 
