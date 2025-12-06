@@ -10,53 +10,62 @@ let nonSpandekPrice = {};
 let customerList = [];
 let choiceCustomer;
 
-/* ===== HELPER FORMAT UANG (selalu 0.00) ===== */
+/* FORMAT RP ##.###,00 */
 function formatMoney(num) {
   const n = Number(num) || 0;
-  return n.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  return (
+    "Rp " +
+    n
+      .toFixed(2)
+      .replace(".", ",")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  );
+}
+
+/* Convert "Rp 12.345,67" → 12345.67 */
+function parseMoney(str) {
+  if (!str) return 0;
+  return parseFloat(
+    str.replace(/Rp\s?/g, "").replace(/\./g, "").replace(",", ".")
+  );
 }
 
 /* ON LOAD */
 window.onload = function () {
-  // Choices untuk Contact
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
-    shouldSort: false,
-    position: "bottom"
+    shouldSort: false
   });
 
-  // Tanggal hari ini
   document.getElementById("issueDate").value =
     new Date().toISOString().split("T")[0];
 
   loadDropdowns();
   setOrderNumber();
 
-  // Default 3 baris
   for (let i = 0; i < 3; i++) addRow();
 
-  // Sortable drag handle
   new Sortable(document.getElementById("itemsBody"), {
     handle: ".drag-handle",
     animation: 150
   });
 };
 
-/* AUTO ORDER NUMBER */
+/* ORDER NUMBER AUTO */
 function setOrderNumber() {
   const key = "ORDERFORM_LAST_ORDER";
-  let last = localStorage.getItem(key) || "1000018"; // biar next 1000019 seperti screenshot
+  let last = localStorage.getItem(key);
+
+  if (!last) last = "1000000";
+
   let next = parseInt(last, 10) + 1;
 
   localStorage.setItem(key, String(next));
   document.getElementById("orderNumber").value = next;
 }
 
-/* LOAD DATA DARI APPS SCRIPT */
+/* LOAD DATA */
 async function loadDropdowns() {
   try {
     const res = await fetch(baseURL + "?action=getdata");
@@ -68,7 +77,6 @@ async function loadDropdowns() {
     spandekPrice = data.priceSpan || {};
     nonSpandekPrice = data.priceNon || {};
 
-    // Contact dropdown
     choiceCustomer.clearChoices();
     choiceCustomer.setChoices(
       [
@@ -79,20 +87,12 @@ async function loadDropdowns() {
       "label",
       true
     );
-
-    document
-      .getElementById("customerSelect")
-      .addEventListener("change", (e) => {
-        if (e.target.value === "add_new") {
-          alert("Add new customer (modal belum dibuat di versi ini).");
-        }
-      });
-  } catch (err) {
-    console.error("loadDropdowns error:", err);
+  } catch (e) {
+    console.error(e);
   }
 }
 
-/* TAMBAH BARIS ITEM */
+/* ADD ROW */
 function addRow() {
   const body = document.getElementById("itemsBody");
   const tr = document.createElement("tr");
@@ -102,6 +102,7 @@ function addRow() {
 
     <td>
       <select class="type-select">
+        <option value="">-- Pilih --</option>
         <option value="spandek">Spandek</option>
         <option value="non">Non Spandek</option>
       </select>
@@ -111,67 +112,48 @@ function addRow() {
       <select class="item-select"></select>
     </td>
 
-    <td>
-      <input type="number" class="meter-input" min="0" step="0.001">
-    </td>
+    <td><input type="number" class="meter-input" step="0.001"></td>
+    <td><input type="number" class="qty-input" step="1"></td>
 
-    <td>
-      <input type="number" class="qty-input" min="0" step="1">
-    </td>
+    <td><input type="text" class="unit-price-input" readonly></td>
+    <td><input type="number" class="discount-input" step="1" value="0"></td>
 
-    <td>
-      <input type="text" class="unit-price-input" readonly>
-    </td>
+    <td><input type="text" class="priceqty-input" readonly></td>
+    <td><input type="text" class="line-total-input" readonly></td>
 
-    <td>
-      <input type="number" class="discount-input" min="0" step="1" value="0">
-    </td>
-
-    <td>
-      <input type="text" class="priceqty-input" readonly>
-    </td>
-
-    <td>
-      <input type="text" class="line-total-input" readonly>
-    </td>
-
-    <td class="delete-row" title="Delete" onclick="deleteRow(this)">🗑</td>
+    <td class="delete-row" onclick="deleteRow(this)">🗑</td>
   `;
 
   body.appendChild(tr);
 
-  // TYPE & ITEM DROPDOWN
   const typeSel = tr.querySelector(".type-select");
   const itemSel = tr.querySelector(".item-select");
 
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
-    shouldSort: false,
-    position: "bottom"
+    shouldSort: false
   });
 
   function loadItems() {
     const list = typeSel.value === "spandek" ? listSpandek : listNonSpandek;
     choiceItem.clearChoices();
     choiceItem.setChoices(
-      list.map((v) => ({ value: v, label: v })),
+      list.map((i) => ({ value: i, label: i })),
       "value",
       "label",
       true
     );
   }
 
-  loadItems(); // initial
-
-  // Non Spandek → Meter disabled
   typeSel.addEventListener("change", () => {
-    const meterInput = tr.querySelector(".meter-input");
+    const meterField = tr.querySelector(".meter-input");
+
     if (typeSel.value === "non") {
-      meterInput.value = "";
-      meterInput.disabled = true;
+      meterField.value = "";
+      meterField.disabled = true;
     } else {
-      meterInput.disabled = false;
+      meterField.disabled = false;
     }
 
     loadItems();
@@ -179,20 +161,19 @@ function addRow() {
     recalcTotals();
   });
 
-  // Saat memilih item → set harga
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
-    const price =
-      typeSel.value === "spandek"
-        ? spandekPrice[item] || 0
-        : nonSpandekPrice[item] || 0;
+    let price = 0;
+
+    if (typeSel.value === "spandek") price = spandekPrice[item] || 0;
+    if (typeSel.value === "non") price = nonSpandekPrice[item] || 0;
 
     tr.querySelector(".unit-price-input").value = formatMoney(price);
+
     recalcRow(tr);
     recalcTotals();
   });
 
-  // Perubahan angka di row
   tr.querySelectorAll("input").forEach((inp) => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
@@ -201,26 +182,21 @@ function addRow() {
   });
 }
 
-/* HAPUS BARIS */
+/* DELETE ROW */
 function deleteRow(el) {
-  el.closest("tr")?.remove();
+  el.closest("tr").remove();
   recalcTotals();
 }
 
-/* PERHITUNGAN PER BARIS */
+/* CALC EACH ROW */
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
 
   let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
-  if (type === "non") meter = 1; // non spandek meter = 1
+  if (type === "non") meter = 1;
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
-
-  let unitStr = row
-    .querySelector(".unit-price-input")
-    .value.replace(/,/g, "");
-  const unit = parseFloat(unitStr) || 0;
-
+  const unit = parseMoney(row.querySelector(".unit-price-input").value);
   const disc = parseFloat(row.querySelector(".discount-input").value) || 0;
 
   const netUnit = unit - disc;
@@ -231,13 +207,12 @@ function recalcRow(row) {
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
-/* PERHITUNGAN TOTAL */
+/* CALC TOTAL */
 function recalcTotals() {
   let grand = 0;
 
   document.querySelectorAll(".line-total-input").forEach((el) => {
-    const v = parseFloat(el.value.replace(/,/g, "")) || 0;
-    grand += v;
+    grand += parseMoney(el.value);
   });
 
   const dpp = grand / 1.11;
