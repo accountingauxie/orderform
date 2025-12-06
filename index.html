@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Form Pemesanan</title>
+  <title>Form Pemesanan – Xero Style</title>
 
+  <!-- Choices.js -->
   <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
 
   <style>
@@ -13,62 +14,64 @@
       --header-bg: #f4f6f8;
       --text-muted: #697386;
       --blue: #1976d2;
+      --bg: #f5f7fa;
     }
 
     body {
       margin: 0;
-      background: #f5f7fa;
+      background: var(--bg);
       font-family: "Segoe UI", sans-serif;
     }
 
-    /* HEADER TOP */
+    /* ================= TOP BAR ================= */
     .top-bar {
       padding: 14px 36px;
       background: #ffffff;
-      border-bottom: 1px solid #e3e7eb;
+      border-bottom: 1px solid var(--border-light);
       display: flex;
       align-items: center;
+      gap: 10px;
       font-weight: 600;
       font-size: 15px;
-      gap: 10px;
     }
 
-    /* PAGE WRAP */
+    /* ================= PAGE WRAPPER ================= */
     .page-wrap {
       display: flex;
       justify-content: center;
       padding: 32px 0;
     }
 
-    /* CARD */
+    /* ================= MAIN CARD ================= */
     .invoice-card {
-      width: 1280px;        /* 🔥 FIX UTAMA */
-      background: white;
+      width: 1380px !important;      /* pixel-perfect width */
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 32px 40px;  /* 🔥 mengikuti screenshot */
+      border-radius: 10px;
+      padding: 48px 50px 60px !important; /* EXACT padding */
     }
 
     h2.card-title {
-      margin: 0 0 24px;
+      margin: 0;
+      margin-bottom: 24px;
       font-size: 20px;
       font-weight: 600;
     }
 
-    /* FORM GRID */
+    /* ================= HEADER FORM GRID ================= */
     .header-grid {
       display: grid;
       grid-template-columns: 2fr 1.2fr 1.2fr;
       gap: 22px;
-      margin-bottom: 26px;
+      margin-bottom: 34px !important;   /* EXACT spacing */
     }
 
     .field-label {
+      display: block;
       font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 6px;
-      display: block;
     }
 
     input, select {
@@ -80,12 +83,13 @@
       font-size: 14px;
     }
 
-    /* TABLE WRAPPER */
+    /* ================= TABLE WRAPPER ================= */
     .table-wrapper {
       border: 1px solid var(--border);
-      background: white;
       border-radius: 6px;
       overflow: hidden;
+      background: #ffffff;
+      margin-bottom: 40px !important; /* EXACT spacing */
     }
 
     table.items-table {
@@ -95,23 +99,25 @@
 
     .items-table th {
       background: var(--header-bg);
-      padding: 10px 8px;
+      padding: 10px 8px !important;
       font-size: 13px;
       color: var(--text-muted);
       font-weight: 600;
+      height: 38px !important;        /* EXACT HEADER ROW HEIGHT */
       border-bottom: 1px solid var(--border-light);
     }
 
     .items-table td {
-      padding: 8px 6px;
+      padding: 11px 8px !important;
+      height: 42px !important;        /* EXACT BODY ROW HEIGHT */
       border-bottom: 1px solid var(--border-light);
     }
 
     .items-table input,
     .items-table select {
-      height: 34px;
-      font-size: 13px;
-      padding: 5px 7px;
+      height: 34px !important;
+      padding: 6px 8px !important;
+      font-size: 13px !important;
     }
 
     .drag-handle {
@@ -121,13 +127,15 @@
     }
 
     .delete-row {
-      font-size: 16px;
-      color: #d33;
       cursor: pointer;
+      color: #d33;
+      font-size: 16px;
     }
 
+    /* ================= ADD ROW BUTTON ================= */
     .add-row-btn {
-      margin-top: 12px;
+      margin-top: 12px !important;
+      margin-bottom: 40px !important;   /* EXACT spacing table → notes */
       padding: 6px 12px;
       font-size: 13px;
       border: 1px solid var(--border);
@@ -136,58 +144,59 @@
       cursor: pointer;
     }
 
-    /* CHOICES FIX */
+    /* ================= CHOICES.JS FIX ================= */
     .choices__inner {
       min-height: 36px !important;
-      padding: 5px 8px !important;
+      padding: 6px 10px !important;
+      font-size: 14px !important;
       border-radius: 4px !important;
       border-color: var(--border) !important;
-      font-size: 14px !important;
     }
 
-    /* NOTES + TOTAL */
+    /* ================= NOTES + TOTALS ================= */
     .notes-and-totals {
-      margin-top: 26px;
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 20px;
+      gap: 28px !important;     /* EXACT spacing notes → totals */
+      margin-top: 0 !important;
     }
 
     textarea {
       width: 100%;
-      min-height: 130px;
-      padding: 10px;
-      font-size: 13px;
+      height: 170px !important;  /* EXACT notes height */
       border-radius: 4px;
       border: 1px solid var(--border);
+      padding: 10px;
+      font-size: 13px;
+      resize: none;
     }
 
     .totals-box {
       text-align: right;
       font-size: 14px;
-      padding-right: 6px;
+      padding-top: 8px;
       line-height: 1.6rem;
     }
 
     .total-line {
+      margin-top: 6px;
       font-size: 18px;
       font-weight: 700;
-      margin-top: 6px;
     }
 
-    /* BUTTON */
+    /* ================= APPROVE BUTTON ================= */
     .footer-actions {
       text-align: right;
-      margin-top: 30px;
+      margin-top: 44px !important;  /* EXACT spacing totals → button */
     }
 
     .btn-primary {
       padding: 10px 28px;
       background: var(--blue);
       color: white;
+      border-radius: 4px;
       font-size: 14px;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
     }
   </style>
@@ -195,6 +204,7 @@
 
 <body>
 
+<!-- TOP BAR -->
 <div class="top-bar">
   UXILIUM <span style="font-weight:400;color:#9aa5b1">Accounting Management Services</span>
 </div>
@@ -204,17 +214,16 @@
 
     <h2 class="card-title">Form Pemesanan</h2>
 
+    <!-- HEADER FORM -->
     <div class="header-grid">
       <div>
         <span class="field-label">Contact</span>
         <select id="customerSelect"></select>
       </div>
-
       <div>
         <span class="field-label">Issue date</span>
         <input type="date" id="issueDate">
       </div>
-
       <div>
         <span class="field-label">Order number</span>
         <input type="text" id="orderNumber">
@@ -244,17 +253,20 @@
 
     <button class="add-row-btn" onclick="addRow()">Add row ▾</button>
 
+    <!-- NOTES + TOTAL -->
     <div class="notes-and-totals">
+
       <div>
         <span class="field-label">Catatan:</span>
         <textarea id="notes"></textarea>
       </div>
 
       <div class="totals-box">
-        <div>DPP 0.00</div>
-        <div>PPN 11% 0.00</div>
-        <div class="total-line">Grand Total 0.00</div>
+        <div>DPP <span id="dppDisplay">0.00</span></div>
+        <div>PPN 11% <span id="ppnDisplay">0.00</span></div>
+        <div class="total-line">Grand Total <span id="grandTotalDisplay">0.00</span></div>
       </div>
+
     </div>
 
     <div class="footer-actions">
