@@ -35,7 +35,6 @@ function parseMoney(str) {
 /* ================= ON LOAD ================= */
 
 window.onload = function () {
-
   choiceCustomer = new Choices("#customerSelect", {
     searchEnabled: true,
     itemSelectText: "",
@@ -119,7 +118,7 @@ function addRow() {
       <select class="item-select"></select>
     </td>
 
-    <td><input type="number" class="meter-input" step="0.001"></td>
+    <td><input type="text" class="meter-input"></td>
     <td><input type="number" class="qty-input" step="1"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
@@ -137,7 +136,7 @@ function addRow() {
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
 
-  typeSel.value = ""; // force reset
+  typeSel.value = "";
   meterInput.disabled = true;
 
   const choiceItem = new Choices(itemSel, {
@@ -178,7 +177,6 @@ function addRow() {
     const item = itemSel.value;
     let price = 0;
 
-    /* 🔥 SUPPORT ARRAY & OBJECT */
     if (typeSel.value === "Spandek") {
       if (Array.isArray(spandekPrice)) {
         const idx = listSpandek.indexOf(item);
@@ -204,6 +202,13 @@ function addRow() {
 
   tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
+
+      // hentikan total jika meter belum valid
+      const meterRaw = tr.querySelector(".meter-input").value;
+      if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
+        return;
+      }
+
       recalcRow(tr);
       recalcTotals();
     });
@@ -222,14 +227,16 @@ function deleteRow(el) {
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
 
-  // ambil nilai mentah dulu
-  const meterRaw = row.querySelector(".meter-input").value;
+  const meterInput = row.querySelector(".meter-input");
+  const meterRaw = meterInput.value;
 
-  // ❗ Jika user mengetik "1." atau "." → jangan hitung dulu
-  if (meterRaw.endsWith(".")) return;
+  // IZINKAN user mengetik "1.", ".", ".5", dst
+  if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
+    return;
+  }
 
   let meter = parseFloat(meterRaw);
-  if (isNaN(meter)) meter = 0;
+  if (isNaN(meter) || meter < 0) meter = 0;
 
   if (type === "Non Spandek") meter = 1;
 
@@ -262,7 +269,7 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= PREVENT MINUS FOR METER & QTY ================= */
+/* ================= PREVENT MINUS ================= */
 
 document.addEventListener("input", function (e) {
   if (
@@ -270,7 +277,6 @@ document.addEventListener("input", function (e) {
     e.target.classList.contains("qty-input")
   ) {
     let val = parseFloat(e.target.value);
-
     if (isNaN(val) || val < 0) {
       e.target.value = 0;
     }
