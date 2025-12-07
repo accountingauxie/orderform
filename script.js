@@ -222,7 +222,15 @@ function deleteRow(el) {
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
 
-  let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
+  // ambil nilai mentah dulu
+  const meterRaw = row.querySelector(".meter-input").value;
+
+  // ❗ Jika user mengetik "1." atau "." → jangan hitung dulu
+  if (meterRaw.endsWith(".")) return;
+
+  let meter = parseFloat(meterRaw);
+  if (isNaN(meter)) meter = 0;
+
   if (type === "Non Spandek") meter = 1;
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
