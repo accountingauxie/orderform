@@ -147,18 +147,23 @@ function addRow() {
   });
 
   function loadItemsForType() {
-    let list = [];
-    if (typeSel.value === "Spandek") list = listSpandek;
-    if (typeSel.value === "Non Spandek") list = listNonSpandek;
+  let list = [];
+  if (typeSel.value === "Spandek") list = listSpandek;
+  if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
-    choiceItem.clearChoices();
-    choiceItem.setChoices(
-      list.map(i => ({ value: i, label: i })),
-      "value",
-      "label",
-      true
-    );
-  }
+  // FULL SAFE RESET
+  choiceItem.clearStore();
+  choiceItem._currentState.items = [];
+  choiceItem._currentState.choices = [];
+  choiceItem.passedElement.element.value = "";
+
+  choiceItem.setChoices(
+    list.map(i => ({ value: i, label: i })),
+    "value",
+    "label",
+    false
+  );
+}
 
   /* ===== TYPE CHANGE ===== */
   typeSel.addEventListener("change", () => {
