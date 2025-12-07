@@ -32,6 +32,21 @@ function parseMoney(str) {
   );
 }
 
+/* Format khusus input diskon: selalu jadi "Rp x.xxx,yy" */
+function formatDiscountInput(input) {
+  // ambil hanya angka
+  let raw = input.value.replace(/[^0-9]/g, "");
+
+  if (raw === "") {
+    input.value = formatMoney(0);
+    return 0;
+  }
+
+  let num = parseInt(raw, 10) || 0;
+  input.value = formatMoney(num); // pakai formatMoney → Rp x.xxx,00
+  return num;
+}
+
 /* ================= ON LOAD ================= */
 
 window.onload = function () {
@@ -118,11 +133,11 @@ function addRow() {
       <select class="item-select"></select>
     </td>
 
-    <td><input type="number" class="meter-input" step="0.001"></td>
+    <td><input type="text" class="meter-input"></td>
     <td><input type="number" class="qty-input" step="1"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
-    <td><input type="number" class="discount-input" step="1" value="0"></td>
+    <td><input type="text" class="discount-input" value="Rp 0,00"></td>
 
     <td><input type="text" class="priceqty-input" readonly></td>
     <td><input type="text" class="line-total-input" readonly></td>
@@ -135,11 +150,13 @@ function addRow() {
   const typeSel = tr.querySelector(".type-select");
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
+  const discInput  = tr.querySelector(".discount-input");
 
   typeSel.value = "";
   meterInput.disabled = true;
   meterInput.style.background = "#f0f0f0";
 
+  // Inisialisasi Choices utk Item
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
@@ -174,9 +191,9 @@ function addRow() {
 
     loadItemsForType();
 
-    tr.querySelector(".unit-price-input").value = "";
-    tr.querySelector(".priceqty-input").value = "";
-    tr.querySelector(".line-total-input").value = "";
+    tr.querySelector(".unit-price-input").value  = "";
+    tr.querySelector(".priceqty-input").value    = "";
+    tr.querySelector(".line-total-input").value  = "";
   });
 
   /* ITEM SELECTED */
@@ -208,8 +225,25 @@ function addRow() {
     recalcTotals();
   });
 
-  /* INPUT CHANGE */
+  /* DISKON — format Rp + tidak boleh > unit price */
+  discInput.addEventListener("input", () => {
+    const unitVal = parseMoney(tr.querySelector(".unit-price-input").value);
+
+    let discVal = formatDiscountInput(discInput); // format & dapat angka
+
+    if (discVal > unitVal) {
+      discVal = unitVal;
+      discInput.value = formatMoney(unitVal);
+    }
+
+    recalcRow(tr);
+    recalcTotals();
+  });
+
+  /* INPUT CHANGE LAIN (meter, qty) */
   tr.querySelectorAll("input").forEach(inp => {
+    if (inp === discInput) return; // diskon sudah punya handler sendiri
+
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -227,38 +261,44 @@ function deleteRow(el) {
 /* ================= PER BARIS ================= */
 
 function recalcRow(row) {
-  const type = row.querySelector(".type-select").value;
+  const type       = row.querySelector(".type-select").value;
   const meterInput = row.querySelector(".meter-input");
 
   let meter = 0;
 
-  /* =============== NON SPANDEK =============== */
+  /* ===== NON SPANDEK: meter selalu 1 ===== */
   if (type === "Non Spandek") {
-    meter = 1; // ALWAYS 1, no validation needed
+    meter = 1;
   }
 
-  /* =============== SPANDEK ==================== */
+  /* ===== SPANDEK: baca input meter ======= */
   else if (type === "Spandek") {
-    const meterRaw = meterInput.value;
+    const meterRaw = meterInput.value.replace(",", ".").trim();
 
-    // Jika user mengetik "1." atau "." → jangan hitung dulu
-    if (meterRaw === "." || meterRaw.endsWith(".")) return;
+    // izinkan user sedang ngetik "." atau "1."
+    if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
+      return;
+    }
 
     meter = parseFloat(meterRaw);
     if (isNaN(meter) || meter < 0) meter = 0;
   }
 
-  /* ============================================ */
+  const qty   = parseFloat(row.querySelector(".qty-input").value) || 0;
+  const unit  = parseMoney(row.querySelector(".unit-price-input").value);
 
-  const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
-  const unit = parseMoney(row.querySelector(".unit-price-input").value);
-  const disc = parseFloat(row.querySelector(".discount-input").value) || 0;
+  // Diskon dalam Rp, tidak boleh > unit
+  let disc = parseMoney(row.querySelector(".discount-input").value) || 0;
+  if (disc > unit) {
+    disc = unit;
+    row.querySelector(".discount-input").value = formatMoney(unit);
+  }
 
-  const netUnit = unit - disc;
+  const netUnit  = Math.max(unit - disc, 0);
   const priceQty = netUnit * meter;
-  const total = priceQty * qty;
+  const total    = priceQty * qty;
 
-  row.querySelector(".priceqty-input").value = formatMoney(priceQty);
+  row.querySelector(".priceqty-input").value   = formatMoney(priceQty);
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
@@ -274,20 +314,16 @@ function recalcTotals() {
   const dpp = grand / 1.11;
   const ppn = grand - dpp;
 
-  document.getElementById("dppDisplay").textContent = formatMoney(dpp);
-  document.getElementById("ppnDisplay").textContent = formatMoney(ppn);
+  document.getElementById("dppDisplay").textContent       = formatMoney(dpp);
+  document.getElementById("ppnDisplay").textContent       = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= PREVENT MINUS ================= */
+/* ================= PREVENT MINUS QTY ================= */
 
 document.addEventListener("input", function (e) {
-  if (
-    e.target.classList.contains("meter-input") ||
-    e.target.classList.contains("qty-input")
-  ) {
+  if (e.target.classList.contains("qty-input")) {
     let val = parseFloat(e.target.value);
-
     if (isNaN(val) || val < 0) {
       e.target.value = 0;
     }
