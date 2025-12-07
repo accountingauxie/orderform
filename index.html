@@ -119,17 +119,17 @@ input:focus, select:focus, textarea:focus {
   border-bottom: 1px solid var(--border-light);
 }
 
-/* FIXED COLUMN WIDTHS */
+/* FIXED COLUMN WIDTHS – UPDATED */
 .items-table th:nth-child(1),  .items-table td:nth-child(1) { width: 28px; }
-.items-table th:nth-child(2),  .items-table td:nth-child(2) { width: 150px; }
-.items-table th:nth-child(3),  .items-table td:nth-child(3) { width: 420px; }
-items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 80px; }
-.items-table th:nth-child(5),  .items-table td:nth-child(5) { width: 70px; }
-items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 130px; }
-items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 100px; }
-items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 130px; }
-items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 160px; }
-items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
+.items-table th:nth-child(2),  .items-table td:nth-child(2) { width: 130px; }
+.items-table th:nth-child(3),  .items-table td:nth-child(3) { width: 370px; }
+.items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 90px; }
+.items-table th:nth-child(5),  .items-table td:nth-child(5) { width: 80px; }
+.items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 150px; }
+.items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 100px; }
+.items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 150px; }
+.items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 170px; }
+.items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
 
 .items-table td {
   padding: 8px;
@@ -151,7 +151,7 @@ items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
   font-size: 16px;
 }
 
-/* ADD ROW DROPDOWN BUTTON */
+/* ADD ROW BUTTON */
 .add-row-btn {
   font-size: 13px;
   padding: 6px 12px;
@@ -171,69 +171,9 @@ items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
 
 textarea { height: 170px; }
 
-.totals-box { font-size: 14px; text-align: right; }
-.grand-value { font-weight: 700; }
-
-.btn-primary {
-  padding: 12px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  background: var(--blue);
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  float: right;
-  margin-top: 30px;
-}
-
-/* ================================
-   DROPDOWN FIX (MOST IMPORTANT)
-================================ */
-
-.choices__list--dropdown {
-  display: none !important;
-}
-
-.choices.is-open .choices__list--dropdown {
-  display: block !important;
-}
-
-.choices__list--dropdown {
-  width: auto !important;
-  z-index: 999999999 !important;
-  background: #fff !important;
-  border: 1px solid #cfd6df !important;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.18) !important;
-  border-radius: 4px !important;
-  top: 100% !important;
-  left: 0 !important;
-}
-
-td:nth-child(3) .choices__list--dropdown {
-  min-width: 350px !important;
-  max-width: 350px !important;
-}
-
-td:nth-child(2) .choices__list--dropdown {
-  min-width: 130px !important;
-  max-width: 130px !important;
-}
-
-#customerSelect + .choices .choices__list--dropdown {
-  min-width: 100% !important;
-  max-width: 100% !important;
-}
-
-.items-table td,
-.choices {
-  overflow: visible !important;
-}
-
-/* ================================
-   XERO SUMMARY STYLE (ADDED HERE)
-================================ */
-
+/* ===========================
+   XERO SUMMARY STYLE
+=========================== */
 .summary-row {
   display: flex;
   justify-content: space-between;
@@ -263,6 +203,26 @@ td:nth-child(2) .choices__list--dropdown {
   font-size: 18px;
   font-weight: 700;
   color: #000;
+}
+
+/* APPROVE BUTTON UNDER SUMMARY */
+.approve-btn {
+  margin-top: 20px;
+  padding: 12px 42px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.totals-box {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
 }
 
 </style>
@@ -339,9 +299,10 @@ td:nth-child(2) .choices__list--dropdown {
           <span class="label">Grand Total</span>
           <span class="value" id="grandTotalDisplay">0.00</span>
         </div>
-      </div>
 
-    <button class="btn-primary" type="button">Approve</button>
+        <button class="btn-primary approve-btn" type="button">Approve</button>
+      </div>
+    </div>
 
   </div>
 </div>
