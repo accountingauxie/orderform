@@ -253,3 +253,18 @@ function recalcTotals() {
   document.getElementById("ppnDisplay").textContent = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
+
+/* ================= PREVENT MINUS FOR METER & QTY ================= */
+
+document.addEventListener("input", function (e) {
+  if (
+    e.target.classList.contains("meter-input") ||
+    e.target.classList.contains("qty-input")
+  ) {
+    let val = parseFloat(e.target.value);
+
+    if (isNaN(val) || val < 0) {
+      e.target.value = 0;
+    }
+  }
+});
