@@ -32,21 +32,6 @@ function parseMoney(str) {
   );
 }
 
-/* Format khusus input diskon: selalu jadi "Rp x.xxx,yy" */
-function formatDiscountInput(input) {
-  // ambil hanya angka
-  let raw = input.value.replace(/[^0-9]/g, "");
-
-  if (raw === "") {
-    input.value = formatMoney(0);
-    return 0;
-  }
-
-  let num = parseInt(raw, 10) || 0;
-  input.value = formatMoney(num); // pakai formatMoney → Rp x.xxx,00
-  return num;
-}
-
 /* ================= ON LOAD ================= */
 
 window.onload = function () {
@@ -147,16 +132,14 @@ function addRow() {
 
   body.appendChild(tr);
 
-  const typeSel = tr.querySelector(".type-select");
-  const itemSel = tr.querySelector(".item-select");
+  const typeSel   = tr.querySelector(".type-select");
+  const itemSel   = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
-  const discInput  = tr.querySelector(".discount-input");
+  const discInput = tr.querySelector(".discount-input");
 
-  typeSel.value = "";
   meterInput.disabled = true;
-  meterInput.style.background = "#f0f0f0";
+  meterInput.style.background = "#eee";
 
-  // Inisialisasi Choices utk Item
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
@@ -177,26 +160,25 @@ function addRow() {
     );
   }
 
-  /* TYPE CHANGE */
+  /* ===== TYPE CHANGE ===== */
   typeSel.addEventListener("change", () => {
-
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
       meterInput.style.background = "white";
     } else {
       meterInput.value = "";
       meterInput.disabled = true;
-      meterInput.style.background = "#f0f0f0";
+      meterInput.style.background = "#eee";
     }
 
     loadItemsForType();
 
-    tr.querySelector(".unit-price-input").value  = "";
-    tr.querySelector(".priceqty-input").value    = "";
-    tr.querySelector(".line-total-input").value  = "";
+    tr.querySelector(".unit-price-input").value = "";
+    tr.querySelector(".priceqty-input").value   = "";
+    tr.querySelector(".line-total-input").value = "";
   });
 
-  /* ITEM SELECTED */
+  /* ===== ITEM SELECTED ===== */
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
     let price = 0;
@@ -225,24 +207,25 @@ function addRow() {
     recalcTotals();
   });
 
-  /* DISKON — format Rp + tidak boleh > unit price */
+  /* ===== DISKON (FORMAT RP & MAX UNIT PRICE) ===== */
   discInput.addEventListener("input", () => {
-    const unitVal = parseMoney(tr.querySelector(".unit-price-input").value);
+    let raw = discInput.value.replace(/[^0-9]/g, "");
+    if (raw === "") raw = "0";
 
-    let discVal = formatDiscountInput(discInput); // format & dapat angka
+    let num = parseInt(raw, 10) || 0;
+    const unit = parseMoney(tr.querySelector(".unit-price-input").value);
 
-    if (discVal > unitVal) {
-      discVal = unitVal;
-      discInput.value = formatMoney(unitVal);
-    }
+    if (num > unit) num = unit;
+
+    discInput.value = formatMoney(num);
 
     recalcRow(tr);
     recalcTotals();
   });
 
-  /* INPUT CHANGE LAIN (meter, qty) */
+  /* ===== INPUT LISTENER LAIN (meter & qty) ===== */
   tr.querySelectorAll("input").forEach(inp => {
-    if (inp === discInput) return; // diskon sudah punya handler sendiri
+    if (inp === discInput) return;
 
     inp.addEventListener("input", () => {
       recalcRow(tr);
@@ -251,14 +234,14 @@ function addRow() {
   });
 }
 
-/* ================= DELETE ================= */
+/* ================= DELETE ROW ================= */
 
 function deleteRow(el) {
   el.closest("tr").remove();
   recalcTotals();
 }
 
-/* ================= PER BARIS ================= */
+/* ================= PER BARIS (CORE) ================= */
 
 function recalcRow(row) {
   const type       = row.querySelector(".type-select").value;
@@ -266,33 +249,31 @@ function recalcRow(row) {
 
   let meter = 0;
 
-  /* ===== NON SPANDEK: meter selalu 1 ===== */
+  /* NON SPANDEK = meter 1 */
   if (type === "Non Spandek") {
     meter = 1;
   }
 
-  /* ===== SPANDEK: baca input meter ======= */
+  /* SPANDEK = baca input */
   else if (type === "Spandek") {
-    const meterRaw = meterInput.value.replace(",", ".").trim();
+    let raw = meterInput.value.trim();
 
-    // izinkan user sedang ngetik "." atau "1."
-    if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
-      return;
-    }
+    raw = raw.replace(",", ".");
 
-    meter = parseFloat(meterRaw);
+    if (raw === "" || raw === "." || raw.endsWith(".")) return;
+
+    meter = parseFloat(raw);
     if (isNaN(meter) || meter < 0) meter = 0;
   }
 
-  const qty   = parseFloat(row.querySelector(".qty-input").value) || 0;
-  const unit  = parseMoney(row.querySelector(".unit-price-input").value);
+  const qty  = parseFloat(row.querySelector(".qty-input").value) || 0;
+  const unit = parseMoney(row.querySelector(".unit-price-input").value);
 
-  // Diskon dalam Rp, tidak boleh > unit
-  let disc = parseMoney(row.querySelector(".discount-input").value) || 0;
-  if (disc > unit) {
-    disc = unit;
-    row.querySelector(".discount-input").value = formatMoney(unit);
-  }
+  let disc = parseMoney(row.querySelector(".discount-input").value);
+  if (disc > unit) disc = unit;
+  if (isNaN(disc) || disc < 0) disc = 0;
+
+  row.querySelector(".discount-input").value = formatMoney(disc);
 
   const netUnit  = Math.max(unit - disc, 0);
   const priceQty = netUnit * meter;
@@ -319,13 +300,11 @@ function recalcTotals() {
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= PREVENT MINUS QTY ================= */
+/* ================= PREVENT NEGATIVE ================= */
 
 document.addEventListener("input", function (e) {
   if (e.target.classList.contains("qty-input")) {
     let val = parseFloat(e.target.value);
-    if (isNaN(val) || val < 0) {
-      e.target.value = 0;
-    }
+    if (isNaN(val) || val < 0) e.target.value = 0;
   }
 });
