@@ -1,177 +1,218 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Form Pemesanan – Xero Style</title>
+<meta charset="UTF-8" />
+<title>Form Pemesanan – Xero Style</title>
 
-  <!-- Choices.js -->
-  <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+<!-- Choices.js -->
+<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 
-  <!-- Sortable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<!-- Sortable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-  <style>
-    :root {
-      --border: #d6dce1;
-      --border-light: #e3e7eb;
-      --header-bg: #f7f8fa;
-      --text-muted: #697386;
-      --blue: #0075c9;
-      --bg: #f5f7fa;
-    }
+<style>
+:root {
+  --border: #d6dce1;
+  --border-light: #e3e7eb;
+  --header-bg: #f7f8fa;
+  --text-muted: #697386;
+  --blue: #0075c9;
+  --bg: #f5f7fa;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: var(--bg);
-      font-size: 13px;
-    }
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  font-size: 13px;
+}
 
-    /* TOP BAR */
-    .top-bar {
-      padding: 14px 36px;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 15px;
-      font-weight: 600;
-    }
+/* TOP BAR */
+.top-bar {
+  padding: 14px 36px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
 
-    .page-wrap {
-      display: flex;
-      justify-content: center;
-      padding: 36px 0;
-    }
+.page-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 36px 0;
+}
 
-    .invoice-card {
-      width: 1150px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 32px;
-    }
+.invoice-card {
+  width: 1150px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 32px;
+}
 
-    h2 {
-      margin: 0 0 18px;
-      font-size: 20px;
-      font-weight: 600;
-    }
+h2 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 600;
+}
 
-    .header-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 22px;
-    }
+/* HEADER GRID */
+.header-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 22px;
+}
 
-    .field-label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 12px;
-      color: #6b7280;
-      font-weight: 600;
-    }
+.field-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
 
-    input, select, textarea {
-      width: 100%;
-      padding: 7px 10px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      font-size: 13px;
-      background: white;
-    }
+input, select, textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  background: white;
+}
 
-    input:focus, select:focus, textarea:focus {
-      border-color: #9fb3c8;
-      outline: none;
-    }
+input:focus, select:focus, textarea:focus {
+  border-color: #9fb3c8;
+  outline: none;
+}
 
-    /* TABLE */
-    .table-wrapper {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: visible !important;
-      background: #fff;
-      margin-bottom: 16px;
-    }
+/* TABLE WRAPPER */
+.table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 16px;
+  overflow: visible !important;
+}
 
-    table.items-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
 
-    table.items-table th {
-      background: var(--header-bg);
-      padding: 9px;
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: left;
-      border-bottom: 1px solid var(--border-light);
-    }
+.items-table th {
+  background: var(--header-bg);
+  padding: 9px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
 
-    table.items-table td {
-      padding: 8px;
-      border-bottom: 1px solid var(--border-light);
-      position: relative;
-      overflow: visible !important;
-    }
+/* FIXED COLUMN WIDTHS */
+.items-table th:nth-child(1),
+.items-table td:nth-child(1) { width: 28px; }
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) { width: 130px; }
+.items-table th:nth-child(3),
+.items-table td:nth-child(3) { width: 350px; }
+.items-table th:nth-child(4),
+.items-table td:nth-child(4) { width: 80px; }
+.items-table th:nth-child(5),
+.items-table td:nth-child(5) { width: 70px; }
+.items-table th:nth-child(6),
+.items-table td:nth-child(6) { width: 100px; }
+.items-table th:nth-child(7),
+.items-table td:nth-child(7) { width: 80px; }
+.items-table th:nth-child(8),
+.items-table td:nth-child(8) { width: 100px; }
+.items-table th:nth-child(9),
+.items-table td:nth-child(9) { width: 110px; }
+.items-table th:nth-child(10),
+.items-table td:nth-child(10) { width: 28px; }
 
-    .drag-handle { cursor: grab; text-align: center; color: #999; }
+.items-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
+  overflow: visible !important;
+}
 
-    .delete-row {
-      cursor: pointer;
-      text-align: center;
-      color: #d33;
-      font-size: 16px;
-    }
+.drag-handle { cursor: grab; text-align: center; color: #999; }
 
-    /* FIX DROPDOWN POPUP */
-    .choices {
-      overflow: visible !important;
-    }
-    .choices__list--dropdown,
-    .choices__list {
-      z-index: 999999 !important;
-      position: absolute !important;
-      background: white;
-      border: 1px solid #d0d6dd;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
+.delete-row {
+  cursor: pointer;
+  text-align: center;
+  color: #d33;
+  font-size: 16px;
+}
 
-    .notes-and-totals {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 30px;
-    }
+/* ADD ROW DROPDOWN BUTTON */
+.add-row-btn {
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
 
-    textarea { height: 170px; }
+/* Notes + Totals Section */
+.notes-and-totals {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+}
 
-    .totals-box { font-size: 14px; text-align: right; }
-    .grand-value { font-weight: 700; }
+textarea { height: 170px; }
 
-    .btn-primary {
-      padding: 8px 28px;
-      background: var(--blue);
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      border: none;
-      float: right;
-      margin-top: 30px;
-    }
+.totals-box { font-size: 14px; text-align: right; }
+.grand-value { font-weight: 700; }
 
-  </style>
+.btn-primary {
+  padding: 8px 28px;
+  background: var(--blue);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  float: right;
+  margin-top: 30px;
+}
+
+/* XERO-STYLE CHOICES DROPDOWN (OVERLAY) */
+.choices { overflow: visible !important; }
+
+.choices__list--dropdown,
+.choices__list {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  min-width: 350px !important;
+  max-width: 350px !important;
+  z-index: 999999999 !important;
+  background: #fff !important;
+  border: 1px solid #cfd6df !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18) !important;
+  border-radius: 4px !important;
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="top-bar">UXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span></div>
+<div class="top-bar">
+  UXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span>
+</div>
 
 <div class="page-wrap">
   <div class="invoice-card">
@@ -183,12 +224,10 @@
         <span class="field-label">Contact</span>
         <select id="customerSelect"></select>
       </div>
-
       <div>
         <span class="field-label">Issue date</span>
         <input type="date" id="issueDate">
       </div>
-
       <div>
         <span class="field-label">Order number</span>
         <input type="text" id="orderNumber" readonly>
@@ -215,7 +254,7 @@
       </table>
     </div>
 
-    <button type="button" onclick="addRow()">+ Add row</button>
+    <button class="add-row-btn" onclick="addRow()">Add row ▼</button>
 
     <div class="notes-and-totals">
       <div>
@@ -224,9 +263,9 @@
       </div>
 
       <div class="totals-box">
-        <div>DPP <span id="dppDisplay"></span></div>
-        <div>PPN 11% <span id="ppnDisplay"></span></div>
-        <div style="margin-top:5px;font-weight:700;">Grand Total <span id="grandTotalDisplay"></span></div>
+        <div>DPP <span id="dppDisplay">0.00</span></div>
+        <div>PPN 11% <span id="ppnDisplay">0.00</span></div>
+        <div style="margin-top:5px;font-weight:700;">Grand Total <span id="grandTotalDisplay">0.00</span></div>
       </div>
     </div>
 
@@ -235,7 +274,6 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="script.js"></script>
 
 </body>
