@@ -42,18 +42,21 @@ body {
   font-weight: 600;
 }
 
+/* PAGE WRAPPER */
 .page-wrap {
   display: flex;
   justify-content: center;
   padding: 36px 0;
 }
 
+/* CARD WIDTH = 1280px */
 .invoice-card {
-  width: 1150px;
+  width: 1280px;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 32px;
+  margin: 0 auto;
 }
 
 h2 {
@@ -92,7 +95,7 @@ input:focus, select:focus, textarea:focus {
   outline: none;
 }
 
-/* TABLE WRAPPER */
+/* TABLE */
 .table-wrapper {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -117,26 +120,16 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* FIXED COLUMN WIDTHS */
-.items-table th:nth-child(1),
-.items-table td:nth-child(1) { width: 28px; }
-.items-table th:nth-child(2),
-.items-table td:nth-child(2) { width: 130px; }
-.items-table th:nth-child(3),
-.items-table td:nth-child(3) { width: 350px; }
-.items-table th:nth-child(4),
-.items-table td:nth-child(4) { width: 80px; }
-.items-table th:nth-child(5),
-.items-table td:nth-child(5) { width: 70px; }
-.items-table th:nth-child(6),
-.items-table td:nth-child(6) { width: 100px; }
-.items-table th:nth-child(7),
-.items-table td:nth-child(7) { width: 80px; }
-.items-table th:nth-child(8),
-.items-table td:nth-child(8) { width: 100px; }
-.items-table th:nth-child(9),
-.items-table td:nth-child(9) { width: 110px; }
-.items-table th:nth-child(10),
-.items-table td:nth-child(10) { width: 28px; }
+.items-table th:nth-child(1),  .items-table td:nth-child(1) { width: 28px; }
+.items-table th:nth-child(2),  .items-table td:nth-child(2) { width: 130px; }
+.items-table th:nth-child(3),  .items-table td:nth-child(3) { width: 350px; }
+.items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 80px; }
+.items-table th:nth-child(5),  .items-table td:nth-child(5) { width: 70px; }
+.items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 100px; }
+.items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 80px; }
+.items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 100px; }
+.items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 110px; }
+.items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
 
 .items-table td {
   padding: 8px;
@@ -145,7 +138,11 @@ input:focus, select:focus, textarea:focus {
   overflow: visible !important;
 }
 
-.drag-handle { cursor: grab; text-align: center; color: #999; }
+.drag-handle {
+  cursor: grab;
+  text-align: center;
+  color: #999;
+}
 
 .delete-row {
   cursor: pointer;
@@ -165,7 +162,7 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 10px;
 }
 
-/* Notes + Totals Section */
+/* NOTES + TOTALS */
 .notes-and-totals {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -188,21 +185,53 @@ textarea { height: 170px; }
   margin-top: 30px;
 }
 
-/* XERO-STYLE CHOICES DROPDOWN (OVERLAY) */
-.choices { overflow: visible !important; }
+/* ================================
+   DROPDOWN FIX (MOST IMPORTANT)
+================================ */
 
-.choices__list--dropdown,
-.choices__list {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  min-width: 350px !important;
-  max-width: 350px !important;
+/* Prevent Choices from auto-opening */
+.choices__list--dropdown {
+  display: none !important;
+}
+
+.choices.is-open .choices__list--dropdown {
+  display: block !important;
+}
+
+/* General overlay behavior */
+.choices__list--dropdown {
+  width: auto !important;
   z-index: 999999999 !important;
   background: #fff !important;
   border: 1px solid #cfd6df !important;
   box-shadow: 0 6px 20px rgba(0,0,0,0.18) !important;
   border-radius: 4px !important;
+  top: 100% !important;
+  left: 0 !important;
+}
+
+/* ITEM DROPDOWN = 350px */
+td:nth-child(3) .choices__list--dropdown {
+  min-width: 350px !important;
+  max-width: 350px !important;
+}
+
+/* TYPE DROPDOWN = 130px */
+td:nth-child(2) .choices__list--dropdown {
+  min-width: 130px !important;
+  max-width: 130px !important;
+}
+
+/* CONTACT DROPDOWN = full width */
+#customerSelect + .choices .choices__list--dropdown {
+  min-width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Allow dropdown to escape table */
+.items-table td,
+.choices {
+  overflow: visible !important;
 }
 
 </style>
