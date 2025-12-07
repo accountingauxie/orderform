@@ -118,7 +118,7 @@ function addRow() {
       <select class="item-select"></select>
     </td>
 
-    <td><input type="text" class="meter-input"></td>
+    <td><input type="number" class="meter-input" step="0.001"></td>
     <td><input type="number" class="qty-input" step="1"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
@@ -138,6 +138,7 @@ function addRow() {
 
   typeSel.value = "";
   meterInput.disabled = true;
+  meterInput.style.background = "#f0f0f0";
 
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
@@ -159,20 +160,26 @@ function addRow() {
     );
   }
 
+  /* TYPE CHANGE */
   typeSel.addEventListener("change", () => {
+
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
+      meterInput.style.background = "white";
     } else {
       meterInput.value = "";
       meterInput.disabled = true;
+      meterInput.style.background = "#f0f0f0";
     }
 
     loadItemsForType();
+
     tr.querySelector(".unit-price-input").value = "";
     tr.querySelector(".priceqty-input").value = "";
     tr.querySelector(".line-total-input").value = "";
   });
 
+  /* ITEM SELECTED */
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
     let price = 0;
@@ -196,19 +203,14 @@ function addRow() {
     }
 
     tr.querySelector(".unit-price-input").value = formatMoney(price);
+
     recalcRow(tr);
     recalcTotals();
   });
 
+  /* INPUT CHANGE */
   tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
-
-      // hentikan total jika meter belum valid
-      const meterRaw = tr.querySelector(".meter-input").value;
-      if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
-        return;
-      }
-
       recalcRow(tr);
       recalcTotals();
     });
@@ -226,26 +228,26 @@ function deleteRow(el) {
 
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
-
   const meterInput = row.querySelector(".meter-input");
+
   const meterRaw = meterInput.value;
+  let meter = 0;
 
-  // IZINKAN user mengetik "1.", ".", ".5", dst
-  if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) {
-    return;
+  if (type === "Non Spandek") {
+    meter = 1; // ALWAYS 1
+  } else {
+    if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) return;
+
+    meter = parseFloat(meterRaw);
+    if (isNaN(meter) || meter < 0) meter = 0;
   }
-
-  let meter = parseFloat(meterRaw);
-  if (isNaN(meter) || meter < 0) meter = 0;
-
-  if (type === "Non Spandek") meter = 1;
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
   const disc = parseFloat(row.querySelector(".discount-input").value) || 0;
 
   const netUnit = unit - disc;
-  const priceQty = netUnit * (meter || 1);
+  const priceQty = netUnit * meter;
   const total = priceQty * qty;
 
   row.querySelector(".priceqty-input").value = formatMoney(priceQty);
@@ -277,6 +279,7 @@ document.addEventListener("input", function (e) {
     e.target.classList.contains("qty-input")
   ) {
     let val = parseFloat(e.target.value);
+
     if (isNaN(val) || val < 0) {
       e.target.value = 0;
     }
