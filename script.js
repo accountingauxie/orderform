@@ -4,9 +4,8 @@ const baseURL =
 
 let listSpandek = [];
 let listNonSpandek = [];
-let spandekPrice = {};
-let nonSpandekPrice = {};
-
+let priceSpan = [];
+let priceNon = [];
 let customerList = [];
 let choiceCustomer;
 
@@ -16,8 +15,7 @@ function formatMoney(num) {
   const n = Number(num) || 0;
   return (
     "Rp " +
-    n
-      .toFixed(2)
+    n.toFixed(2)
       .replace(".", ",")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
   );
@@ -40,9 +38,6 @@ window.onload = function () {
     itemSelectText: "",
     shouldSort: false
   });
-
-  document.getElementById("issueDate").value =
-    new Date().toISOString().split("T")[0];
 
   loadDropdowns();
   setOrderNumber();
@@ -68,33 +63,29 @@ function setOrderNumber() {
   document.getElementById("orderNumber").value = next;
 }
 
-/* ================= LOAD DATA FROM API ================= */
+/* ================= LOAD DATA ================= */
 
 async function loadDropdowns() {
-  try {
-    const res = await fetch(baseURL + "?action=getdata");
-    const data = await res.json();
+  const res = await fetch(baseURL + "?action=getdata");
+  const data = await res.json();
 
-    customerList = data.customers || [];
-    listSpandek = data.spandek || [];
-    listNonSpandek = data.nonspandek || [];
-    spandekPrice = data.priceSpan || {};
-    nonSpandekPrice = data.priceNon || {};
+  customerList = data.customers || [];
+  listSpandek = data.spandek || [];
+  listNonSpandek = data.nonspandek || [];
+  priceSpan = data.priceSpan || [];
+  priceNon = data.priceNon || [];
 
-    choiceCustomer.clearChoices();
-    choiceCustomer.setChoices(
-      [
-        { value: "add_new", label: "➕ Add New Customer" },
-        ...customerList.map((c) => ({ value: c, label: c }))
-      ],
-      "value",
-      "label",
-      true
-    );
-
-  } catch (err) {
-    console.error("loadDropdowns error:", err);
-  }
+  // load customer dropdown
+  choiceCustomer.clearChoices();
+  choiceCustomer.setChoices(
+    [
+      { value: "add_new", label: "➕ Add New Customer" },
+      ...customerList.map((c) => ({ value: c, label: c }))
+    ],
+    "value",
+    "label",
+    true
+  );
 }
 
 /* ================= ADD ROW ================= */
@@ -114,17 +105,16 @@ function addRow() {
       </select>
     </td>
 
-    <td>
-      <select class="item-select"></select>
-    </td>
+    <td><select class="item-select"></select></td>
 
-    <td><input type="text" class="meter-input"></td>
+    <td><input type="number" class="meter-input" step="0.001"></td>
     <td><input type="number" class="qty-input" step="1"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
-    <td><input type="text" class="discount-input" value="Rp 0,00"></td>
+    <td><input type="text" class="discount-input" value="0"></td>
 
     <td><input type="text" class="priceqty-input" readonly></td>
+
     <td><input type="text" class="line-total-input" readonly></td>
 
     <td class="delete-row" onclick="deleteRow(this)">🗑</td>
@@ -132,88 +122,87 @@ function addRow() {
 
   body.appendChild(tr);
 
-  const typeSel    = tr.querySelector(".type-select");
-  const itemSel    = tr.querySelector(".item-select");
+  const typeSel = tr.querySelector(".type-select");
+  const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
-  const discInput  = tr.querySelector(".discount-input");
+  const discInput = tr.querySelector(".discount-input");
 
   meterInput.disabled = true;
-  meterInput.style.background = "#eee";
 
-  /* Init Choices.js for ITEM column */
+  /* ============ INIT CHOICES ============ */
+
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false
   });
 
-  /* ========= LOAD ITEMS (SPx / NON-SPx) ========= */
-  function loadItemsForType() {
-    let list = typeSel.value === "Spandek" ? listSpandek : listNonSpandek;
+  /* Load item sesuai tipe */
+  function loadItems() {
+    let list = [];
+    if (typeSel.value === "Spandek") list = listSpandek;
+    if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
-    // RESET WAJIB untuk bisa reload list
-    choiceItem.clearStore();
+    choiceItem.clearChoices();
+
     choiceItem.setChoices(
-      list.map(i => ({ value: i, label: i })),
+      list.map((name, i) => ({ value: i, label: name })), 
       "value",
       "label",
-      false
+      true
     );
   }
 
-  /* ========= TYPE CHANGE ========= */
+  /* ================= TYPE CHANGE ================= */
+
   typeSel.addEventListener("change", () => {
+    loadItems();
+
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
       meterInput.style.background = "white";
     } else {
       meterInput.disabled = true;
-      meterInput.value = "";
-      meterInput.style.background = "#eee";
+      meterInput.value = "1";
+      meterInput.style.background = "#e8e8e8";
     }
 
-    loadItemsForType();
-
-    tr.querySelector(".unit-price-input").value  = "";
-    tr.querySelector(".priceqty-input").value    = "";
-    tr.querySelector(".line-total-input").value  = "";
+    tr.querySelector(".unit-price-input").value = "";
+    tr.querySelector(".priceqty-input").value = "";
+    tr.querySelector(".line-total-input").value = "";
   });
 
-  /* ========= ITEM CHANGE ========= */
+  /* ================= ITEM CHANGE ================= */
+
   itemSel.addEventListener("change", () => {
-    const item = itemSel.value;
+    const idx = parseInt(itemSel.value);
     let price = 0;
 
-    if (typeSel.value === "Spandek") {
-      price = spandekPrice[item] || 0;
-    } else {
-      price = nonSpandekPrice[item] || 0;
-    }
+    if (typeSel.value === "Spandek") price = priceSpan[idx] || 0;
+    if (typeSel.value === "Non Spandek") price = priceNon[idx] || 0;
 
     tr.querySelector(".unit-price-input").value = formatMoney(price);
-
     recalcRow(tr);
     recalcTotals();
   });
 
-  /* ========= DISKON FORMAT RP ========= */
+  /* ================= DISCOUNT FORMAT ================= */
+
   discInput.addEventListener("input", () => {
-    let raw = discInput.value.replace(/[^0-9]/g, "");
-    if (raw === "") raw = "0";
+    const unit = parseMoney(tr.querySelector(".unit-price-input").value);
+    let d = parseMoney(discInput.value);
 
-    let num = parseInt(raw, 10) || 0;
+    if (d > unit) d = unit;
 
-    const unitPrice = parseMoney(tr.querySelector(".unit-price-input").value);
-    if (num > unitPrice) num = unitPrice;
-
-    discInput.value = formatMoney(num);
+    discInput.value = formatMoney(d);
 
     recalcRow(tr);
     recalcTotals();
   });
 
-  /* ========= METER + QTY CHANGE ========= */
-  tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
+  /* ================= INPUT CHANGE ================= */
+
+  tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -221,44 +210,32 @@ function addRow() {
   });
 }
 
-/* ================= DELETE ROW ================= */
+/* ================= DELETE ================= */
 
 function deleteRow(el) {
   el.closest("tr").remove();
   recalcTotals();
 }
 
-/* ================= PER-BARIS CALC ================= */
+/* ================= PER-BARIS ================= */
 
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
-  const meterInput = row.querySelector(".meter-input");
 
-  let meter = 0;
+  let meter = parseFloat(row.querySelector(".meter-input").value);
+  if (isNaN(meter) || meter <= 0) meter = 1;
 
-  if (type === "Non Spandek") {
-    meter = 1;
-  } else if (type === "Spandek") {
-    let raw = meterInput.value.trim().replace(",", ".");
-    if (raw === "" || raw === "." || raw.endsWith(".")) return;
-    meter = parseFloat(raw);
-    if (isNaN(meter) || meter < 0) meter = 0;
-  }
+  if (type === "Non Spandek") meter = 1;
 
-  const qty  = parseFloat(row.querySelector(".qty-input").value) || 0;
+  const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
+  const disc = parseMoney(row.querySelector(".discount-input").value);
 
-  let disc = parseMoney(row.querySelector(".discount-input").value);
-  if (disc > unit) disc = unit;
-  if (disc < 0 || isNaN(disc)) disc = 0;
-
-  row.querySelector(".discount-input").value = formatMoney(disc);
-
-  const netUnit  = Math.max(unit - disc, 0);
+  const netUnit = Math.max(unit - disc, 0);
   const priceQty = netUnit * meter;
-  const total    = priceQty * qty;
+  const total = priceQty * qty;
 
-  row.querySelector(".priceqty-input").value   = formatMoney(priceQty);
+  row.querySelector(".priceqty-input").value = formatMoney(priceQty);
   row.querySelector(".line-total-input").value = formatMoney(total);
 }
 
@@ -274,16 +251,7 @@ function recalcTotals() {
   const dpp = grand / 1.11;
   const ppn = grand - dpp;
 
-  document.getElementById("dppDisplay").textContent        = formatMoney(dpp);
-  document.getElementById("ppnDisplay").textContent        = formatMoney(ppn);
+  document.getElementById("dppDisplay").textContent = formatMoney(dpp);
+  document.getElementById("ppnDisplay").textContent = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
-
-/* ================= PREVENT NEGATIVE QTY ================= */
-
-document.addEventListener("input", function (e) {
-  if (e.target.classList.contains("qty-input")) {
-    let v = parseFloat(e.target.value);
-    if (isNaN(v) || v < 0) e.target.value = 0;
-  }
-});
