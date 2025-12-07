@@ -230,17 +230,25 @@ function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
   const meterInput = row.querySelector(".meter-input");
 
-  const meterRaw = meterInput.value;
   let meter = 0;
 
+  /* =============== NON SPANDEK =============== */
   if (type === "Non Spandek") {
-    meter = 1; // ALWAYS 1
-  } else {
-    if (meterRaw === "" || meterRaw === "." || meterRaw.endsWith(".")) return;
+    meter = 1; // ALWAYS 1, no validation needed
+  }
+
+  /* =============== SPANDEK ==================== */
+  else if (type === "Spandek") {
+    const meterRaw = meterInput.value;
+
+    // Jika user mengetik "1." atau "." → jangan hitung dulu
+    if (meterRaw === "." || meterRaw.endsWith(".")) return;
 
     meter = parseFloat(meterRaw);
     if (isNaN(meter) || meter < 0) meter = 0;
   }
+
+  /* ============================================ */
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
