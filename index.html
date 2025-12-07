@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Form Pemesanan – Xero Style</title>
+<title>Form Pemesanan</title>
 
 <!-- Choices.js -->
 <link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
@@ -123,13 +123,13 @@ input:focus, select:focus, textarea:focus {
 .items-table th:nth-child(1),  .items-table td:nth-child(1) { width: 28px; }
 .items-table th:nth-child(2),  .items-table td:nth-child(2) { width: 130px; }
 .items-table th:nth-child(3),  .items-table td:nth-child(3) { width: 350px; }
-.items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 80px; }
+items-table th:nth-child(4),  .items-table td:nth-child(4) { width: 80px; }
 .items-table th:nth-child(5),  .items-table td:nth-child(5) { width: 70px; }
-.items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 130px; }
-.items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 100px; }
-.items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 130px; }
-.items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 160px; }
-.items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
+items-table th:nth-child(6),  .items-table td:nth-child(6) { width: 130px; }
+items-table th:nth-child(7),  .items-table td:nth-child(7) { width: 100px; }
+items-table th:nth-child(8),  .items-table td:nth-child(8) { width: 130px; }
+items-table th:nth-child(9),  .items-table td:nth-child(9) { width: 160px; }
+items-table th:nth-child(10), .items-table td:nth-child(10) { width: 28px; }
 
 .items-table td {
   padding: 8px;
@@ -191,7 +191,6 @@ textarea { height: 170px; }
    DROPDOWN FIX (MOST IMPORTANT)
 ================================ */
 
-/* Prevent Choices from auto-opening */
 .choices__list--dropdown {
   display: none !important;
 }
@@ -200,7 +199,6 @@ textarea { height: 170px; }
   display: block !important;
 }
 
-/* General overlay behavior */
 .choices__list--dropdown {
   width: auto !important;
   z-index: 999999999 !important;
@@ -212,28 +210,59 @@ textarea { height: 170px; }
   left: 0 !important;
 }
 
-/* ITEM DROPDOWN = 350px */
 td:nth-child(3) .choices__list--dropdown {
   min-width: 350px !important;
   max-width: 350px !important;
 }
 
-/* TYPE DROPDOWN = 130px */
 td:nth-child(2) .choices__list--dropdown {
   min-width: 130px !important;
   max-width: 130px !important;
 }
 
-/* CONTACT DROPDOWN = full width */
 #customerSelect + .choices .choices__list--dropdown {
   min-width: 100% !important;
   max-width: 100% !important;
 }
 
-/* Allow dropdown to escape table */
 .items-table td,
 .choices {
   overflow: visible !important;
+}
+
+/* ================================
+   XERO SUMMARY STYLE (ADDED HERE)
+================================ */
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.summary-row .label {
+  color: #333;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.summary-row .value {
+  color: #333;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #d4d7dc;
+  margin: 12px 0;
+}
+
+.summary-row.total .label,
+.summary-row.total .value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
 }
 
 </style>
@@ -242,7 +271,7 @@ td:nth-child(2) .choices__list--dropdown {
 <body>
 
 <div class="top-bar">
-  UXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span>
+  AUXILIUM <span style="font-weight:300;color:#909090">Accounting Management Services</span>
 </div>
 
 <div class="page-wrap">
@@ -294,11 +323,23 @@ td:nth-child(2) .choices__list--dropdown {
       </div>
 
       <div class="totals-box">
-        <div>DPP <span id="dppDisplay">0.00</span></div>
-        <div>PPN 11% <span id="ppnDisplay">0.00</span></div>
-        <div style="margin-top:5px;font-weight:700;">Grand Total <span id="grandTotalDisplay">0.00</span></div>
+        <div class="summary-row">
+          <span class="label">DPP</span>
+          <span class="value" id="dppDisplay">0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="label">PPN 11%</span>
+          <span class="value" id="ppnDisplay">0.00</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-row total">
+          <span class="label">Grand Total</span>
+          <span class="value" id="grandTotalDisplay">0.00</span>
+        </div>
       </div>
-    </div>
 
     <button class="btn-primary" type="button">Approve</button>
 
