@@ -4,18 +4,20 @@ const baseURL =
 
 let listSpandek = [];
 let listNonSpandek = [];
-let priceSpan = [];
-let priceNon = [];
+let spandekPrice = {};
+let nonSpandekPrice = {};
+
 let customerList = [];
 let choiceCustomer;
 
-/* ================= FORMAT RP ================= */
+/* ================= FORMAT Rp ================= */
 
 function formatMoney(num) {
   const n = Number(num) || 0;
   return (
     "Rp " +
-    n.toFixed(2)
+    n
+      .toFixed(2)
       .replace(".", ",")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
   );
@@ -38,6 +40,9 @@ window.onload = function () {
     itemSelectText: "",
     shouldSort: false
   });
+
+  document.getElementById("issueDate").value =
+    new Date().toISOString().split("T")[0];
 
   loadDropdowns();
   setOrderNumber();
@@ -66,26 +71,30 @@ function setOrderNumber() {
 /* ================= LOAD DATA ================= */
 
 async function loadDropdowns() {
-  const res = await fetch(baseURL + "?action=getdata");
-  const data = await res.json();
+  try {
+    const res = await fetch(baseURL + "?action=getdata");
+    const data = await res.json();
 
-  customerList = data.customers || [];
-  listSpandek = data.spandek || [];
-  listNonSpandek = data.nonspandek || [];
-  priceSpan = data.priceSpan || [];
-  priceNon = data.priceNon || [];
+    customerList = data.customers || [];
+    listSpandek = data.spandek || [];
+    listNonSpandek = data.nonspandek || [];
+    spandekPrice = data.priceSpan || {};
+    nonSpandekPrice = data.priceNon || {};
 
-  // load customer dropdown
-  choiceCustomer.clearChoices();
-  choiceCustomer.setChoices(
-    [
-      { value: "add_new", label: "➕ Add New Customer" },
-      ...customerList.map((c) => ({ value: c, label: c }))
-    ],
-    "value",
-    "label",
-    true
-  );
+    choiceCustomer.clearChoices();
+    choiceCustomer.setChoices(
+      [
+        { value: "add_new", label: "➕ Add New Customer" },
+        ...customerList.map((c) => ({ value: c, label: c }))
+      ],
+      "value",
+      "label",
+      true
+    );
+
+  } catch (err) {
+    console.error("loadDropdowns error:", err);
+  }
 }
 
 /* ================= ADD ROW ================= */
@@ -105,16 +114,17 @@ function addRow() {
       </select>
     </td>
 
-    <td><select class="item-select"></select></td>
+    <td>
+      <select class="item-select"></select>
+    </td>
 
     <td><input type="number" class="meter-input" step="0.001"></td>
     <td><input type="number" class="qty-input" step="1"></td>
 
     <td><input type="text" class="unit-price-input" readonly></td>
-    <td><input type="text" class="discount-input" value="0"></td>
+    <td><input type="text" class="discount-input" value="Rp 0,00"></td>
 
     <td><input type="text" class="priceqty-input" readonly></td>
-
     <td><input type="text" class="line-total-input" readonly></td>
 
     <td class="delete-row" onclick="deleteRow(this)">🗑</td>
@@ -125,83 +135,94 @@ function addRow() {
   const typeSel = tr.querySelector(".type-select");
   const itemSel = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
-  const discInput = tr.querySelector(".discount-input");
+  const discountInput = tr.querySelector(".discount-input");
 
   meterInput.disabled = true;
-
-  /* ============ INIT CHOICES ============ */
 
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
-    shouldSort: false
+    shouldSort: false,
+    removeItemButton: false,
   });
 
-  /* Load item sesuai tipe */
+  /* FIX DROPDOWN — ALWAYS LOAD ITEMS CORRECTLY */
   function loadItems() {
     let list = [];
+
     if (typeSel.value === "Spandek") list = listSpandek;
     if (typeSel.value === "Non Spandek") list = listNonSpandek;
 
-    choiceItem.clearChoices();
+    choiceItem.clearStore();
+    choiceItem.setChoiceByValue(null); // Reset value
 
-    choiceItem.setChoices(
-      list.map((name, i) => ({ value: i, label: name })), 
-      "value",
-      "label",
-      true
-    );
+    list.forEach((name, i) => {
+      choiceItem._addChoice({
+        value: name,
+        label: name,
+        selected: false,
+        disabled: false,
+      });
+    });
+
+    choiceItem._render();
   }
 
-  /* ================= TYPE CHANGE ================= */
-
+  /* When type changed */
   typeSel.addEventListener("change", () => {
-    loadItems();
-
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
-      meterInput.style.background = "white";
+      meterInput.value = "";
     } else {
       meterInput.disabled = true;
       meterInput.value = "1";
-      meterInput.style.background = "#e8e8e8";
     }
+
+    loadItems();
 
     tr.querySelector(".unit-price-input").value = "";
     tr.querySelector(".priceqty-input").value = "";
     tr.querySelector(".line-total-input").value = "";
+
+    recalcRow(tr);
+    recalcTotals();
   });
 
-  /* ================= ITEM CHANGE ================= */
-
+  /* When an item is chosen */
   itemSel.addEventListener("change", () => {
-    const idx = parseInt(itemSel.value);
+    const item = itemSel.value;
     let price = 0;
 
-    if (typeSel.value === "Spandek") price = priceSpan[idx] || 0;
-    if (typeSel.value === "Non Spandek") price = priceNon[idx] || 0;
+    if (typeSel.value === "Spandek") {
+      const idx = listSpandek.indexOf(item);
+      price = Number(spandekPrice[idx]) || 0;
+    }
+
+    if (typeSel.value === "Non Spandek") {
+      const idx = listNonSpandek.indexOf(item);
+      price = Number(nonSpandekPrice[idx]) || 0;
+    }
 
     tr.querySelector(".unit-price-input").value = formatMoney(price);
     recalcRow(tr);
     recalcTotals();
   });
 
-  /* ================= DISCOUNT FORMAT ================= */
+  /* Diskon formatting */
+  discountInput.addEventListener("input", () => {
+    let num = parseMoney(discountInput.value);
 
-  discInput.addEventListener("input", () => {
     const unit = parseMoney(tr.querySelector(".unit-price-input").value);
-    let d = parseMoney(discInput.value);
+    if (num > unit) num = unit;
+    if (num < 0) num = 0;
 
-    if (d > unit) d = unit;
-
-    discInput.value = formatMoney(d);
+    discountInput.value = formatMoney(num);
 
     recalcRow(tr);
     recalcTotals();
   });
 
-  /* ================= INPUT CHANGE ================= */
-
+  /* Recalculate on any input */
   tr.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
@@ -217,21 +238,22 @@ function deleteRow(el) {
   recalcTotals();
 }
 
-/* ================= PER-BARIS ================= */
+/* ================= PER BARIS ================= */
 
 function recalcRow(row) {
   const type = row.querySelector(".type-select").value;
 
-  let meter = parseFloat(row.querySelector(".meter-input").value);
-  if (isNaN(meter) || meter <= 0) meter = 1;
+  const meterRaw = row.querySelector(".meter-input").value;
+  if (meterRaw.endsWith(".")) return;
 
-  if (type === "Non Spandek") meter = 1;
+  let meter = parseFloat(meterRaw);
+  if (isNaN(meter) || type === "Non Spandek") meter = 1;
 
   const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
   const unit = parseMoney(row.querySelector(".unit-price-input").value);
   const disc = parseMoney(row.querySelector(".discount-input").value);
 
-  const netUnit = Math.max(unit - disc, 0);
+  const netUnit = unit - disc;
   const priceQty = netUnit * meter;
   const total = priceQty * qty;
 
@@ -255,3 +277,15 @@ function recalcTotals() {
   document.getElementById("ppnDisplay").textContent = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
+
+/* ================= PREVENT MINUS ================= */
+
+document.addEventListener("input", function (e) {
+  if (
+    e.target.classList.contains("meter-input") ||
+    e.target.classList.contains("qty-input")
+  ) {
+    let val = parseFloat(e.target.value);
+    if (isNaN(val) || val < 0) e.target.value = 0;
+  }
+});
