@@ -68,7 +68,7 @@ function setOrderNumber() {
   document.getElementById("orderNumber").value = next;
 }
 
-/* ================= LOAD DATA ================= */
+/* ================= LOAD DATA FROM API ================= */
 
 async function loadDropdowns() {
   try {
@@ -132,78 +132,62 @@ function addRow() {
 
   body.appendChild(tr);
 
-  const typeSel   = tr.querySelector(".type-select");
-  const itemSel   = tr.querySelector(".item-select");
+  const typeSel    = tr.querySelector(".type-select");
+  const itemSel    = tr.querySelector(".item-select");
   const meterInput = tr.querySelector(".meter-input");
-  const discInput = tr.querySelector(".discount-input");
+  const discInput  = tr.querySelector(".discount-input");
 
   meterInput.disabled = true;
   meterInput.style.background = "#eee";
 
+  /* Init Choices.js for ITEM column */
   const choiceItem = new Choices(itemSel, {
     searchEnabled: true,
     itemSelectText: "",
     shouldSort: false
   });
 
+  /* ========= LOAD ITEMS (SPx / NON-SPx) ========= */
   function loadItemsForType() {
-  let list = [];
-  if (typeSel.value === "Spandek") list = listSpandek;
-  if (typeSel.value === "Non Spandek") list = listNonSpandek;
+    let list = typeSel.value === "Spandek" ? listSpandek : listNonSpandek;
 
-  // FULL SAFE RESET
-  choiceItem.clearStore();
-  choiceItem._currentState.items = [];
-  choiceItem._currentState.choices = [];
-  choiceItem.passedElement.element.value = "";
+    // RESET WAJIB untuk bisa reload list
+    choiceItem.clearStore();
+    choiceItem.setChoices(
+      list.map(i => ({ value: i, label: i })),
+      "value",
+      "label",
+      false
+    );
+  }
 
-  choiceItem.setChoices(
-    list.map(i => ({ value: i, label: i })),
-    "value",
-    "label",
-    false
-  );
-}
-
-  /* ===== TYPE CHANGE ===== */
+  /* ========= TYPE CHANGE ========= */
   typeSel.addEventListener("change", () => {
     if (typeSel.value === "Spandek") {
       meterInput.disabled = false;
       meterInput.style.background = "white";
     } else {
-      meterInput.value = "";
       meterInput.disabled = true;
+      meterInput.value = "";
       meterInput.style.background = "#eee";
     }
 
     loadItemsForType();
 
-    tr.querySelector(".unit-price-input").value = "";
-    tr.querySelector(".priceqty-input").value   = "";
-    tr.querySelector(".line-total-input").value = "";
+    tr.querySelector(".unit-price-input").value  = "";
+    tr.querySelector(".priceqty-input").value    = "";
+    tr.querySelector(".line-total-input").value  = "";
   });
 
-  /* ===== ITEM SELECTED ===== */
+  /* ========= ITEM CHANGE ========= */
   itemSel.addEventListener("change", () => {
     const item = itemSel.value;
     let price = 0;
 
     if (typeSel.value === "Spandek") {
-      if (Array.isArray(spandekPrice)) {
-        const idx = listSpandek.indexOf(item);
-        if (idx >= 0) price = Number(spandekPrice[idx]) || 0;
-      } else {
-        price = Number(spandekPrice[item]) || 0;
-      }
-    }
-
-    if (typeSel.value === "Non Spandek") {
-      if (Array.isArray(nonSpandekPrice)) {
-        const idx = listNonSpandek.indexOf(item);
-        if (idx >= 0) price = Number(nonSpandekPrice[idx]) || 0;
-      } else {
-        price = Number(nonSpandekPrice[item]) || 0;
-      }
+      price = spandekPrice[item] || 0;
+    } else {
+      price = nonSpandekPrice[item] || 0;
     }
 
     tr.querySelector(".unit-price-input").value = formatMoney(price);
@@ -212,15 +196,15 @@ function addRow() {
     recalcTotals();
   });
 
-  /* ===== DISKON (FORMAT RP & MAX UNIT PRICE) ===== */
+  /* ========= DISKON FORMAT RP ========= */
   discInput.addEventListener("input", () => {
     let raw = discInput.value.replace(/[^0-9]/g, "");
     if (raw === "") raw = "0";
 
     let num = parseInt(raw, 10) || 0;
-    const unit = parseMoney(tr.querySelector(".unit-price-input").value);
 
-    if (num > unit) num = unit;
+    const unitPrice = parseMoney(tr.querySelector(".unit-price-input").value);
+    if (num > unitPrice) num = unitPrice;
 
     discInput.value = formatMoney(num);
 
@@ -228,10 +212,8 @@ function addRow() {
     recalcTotals();
   });
 
-  /* ===== INPUT LISTENER LAIN (meter & qty) ===== */
-  tr.querySelectorAll("input").forEach(inp => {
-    if (inp === discInput) return;
-
+  /* ========= METER + QTY CHANGE ========= */
+  tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
     inp.addEventListener("input", () => {
       recalcRow(tr);
       recalcTotals();
@@ -246,27 +228,19 @@ function deleteRow(el) {
   recalcTotals();
 }
 
-/* ================= PER BARIS (CORE) ================= */
+/* ================= PER-BARIS CALC ================= */
 
 function recalcRow(row) {
-  const type       = row.querySelector(".type-select").value;
+  const type = row.querySelector(".type-select").value;
   const meterInput = row.querySelector(".meter-input");
 
   let meter = 0;
 
-  /* NON SPANDEK = meter 1 */
   if (type === "Non Spandek") {
     meter = 1;
-  }
-
-  /* SPANDEK = baca input */
-  else if (type === "Spandek") {
-    let raw = meterInput.value.trim();
-
-    raw = raw.replace(",", ".");
-
+  } else if (type === "Spandek") {
+    let raw = meterInput.value.trim().replace(",", ".");
     if (raw === "" || raw === "." || raw.endsWith(".")) return;
-
     meter = parseFloat(raw);
     if (isNaN(meter) || meter < 0) meter = 0;
   }
@@ -276,7 +250,7 @@ function recalcRow(row) {
 
   let disc = parseMoney(row.querySelector(".discount-input").value);
   if (disc > unit) disc = unit;
-  if (isNaN(disc) || disc < 0) disc = 0;
+  if (disc < 0 || isNaN(disc)) disc = 0;
 
   row.querySelector(".discount-input").value = formatMoney(disc);
 
@@ -300,16 +274,16 @@ function recalcTotals() {
   const dpp = grand / 1.11;
   const ppn = grand - dpp;
 
-  document.getElementById("dppDisplay").textContent       = formatMoney(dpp);
-  document.getElementById("ppnDisplay").textContent       = formatMoney(ppn);
+  document.getElementById("dppDisplay").textContent        = formatMoney(dpp);
+  document.getElementById("ppnDisplay").textContent        = formatMoney(ppn);
   document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
 }
 
-/* ================= PREVENT NEGATIVE ================= */
+/* ================= PREVENT NEGATIVE QTY ================= */
 
 document.addEventListener("input", function (e) {
   if (e.target.classList.contains("qty-input")) {
-    let val = parseFloat(e.target.value);
-    if (isNaN(val) || val < 0) e.target.value = 0;
+    let v = parseFloat(e.target.value);
+    if (isNaN(v) || v < 0) e.target.value = 0;
   }
 });
