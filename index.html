@@ -1,877 +1,846 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kas Kecil Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Select2 Customization to match Tailwind */
-        .select2-container .select2-selection--single {
-            height: 42px;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 6px;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            top: 8px;
-        }
-        
-        .loading-overlay { background: rgba(255,255,255,0.8); z-index: 50; }
-        tbody tr:nth-child(even) { background-color: #f9fafb; }
-        tbody tr:hover { background-color: #f3f4f6; }
-        
-        .transition-width {
-            transition-property: width;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 300ms;
-        }
-
-        .cursor-not-allowed { cursor: not-allowed; }
-
-        .glass-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-        
-        /* Segmented Control */
-        .segmented-control {
-            display: flex;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 12px;
-            position: relative;
-        }
-        .segmented-control input { display: none; }
-        .segmented-control label {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            z-index: 2;
-            color: #64748b;
-        }
-        /* Active States */
-        #tipeKeluar:checked ~ .indicator {
-            transform: translateX(0);
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid #fee2e2;
-        }
-        #tipeKeluar:checked + label { color: #ef4444; } 
-        
-        #tipeMasuk:checked ~ .indicator {
-            transform: translateX(100%);
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid #dcfce7;
-        }
-        #tipeMasuk:checked + label { color: #16a34a; } 
-
-        .indicator {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: calc(50% - 4px);
-            height: calc(100% - 8px);
-            border-radius: 8px;
-            transition: transform 0.2s ease;
-            z-index: 1;
-        }
-
-        .modern-input {
-            @apply w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:outline-none transition-all;
-        }
-        .modern-input:focus {
-            @apply border-blue-500 ring-blue-100;
-        }
-        /* Readonly input style */
-        .modern-input:read-only {
-            background-color: #f3f4f6;
-            cursor: not-allowed;
-        }
-
-        /* Error state validation */
-        .input-error {
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important;
-        }
-        .input-error:focus {
-            ring-color: #fee2e2 !important;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden">
-
-    <div id="loginPage" class="fixed inset-0 flex items-center justify-center bg-gray-200 z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-96 border border-gray-100">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">Login Kas Kecil</h2>
-                <p class="text-gray-500 text-sm mt-1">Silakan masuk untuk melanjutkan</p>
-            </div>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Email</label>
-                    <input type="email" id="email" class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition" placeholder="user@example.com" required>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Password</label>
-                    <input type="password" id="password" class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition" placeholder="••••••••" required>
-                </div>
-                <button type="submit" id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition">Masuk</button>
-                <p id="loginError" class="text-red-500 text-sm mt-4 text-center hidden"></p>
-            </form>
-        </div>
-    </div>
-
-    <div id="dashboardPage" class="hidden flex flex-col h-full">
-        
-        <nav class="bg-white shadow-sm px-6 py-3 flex justify-between items-center z-20 relative flex-none border-b">
-            <h1 class="text-lg font-bold text-gray-700 flex items-center">
-                <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-3 shadow-sm">
-                    <i class="fas fa-wallet text-sm"></i>
-                </span>
-                Kas Kecil Overview
-            </h1>
-            <div class="flex items-center gap-4">
-                <div id="lockStatus" class="hidden text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-full border border-red-100 font-medium">
-                    <i class="fas fa-lock mr-1.5"></i> Locked: <span id="lockDateDisplay">-</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="text-right hidden md:block">
-                        <p id="userName" class="text-sm font-bold text-gray-700">User</p>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">Active</p>
-                    </div>
-                    <button onclick="logout()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 transition flex items-center justify-center">
-                        <i class="fas fa-power-off"></i>
-                    </button>
-                </div>
-            </div>
-        </nav>
-
-        <div class="flex-grow flex overflow-hidden relative">
-            
-            <div id="mainContent" class="w-full h-full overflow-y-auto p-6 transition-width custom-scrollbar">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-                        <div class="absolute right-0 top-0 h-full w-1 bg-blue-500"></div>
-                        <div class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Total Saldo Akhir</div>
-                        <div class="text-3xl font-bold text-gray-800" id="valSaldo">Rp 0</div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-                        <div class="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
-                        <div class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Total Masuk</div>
-                        <div class="text-2xl font-bold text-green-600" id="valDebit">Rp 0</div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
-                        <div class="absolute right-0 top-0 h-full w-1 bg-red-500"></div>
-                        <div class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Total Keluar</div>
-                        <div class="text-2xl font-bold text-red-600" id="valKredit">Rp 0</div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-end justify-between">
-                    <div class="flex gap-4 items-end flex-wrap">
-                        <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 flex gap-3">
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Start Date</label>
-                                <input type="date" id="filterStart" class="bg-transparent text-sm font-semibold text-gray-700 focus:outline-none">
-                            </div>
-                            <div class="w-px bg-gray-300"></div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">End Date</label>
-                                <input type="date" id="filterEnd" class="bg-transparent text-sm font-semibold text-gray-700 focus:outline-none">
-                            </div>
-                        </div>
-                        <button onclick="fetchData()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium text-sm transition flex items-center">
-                            <i class="fas fa-filter mr-2"></i> Filter
-                        </button>
-                    </div>
-                    
-                    <button onclick="openModal('add')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg shadow-md font-bold text-sm transition transform hover:-translate-y-0.5 flex items-center">
-                        <i class="fas fa-plus-circle mr-2 text-lg"></i> Add Transaction
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full leading-normal">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-left">
-                                    <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Ref</th>
-                                    <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Deskripsi</th>
-                                    <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Akun</th>
-                                    <th class="px-5 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Debit</th>
-                                    <th class="px-5 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Kredit</th>
-                                    <th class="px-5 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Saldo</th>
-                                    <th class="px-5 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody"></tbody>
-                        </table>
-                    </div>
-                    <div id="tableLoading" class="p-12 text-center text-gray-500 hidden">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600 mb-3"></div>
-                        <p class="text-sm font-medium">Mengambil data terbaru...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="previewPane" class="w-0 bg-white border-l border-gray-200 shadow-2xl transition-width flex flex-col hidden relative z-30">
-                <div class="flex justify-between items-center p-4 border-b flex-none bg-gray-50">
-                    <h3 class="font-bold text-gray-700 text-sm"><i class="fas fa-paperclip mr-2 text-gray-400"></i> Bukti</h3>
-                    <div class="flex gap-2">
-                        <a id="btnNewTab" href="#" target="_blank" class="text-gray-500 hover:text-blue-600 p-2 rounded hover:bg-gray-200 transition">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
-                        <button onclick="closePreview()" class="text-gray-500 hover:text-red-600 p-2 rounded hover:bg-gray-200 transition">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="flex-grow relative bg-gray-100 flex items-center justify-center">
-                    <div id="previewLoader" class="absolute inset-0 flex items-center justify-center text-gray-400 flex-col">
-                        <i class="fas fa-circle-notch fa-spin text-2xl mb-2"></i>
-                        <span class="text-xs">Memuat...</span>
-                    </div>
-                    <iframe id="previewFrame" class="w-full h-full hidden" src="" frameborder="0"></iframe>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="modalAdd" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden backdrop-blur-sm h-full w-full z-50 flex items-center justify-center p-4">
-        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
-            
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 sticky top-0 z-10">
-                <h3 id="modalTitle" class="text-lg font-bold text-gray-800">Tambah Transaksi</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <form id="addForm" onsubmit="submitTransaction(event)" class="p-6">
-                <input type="hidden" id="editRef">
-                <input type="hidden" id="formMode" value="add">
-                
-                <div class="mb-5">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tipe Transaksi</label>
-                    <div class="segmented-control">
-                        <input type="radio" name="tipe" id="tipeKeluar" value="Keluar" checked onchange="handleTypeChange()">
-                        <label for="tipeKeluar"><i class="fas fa-arrow-up mr-1"></i> Expense</label>
-                        
-                        <input type="radio" name="tipe" id="tipeMasuk" value="Masuk" onchange="handleTypeChange()">
-                        <label for="tipeMasuk"><i class="fas fa-arrow-down mr-1"></i> Income</label>
-                        
-                        <div class="indicator"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tanggal</label>
-                        <input type="date" id="tgl" class="modern-input text-sm bg-gray-50">
-                    </div>
-                    <div>
-                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Contact</label>
-                         <input type="text" id="contact" class="modern-input text-sm" placeholder="Nama Vendor/Klien">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Akun (CoA)</label>
-                    <select id="akun" class="w-full" style="width: 100%;">
-                        <option value="">-- Cari Akun --</option>
-                    </select>
-                    <p class="text-[10px] text-gray-400 italic mt-1" id="coaHelpText">*Menampilkan akun Expense</p>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tax Type</label>
-                    <div class="relative">
-                         <select id="taxType" class="modern-input appearance-none bg-white">
-                            <option value="">-- Pilih Tax Type --</option>
-                         </select>
-                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                             <i class="fas fa-chevron-down text-xs"></i>
-                         </div>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Deskripsi</label>
-                    <input type="text" id="desc" class="modern-input" placeholder="Contoh: Beli bensin operasional">
-                </div>
-
-                <div class="grid grid-cols-3 gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                    <div class="flex flex-col">
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Qty (L)</label>
-                        <input type="number" id="qty" class="modern-input text-sm text-center w-full" placeholder="1" value="1" min="1" oninput="updateNominal()">
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Price (M)</label>
-                        <input type="number" id="price" class="modern-input text-sm w-full" placeholder="0" oninput="updateNominal()">
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Total (Calc)</label>
-                        <input type="number" id="nominal" class="modern-input text-sm bg-gray-200 font-bold text-gray-800 w-full" readonly>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">No Tagihan (Opsional)</label>
-                        <input type="text" id="tagihan" class="modern-input text-sm" placeholder="-">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">
-                            Bukti <span id="fileLabelInfo" class="font-normal text-gray-400 text-[9px] lowercase">(kosongkan jika tetap)</span>
-                        </label>
-                        <input type="file" id="file" class="block w-full text-sm text-gray-500
-                            file:mr-4 file:py-2 file:px-4
-                            file:rounded-full file:border-0
-                            file:text-xs file:font-semibold
-                            file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100 cursor-pointer border border-gray-300 rounded-lg p-1" 
-                            accept="image/*,application/pdf">
-                    </div>
-                </div>
-
-                <button type="submit" id="btnSubmit" class="w-full bg-red-500 text-white p-3 rounded-xl hover:bg-red-600 font-bold transition shadow-lg flex items-center justify-center">
-                    <i class="fas fa-save mr-2"></i> Simpan Transaksi
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // --- GANTI URL INI DENGAN DEPLOYMENT ID BARU ANDA ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxsq5H0Q7P9QXPWtQ-wQ-1ItB_xfnBQfvgnOOPvcYA9xQydZBhyxszoHX5592r3NYN7/exec"; 
-        
-        // VARIABEL GLOBAL
-        let globalTransactions = [];
-        let currentLockDate = null;
-        let coaData = { expense: [], income: [], taxTypes: [] };
-
-        document.addEventListener("DOMContentLoaded", () => {
-            checkSession();
-            document.getElementById('tgl').valueAsDate = new Date();
-            
-            // Inisialisasi Select2
-            $('#akun').select2({
-                placeholder: "-- Pilih Akun --",
-                allowClear: true,
-                dropdownParent: $('#modalAdd') // Penting agar Select2 jalan di dalam Modal
-            });
-
-            // Reset error visual saat user mengetik/memilih
-            $('input, select').on('input change', function() {
-                $(this).removeClass('input-error');
-            });
-             $('#akun').on('select2:select', function (e) {
-                 $('#akun').next('.select2-container').find('.select2-selection').removeClass('border-red-500');
-             });
-        });
-
-        // --- MATH LOGIC: Qty * Price = Nominal ---
-        function updateNominal() {
-            const qty = parseFloat(document.getElementById("qty").value) || 0;
-            const price = parseFloat(document.getElementById("price").value) || 0;
-            const total = qty * price;
-            document.getElementById("nominal").value = total;
-            document.getElementById("nominal").classList.remove('input-error');
-        }
-
-        // --- UI LOGIC: Handle Perubahan Tipe Transaksi ---
-        function handleTypeChange() {
-            const isIncome = document.getElementById("tipeMasuk").checked;
-            const btnSubmit = document.getElementById("btnSubmit");
-            const helpText = document.getElementById("coaHelpText");
-            
-            // 1. Ubah Data Dropdown (Select2)
-            const listToUse = isIncome ? coaData.income : coaData.expense;
-            updateDropdown(listToUse);
-
-            // 2. Ubah UI Theme
-            if (isIncome) {
-                btnSubmit.classList.remove("bg-red-500", "hover:bg-red-600");
-                btnSubmit.classList.add("bg-green-600", "hover:bg-green-700");
-                helpText.innerText = "*Menampilkan akun Income (Pendapatan)";
-            } else {
-                btnSubmit.classList.remove("bg-green-600", "hover:bg-green-700");
-                btnSubmit.classList.add("bg-red-500", "hover:bg-red-600");
-                helpText.innerText = "*Menampilkan akun Expense (Pengeluaran)";
-            }
-        }
-
-        function updateDropdown(accounts) {
-            const $select = $('#akun');
-            $select.empty(); // Kosongkan opsi lama
-            $select.append('<option value="">-- Pilih Akun --</option>');
-            
-            if(accounts && accounts.length > 0){
-                accounts.forEach(acc => {
-                    // acc sekarang object {name: "...", tax: "..."}
-                    const opt = new Option(acc.name, acc.name, false, false);
-                    $select.append(opt);
-                });
-            }
-            $select.trigger('change'); // Refresh Select2
-        }
-
-        // --- NEW: Populate Dropdown Tax Manual ---
-        function updateTaxDropdown(taxList) {
-            const sel = document.getElementById("taxType");
-            sel.innerHTML = '<option value="">-- Pilih Tax Type --</option>';
-            if(taxList && taxList.length > 0) {
-                taxList.forEach(tax => {
-                    const opt = document.createElement("option");
-                    opt.value = tax;
-                    opt.text = tax;
-                    sel.add(opt);
-                });
-            }
-        }
-
-        // --- AUTH & CORE (Sama seperti sebelumnya) ---
-
-        function checkSession() {
-            const user = localStorage.getItem("kasUser");
-            if (user) {
-                document.getElementById("loginPage").classList.add("hidden");
-                document.getElementById("dashboardPage").classList.remove("hidden");
-                document.getElementById("userName").innerText = JSON.parse(user).name;
-                fetchData(); 
-            }
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById("btnLogin");
-            const err = document.getElementById("loginError");
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-            btn.disabled = true;
-            err.classList.add("hidden");
-
-            const payload = {
-                action: "login",
-                email: document.getElementById("email").value,
-                password: document.getElementById("password").value
-            };
-
-            fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success") {
-                    localStorage.setItem("kasUser", JSON.stringify(data.user));
-                    checkSession();
-                } else {
-                    err.innerText = data.message;
-                    err.classList.remove("hidden");
-                }
-            })
-            .catch(error => {
-                err.innerText = "Gagal terhubung server";
-                err.classList.remove("hidden");
-            })
-            .finally(() => {
-                btn.innerText = "Masuk";
-                btn.disabled = false;
-            });
-        }
-
-        function logout() {
-            localStorage.removeItem("kasUser");
-            location.reload();
-        }
-
-        // --- DATA FETCHING ---
-        function fetchData() {
-            const tbody = document.getElementById("tableBody");
-            const loading = document.getElementById("tableLoading");
-            const start = document.getElementById("filterStart").value;
-            const end = document.getElementById("filterEnd").value;
-
-            tbody.innerHTML = "";
-            loading.classList.remove("hidden");
-
-            let url = `${API_URL}?action=getData`;
-            if (start) url += `&start=${start}`;
-            if (end) url += `&end=${end}`;
-
-            fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                loading.classList.add("hidden");
-                if (data.status === "success") {
-                    globalTransactions = data.data;
-                    
-                    if(data.accounts) {
-                        coaData.expense = data.accounts.expense || [];
-                        coaData.income = data.accounts.income || [];
-                        // Simpan list tax unique
-                        coaData.taxTypes = data.accounts.taxTypes || [];
-                    }
-
-                    if (data.lockDate) currentLockDate = data.lockDate;
-                    
-                    updateLockDateUI();
-                    updateCards(data.stats);
-                    updateTable(globalTransactions);
-                }
-            })
-            .catch(err => {
-                loading.innerHTML = `<span class="text-red-500">Error: ${err}</span>`;
-            });
-        }
-
-        function updateLockDateUI() {
-            const el = document.getElementById("lockStatus");
-            const txt = document.getElementById("lockDateDisplay");
-            
-            if (currentLockDate) {
-                el.classList.remove("hidden");
-                const d = new Date(currentLockDate);
-                txt.innerText = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            } else {
-                el.classList.add("hidden");
-            }
-        }
-
-        function updateCards(stats) {
-            const fmt = (n) => "Rp " + new Intl.NumberFormat('id-ID').format(n);
-            document.getElementById("valDebit").innerText = fmt(stats.debit);
-            document.getElementById("valKredit").innerText = fmt(stats.kredit);
-            document.getElementById("valSaldo").innerText = fmt(stats.saldo);
-        }
-
-        function updateTable(rows) {
-            const tbody = document.getElementById("tableBody");
-            const fmt = (n) => n === 0 ? "-" : new Intl.NumberFormat('id-ID').format(n);
-            
-            if(rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-8 text-gray-400 italic">Tidak ada data transaksi.</td></tr>';
-                return;
-            }
-
-            rows.forEach((row, index) => {
-                const tr = document.createElement("tr");
-
-                let btnLihat = `<span class="text-gray-300 text-xs">-</span>`;
-                if (row.attach && row.attach.includes("http")) {
-                    btnLihat = `
-                        <button onclick="openPreview('${row.attach}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition" title="Lihat Bukti">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    `;
-                }
-
-                let isLocked = false;
-                if (currentLockDate) {
-                    const lockDateObj = new Date(currentLockDate); 
-                    const transDateObj = new Date(row.dateISO || row.date); 
-                    lockDateObj.setHours(0,0,0,0);
-                    transDateObj.setHours(0,0,0,0);
-                    if (transDateObj <= lockDateObj) isLocked = true;
-                }
-
-                let btnAction = "";
-                if (isLocked) {
-                    btnAction = `<span class="text-gray-400 ml-2 cursor-not-allowed p-2"><i class="fas fa-lock"></i></span>`;
-                } else {
-                    btnAction = `
-                        <button onclick="openModal('edit', ${index})" class="text-amber-500 hover:text-amber-600 bg-amber-50 hover:bg-amber-100 p-2 rounded-full ml-2 transition">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                    `;
-                }
-
-                tr.innerHTML = `
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-900 whitespace-nowrap">${row.date}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-xs text-gray-500 font-mono bg-gray-50 rounded">${row.ref}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-700 font-medium truncate max-w-xs" title="${row.desc}">${row.desc}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-xs text-gray-500">${row.account}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm font-bold text-right text-gray-700">
-                        ${row.debit > 0 ? '<span class="text-green-600 bg-green-50 px-2 py-1 rounded">+ '+fmt(row.debit)+'</span>' : '-'}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm font-bold text-right text-gray-700">
-                        ${row.kredit > 0 ? '<span class="text-red-600 bg-red-50 px-2 py-1 rounded">- '+fmt(row.kredit)+'</span>' : '-'}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-right text-gray-900 font-bold">${fmt(row.saldo)}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-center text-lg whitespace-nowrap">
-                        ${btnLihat} ${btnAction}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // --- PREVIEW LOGIC ---
-        function openPreview(url) {
-            if(!url) return alert("Link file tidak valid");
-            const mainContent = document.getElementById("mainContent");
-            const previewPane = document.getElementById("previewPane");
-            const iframe = document.getElementById("previewFrame");
-            const btnNewTab = document.getElementById("btnNewTab");
-            const loader = document.getElementById("previewLoader");
-
-            let previewUrl = url;
-            if (url.includes("drive.google.com") && url.includes("/view")) {
-                previewUrl = url.replace(/\/view.*/, "/preview");
-            }
-
-            previewPane.classList.remove("hidden");
-            setTimeout(() => {
-                mainContent.classList.remove("w-full");
-                mainContent.classList.add("w-2/3"); 
-                previewPane.classList.remove("w-0");
-                previewPane.classList.add("w-1/3"); 
-            }, 10);
-
-            loader.classList.remove("hidden");
-            iframe.classList.add("hidden");
-            iframe.src = previewUrl;
-            iframe.onload = function() {
-                loader.classList.add("hidden");
-                iframe.classList.remove("hidden");
-            };
-            btnNewTab.href = url;
-        }
-
-        function closePreview() {
-            const mainContent = document.getElementById("mainContent");
-            const previewPane = document.getElementById("previewPane");
-            const iframe = document.getElementById("previewFrame");
-
-            mainContent.classList.remove("w-2/3");
-            mainContent.classList.add("w-full");
-            previewPane.classList.remove("w-1/3");
-            previewPane.classList.add("w-0");
-
-            setTimeout(() => {
-                previewPane.classList.add("hidden");
-                iframe.src = ""; 
-            }, 300);
-        }
-
-        // --- MODAL LOGIC ---
-        
-        function openModal(mode, index = null) {
-            const modal = document.getElementById("modalAdd");
-            const form = document.getElementById("addForm");
-            const title = document.getElementById("modalTitle");
-            const fileInfo = document.getElementById("fileLabelInfo");
-            
-            // Reset Form
-            document.getElementById("formMode").value = mode;
-            
-            // Populate Dropdown Tax dari data yang sudah di-fetch
-            updateTaxDropdown(coaData.taxTypes);
-
-            if (mode === 'add') {
-                form.reset();
-                $('#akun').val(null).trigger('change'); // Reset Select2
-
-                title.innerText = "Tambah Transaksi";
-                fileInfo.classList.add("hidden");
-                document.getElementById("editRef").value = "";
-                document.getElementById('tgl').valueAsDate = new Date();
-                
-                // Default ke Expense
-                document.getElementById("tipeKeluar").checked = true;
-                handleTypeChange(); 
-
-            } else if (mode === 'edit') {
-                const data = globalTransactions[index];
-                
-                title.innerText = "Edit Transaksi (" + data.ref + ")";
-                fileInfo.classList.remove("hidden");
-
-                document.getElementById("editRef").value = data.ref;
-                document.getElementById("tgl").value = data.dateISO; 
-                document.getElementById("desc").value = data.desc;
-                document.getElementById("tagihan").value = data.noTagihan || "";
-                
-                // Set New Fields
-                document.getElementById("contact").value = data.contact || "";
-                document.getElementById("qty").value = data.qty || 1;
-                document.getElementById("price").value = data.price || 0;
-                document.getElementById("taxType").value = data.taxType || "";
-
-                // Hitung ulang nominal
-                updateNominal();
-
-                if (data.debit > 0) {
-                    document.getElementById("tipeMasuk").checked = true;
-                } else {
-                    document.getElementById("tipeKeluar").checked = true;
-                }
-
-                // 1. Populate Dropdown Options
-                handleTypeChange();
-
-                // 2. Set Selected Value di Select2
-                // Timeout kecil diperlukan agar Select2 merender opsi dulu
-                setTimeout(() => {
-                    $('#akun').val(data.account).trigger('change');
-                }, 50);
-            }
-
-            modal.classList.remove("hidden");
-        }
-
-        function closeModal() { document.getElementById("modalAdd").classList.add("hidden"); }
-
-        // --- VALIDATION FUNCTION (KONTROL INPUT) ---
-       function validateForm() {
-    let isValid = true;
-    
-    // Elements
-    const elTgl = document.getElementById('tgl');
-    const elContact = document.getElementById('contact'); // Tambahan
-    const elTaxType = document.getElementById('taxType'); // Tambahan
-    const elDesc = document.getElementById('desc');
-    const elQty = document.getElementById('qty');
-    const elPrice = document.getElementById('price');
-    const elNominal = document.getElementById('nominal');
-
-    // Reset Styles
-    $('.input-error').removeClass('input-error');
-    $('#akun').next('.select2-container').find('.select2-selection').removeClass('border-red-500');
-
-    // Validasi Kolom
-    if (!elTgl.value) { elTgl.classList.add('input-error'); isValid = false; }
-    
-    // NEW: Validasi Contact
-    if (!elContact.value.trim()) { 
-        elContact.classList.add('input-error'); 
-        isValid = false; 
-    }
-    
-    // NEW: Validasi Tax Type
-    if (!elTaxType.value) { 
-        elTaxType.classList.add('input-error'); 
-        isValid = false; 
-    }
-
-    if (!elDesc.value.trim()) { elDesc.classList.add('input-error'); isValid = false; }
-    
-    // Select2 Validation
-    if (!$('#akun').val()) {
-        $('#akun').next('.select2-container').find('.select2-selection').addClass('border-red-500');
-        isValid = false;
-    }
-
-    // Qty & Price Validation
-    if (!elQty.value || elQty.value <= 0) { elQty.classList.add('input-error'); isValid = false; }
-    if (elPrice.value === "" || elPrice.value < 0) { elPrice.classList.add('input-error'); isValid = false; }
-    
-    const nom = parseFloat(elNominal.value) || 0;
-    if (nom <= 0) { elNominal.classList.add('input-error'); isValid = false; }
-
-    if (!isValid) {
-        alert("Mohon lengkapi data yang wajib diisi (Contact, Tax Type, dll).");
-    }
-    return isValid;
+<meta charset="UTF-8" />
+<title>Purchase Order - CV Sukses Jaya</title>
+
+<link rel="stylesheet" href="https://unpkg.com/choices.js/public/assets/styles/choices.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<style>
+/* --- VARIABLES --- */
+:root {
+  --xero-blue: #116999;
+  --primary-color: #116999; 
+  --aux-text: #555555;
+  --border-color: #eaecf0;
+  --bg-color: #f4f5f6;
+  --text-color: #222;
+  --green-bg: #dcfce7; --green-text: #166534;
+  --red-bg: #fee2e2; --red-text: #991b1b;
+  --border-light: #e0e0e0;
+  --locked-bg: #f9f9f9;
 }
 
-        function submitTransaction(e) {
-            e.preventDefault();
-            
-            // PANGGIL VALIDASI
-            if (!validateForm()) return;
+* { box-sizing: border-box; }
 
-            const btn = document.getElementById("btnSubmit");
-            const originalText = btn.innerHTML;
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
+/* Reset Font Global ke Inter, tapi Form tetap Arial jika diinginkan */
+body { margin: 0; padding: 0; background: var(--bg-color); font-family: "Inter", sans-serif; font-size: 14px; color: var(--text-color); -webkit-font-smoothing: antialiased; }
 
-            const fileInput = document.getElementById("file");
-            const mode = document.getElementById("formMode").value;
-            const actionType = (mode === 'edit') ? "editTransaction" : "addTransaction";
-            const select2Val = $('#akun').val();
+/* Input fields tetap menggunakan style form standar */
+input, select, textarea, button, .choices, .choices__inner, .brand-title, .field-label {
+  font-family: 'Arial', sans-serif; font-size: 13px;
+}
 
-            const payload = {
-                action: actionType,
-                ref: document.getElementById("editRef").value,
-                tanggal: document.getElementById("tgl").value,
-                tipe: document.querySelector('input[name="tipe"]:checked').value,
-                akun: select2Val,
-                deskripsi: document.getElementById("desc").value,
-                nominal: document.getElementById("nominal").value,
-                noTagihan: document.getElementById("tagihan").value,
-                // Data Baru
-                contact: document.getElementById("contact").value,
-                taxType: document.getElementById("taxType").value,
-                qty: document.getElementById("qty").value,
-                price: document.getElementById("price").value
-            };
+/* --- NEW NAVIGATION BAR STYLE --- */
+.aux-navbar {
+    background-color: #ffffff;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: sticky; top: 0; z-index: 100000; /* Z-Index tinggi agar di atas form */
+}
 
-            const send = (finalPayload) => {
-                fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify(finalPayload)
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        const title = document.getElementById("modalTitle");
-                        title.innerHTML = '<span class="text-green-500"><i class="fas fa-check"></i> Berhasil!</span>';
-                        setTimeout(() => {
-                            closeModal();
-                            document.getElementById("addForm").reset();
-                            $('#akun').val(null).trigger('change');
-                            fetchData();
-                        }, 800);
-                    } else {
-                        alert("Gagal: " + data.message);
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                })
-                .catch(err => {
-                    alert("Gagal koneksi: " + err);
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                });
-            };
+/* Logo */
+.aux-logo { display: flex; align-items: center; gap: 10px; }
+.aux-logo img { height: 45px; width: auto; object-fit: contain; }
 
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    payload.fileData = e.target.result;
-                    payload.fileName = fileInput.files[0].name;
-                    send(payload);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                send(payload);
-            }
+/* Menu Wrapper */
+.aux-menu { display: flex; gap: 8px; align-items: center; height: 100%; }
+
+/* Navigation Item */
+.nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+
+/* Link Style */
+.aux-link { 
+    text-decoration: none; color: #475467; font-weight: 600; font-size: 14px; 
+    padding: 8px 16px; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; font-family: "Inter", sans-serif;
+}
+.aux-link:hover, .nav-item:hover .aux-link { background-color: #f2f4f7; color: #101828; }
+.aux-link.active { background-color: #eff8ff; color: var(--primary-color); font-weight: 700; }
+
+.chevron-down { width: 14px; height: 14px; transition: transform 0.2s; }
+.nav-item:hover .chevron-down { transform: rotate(180deg); }
+
+/* Dropdown Menu */
+.dropdown-menu {
+    visibility: hidden; opacity: 0; position: absolute; top: 85%; left: 0;
+    background: white; min-width: 240px; border: 1px solid var(--border-color);
+    border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 8px; z-index: 100001; transform: translateY(10px); transition: all 0.2s ease-in-out;
+}
+.dropdown-menu::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+.nav-item:hover .dropdown-menu { visibility: visible; opacity: 1; transform: translateY(0); }
+
+.dropdown-item {
+    display: flex; align-items: center; padding: 10px 12px; color: #344054;
+    text-decoration: none; font-size: 14px; border-radius: 6px; transition: background 0.2s; font-family: "Inter", sans-serif;
+}
+.dropdown-item:hover { background-color: #f9fafb; color: var(--primary-color); }
+.dropdown-divider { height: 1px; background-color: #eaecf0; margin: 6px 0; }
+.dropdown-header { font-size: 11px; text-transform: uppercase; color: #98a2b3; font-weight: 600; padding: 8px 12px 4px; font-family: "Inter", sans-serif; }
+
+/* User Panel */
+.user-panel { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid var(--border-color); }
+.user-details { display: flex; flex-direction: column; text-align: right; line-height: 1.3; font-family: "Inter", sans-serif; }
+.user-name { font-weight: 700; font-size: 13px; color: #101828; }
+.user-role { font-size: 11px; color: #667085; }
+.user-avatar { width: 36px; height: 36px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; user-select: none; font-family: "Inter", sans-serif; }
+.logout-btn { background: none; border: 1px solid var(--border-color); color: #666; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.logout-btn:hover { background-color: var(--red-bg); color: var(--red-text); border-color: var(--red-bg); }
+
+/* --- PAGE LAYOUT (INVOICE FORM) --- */
+.page-wrap { padding: 40px 20px; display: flex; justify-content: center; position: relative; z-index: 1; }
+.invoice-card { width: 100%; max-width: 1600px; background: #fff; padding: 40px; border: 1px solid #d4d4d4; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: visible; }
+
+/* --- HEADER INVOICE --- */
+.top-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+.brand-section .brand-logo { max-height: 80px; width: auto; display: block; }
+.xero-header-right { display: flex; align-items: center; gap: 15px; height: 80px; }
+.xero-order-title { font-size: 28px; font-weight: 700; color: #222; margin: 0; font-family: 'Arial', sans-serif; }
+.xero-badge { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-draft { background: #eee; color: #666; border: 1px solid #ccc; }
+.badge-sent { background: var(--green-bg); color: var(--green-text); border: 1px solid #bbf7d0; }
+
+.header-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; position: relative; z-index: 200; }
+.field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: #444; }
+input.main-input, textarea.main-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; height: 38px; }
+textarea.main-input { height: auto; }
+input.main-input:focus, textarea.main-input:focus { border-color: var(--xero-blue); outline: none; }
+
+/* DATE ICON */
+input[type="date"].main-input {
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-left: 10px !important; padding-right: 36px !important; background-color: #fff; color: var(--text-color);
+}
+input[type="date"].main-input::-webkit-calendar-picker-indicator { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+/* DETAIL GRID */
+.detail-grid { display: grid; grid-template-columns: 1.2fr 1.2fr 2fr 1fr 1fr; gap: 15px; padding: 15px; background: #fbfbfb; border: 1px solid #e5e5e5; margin-bottom: 25px; border-radius: 3px; position: relative; z-index: 10; }
+input.detail-readonly { background: transparent; border: none; border-bottom: 1px dashed #ccc; color: #555; width: 100%; padding: 5px 0; }
+
+/* TABLE */
+.table-container { 
+    margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px 4px 0 0; 
+    overflow-x: auto; width: 100%; position: relative; z-index: 5; background: #fff; padding-bottom: 0; 
+    min-height: auto; 
+}
+table.xero-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
+table.xero-table th { background: #f8f9fa; text-align: left; padding: 12px 10px; font-size: 12px; font-weight: 700; color: #333; border-bottom: 1px solid #ccc; border-right: 1px solid var(--border-light); white-space: nowrap; height: 40px; vertical-align: middle; }
+table.xero-table th.col-price, table.xero-table th.col-disc, table.xero-table th.col-net, table.xero-table th.col-total, table.xero-table th.col-stock { text-align: right; }
+table.xero-table td { padding: 0 !important; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); background: #fff; height: 42px; vertical-align: middle !important; }
+
+/* STICKY COLS */
+.col-drag, .drag-cell { position: sticky !important; left: 0; width: 40px !important; min-width: 40px !important; z-index: 30; background-color: var(--locked-bg) !important; border-right: 1px solid #ccc !important; text-align: center; cursor: grab; color: #999; font-size: 14px; }
+th.col-drag { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); } 
+.col-del, td:last-child { position: sticky !important; right: 0; width: 45px !important; min-width: 45px !important; z-index: 30; background-color: var(--locked-bg) !important; border-left: 1px solid #ccc !important; border-right: none !important; text-align: center; }
+th.col-del { z-index: 35; border-bottom: 1px solid #ccc; background-color: var(--locked-bg); }
+.col-drag::after, .drag-cell::after { content: ''; position: absolute; top: 0; right: -5px; bottom: 0; width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.05), transparent); pointer-events: none; }
+.col-del::before, td:last-child::before { content: ''; position: absolute; top: 0; left: -5px; bottom: 0; width: 5px; background: linear-gradient(to left, rgba(0,0,0,0.05), transparent); pointer-events: none; }
+
+/* TABLE INPUTS */
+.uprice-input, .disc-input, .pqty-input, .total-input, .stock-display { text-align: right !important; }
+table.xero-table input { width: 100%; height: 100%; padding: 0 10px; border: none !important; background: transparent; font-size: 13px; color: #333; display: block; }
+table.xero-table input:focus { background: #fff; outline: none; box-shadow: inset 0 0 0 1px var(--xero-blue) !important; }
+table.xero-table input[readonly] { color: #666; cursor: default; }
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* CHOICES & COLUMN WIDTHS */
+.xero-table .choices { margin: 0 !important; padding: 0 !important; height: 100%; width: 100%; overflow: visible; }
+.xero-table .choices__inner { border: none !important; background-color: transparent !important; border-radius: 0 !important; min-height: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; padding: 0 10px !important; margin: 0 !important; }
+.header-grid .choices__inner { background-color: #fff !important; border: 1px solid #ccc !important; border-radius: 3px !important; min-height: 38px !important; height: 38px !important; display: flex; align-items: center; }
+
+/* FIX CSS DROPDOWN UTAMA */
+.choices__list--dropdown { 
+    border: 1px solid var(--xero-blue) !important; 
+    z-index: 999999 !important; /* Di atas segalanya */
+    word-break: break-word;
+}
+.choices__input { z-index: 1000000 !important; }
+
+/* Columns */
+.col-type { width: 150px; } .col-item { width: 320px; } .col-unit { width: 80px; } .col-meter { width: 70px; } .col-qty { width: 70px; } .col-price { width: 120px; } .col-disc { width: 80px; } .col-net { width: 120px; } .col-total { width: 140px; } .col-stock { width: 90px; } .col-status { width: 90px; }
+
+/* UTILS */
+.delete-btn { border: none; background: none; color: #999; font-size: 18px; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.delete-btn:hover { color: #d33; }
+.add-row-btn { background-color: #fff; color: var(--xero-blue); border: 1px solid var(--xero-blue); padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 3px; display: inline-flex; align-items: center; margin-top: 15px;}
+.add-row-btn:hover { background-color: #f0f7fc; }
+.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; position: relative; z-index: 1; align-items: start; }
+.summary-box { width: 100%; max-width: 350px; margin-left: auto; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: #333; }
+.summary-row .label { font-weight: 400; color: #222; }
+.summary-row .value { font-weight: 500; text-align: right; }
+.grand-total-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #999; margin-top: 10px; padding-top: 15px; font-size: 18px; font-weight: 700; color: #000; }
+.btn-primary { background-color: var(--xero-blue); color: white; border: none; padding: 12px 30px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+
+/* STATUS */
+.status-container { height: 100%; display: flex; align-items: center; justify-content: center; }
+.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; width: auto; min-width: 80%; text-align: center; }
+.status-ok { background: var(--green-bg); color: var(--green-text); }
+.status-oos { background: var(--red-bg); color: var(--red-text); }
+.stock-display { text-align: right; line-height: 42px; padding-right: 10px; color: #555; }
+
+/* MODALS & TOAST */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 99999; }
+.modal-box { background: #fff; padding: 30px; width: 600px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: 'Arial', sans-serif; } 
+.modal-actions { margin-top: 25px; text-align: right; }
+.btn-ok { background: var(--xero-blue); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+.btn-cancel { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+.spinner { display:inline-block; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-left:5px; }
+@keyframes spin { to {transform: rotate(360deg);} }
+.toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #333; color: white; border-radius: 5px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 100000; font-family: 'Arial', sans-serif; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.cust-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+.cust-full-width { grid-column: span 2; }
+</style>
+</head>
+
+<body>
+
+<div id="toast" class="toast">Notifikasi</div>
+
+<div class="aux-navbar">
+    <div class="aux-logo">
+        <img src="https://raw.githubusercontent.com/accountingauxie/Auxilium-Portal-Sukses-Jaya/refs/heads/main/assets/auxilium_logo_pure_white_bg.png" alt="Auxilium Logo">
+    </div>
+    
+    <nav class="aux-menu">
+        <div class="nav-item">
+            <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/" class="aux-link">Home</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link active">
+                Penjualan 
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Sales Orders</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Order%20Penjualan/index.html" class="dropdown-item">Order Penjualan</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Penjualan/Review%20Penjualan/review_penjualan.html" class="dropdown-item">Review Penjualan</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Pembelian
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Purchasing</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/PurchaseOrder/index.html" class="dropdown-item">Pemesanan Pembelian</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/entry/index.html" class="dropdown-item">Penerimaan Barang (Entry)</a>
+                
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-header">Finance</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/CreateBill/index.html" class="dropdown-item">Daftar Tagihan (Bill)</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/receiving/ImportXeroPO/index.html" class="dropdown-item">Import Xero PO</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Produksi
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">Input Mesin</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20Back%20Order/produksi_backorder.html" class="dropdown-item">Back Order</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20General%20Order/produksi_general.html" class="dropdown-item">General Order</a>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/Produksi/Produksi%20-%20Pre%20Order/produksi_preorder.html" class="dropdown-item">Pre Order</a>
+
+                <div class="dropdown-divider"></div>
+                
+                <div class="dropdown-header">Hasil Produksi</div>
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/production/daftarproduksi/index.html" class="dropdown-item">Produksi Barang Jadi</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="aux-link">
+                Persediaan
+                <i data-feather="chevron-down" class="chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://accountingauxie.github.io/Auxilium-Portal-Sukses-Jaya/inventory/index.html" class="dropdown-item">Cek Stok Inventory</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="user-panel">
+        <div class="user-details">
+            <span class="user-name">Admin Gudang</span>
+            <span class="user-role">CV Sukses Jaya</span>
+        </div>
+        <div class="user-avatar">AG</div>
+        <button class="logout-btn" onclick="alert('Logout')" title="Keluar Akun">
+            <i data-feather="log-out" style="width:16px; height:16px;"></i>
+        </button>
+    </div>
+</div>
+
+<div id="modalAddCustomer" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">Tambah Pelanggan Baru</h3>
+    <div class="cust-form-grid">
+        <div class="cust-full-width"><span class="field-label">Nama Perusahaan / Pelanggan</span><input id="ncName" type="text" class="main-input" placeholder="Nama Lengkap"></div>
+        <div><span class="field-label">Kontak Person (PIC)</span><input id="ncPerson" type="text" class="main-input" placeholder="Nama PIC"></div>
+        <div><span class="field-label">NIK / NPWP</span><input id="ncNPWP" type="text" class="main-input" placeholder="Nomor Identitas"></div>
+        <div class="cust-full-width"><span class="field-label">Alamat Lengkap</span><input id="ncAddress" type="text" class="main-input" placeholder="Jalan, No, RT/RW"></div>
+        <div><span class="field-label">Kecamatan</span><input id="ncKec" type="text" class="main-input"></div>
+        <div><span class="field-label">Kota / Kab</span><input id="ncCity" type="text" class="main-input"></div>
+        <div class="cust-full-width"><span class="field-label">Termin Pembayaran (Hari)</span><input id="ncTOP" type="number" class="main-input" placeholder="Contoh: 30"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCustomerModal()">Batal</button>
+      <button class="btn-ok" onclick="submitNewCustomer()">Simpan <span id="modalSpinner" class="spinner" style="display:none"></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="modalConfirmSubmit" class="modal-overlay">
+  <div class="modal-box" style="width: 450px; text-align:center;">
+    <h3 style="margin-top:0; color:var(--xero-blue);">Konfirmasi Pesanan</h3>
+    <p style="color:#666; font-size:14px; margin-bottom:20px;">
+      Apakah data sudah benar dan Anda yakin ingin mengirim order ini?
+    </p>
+    <div class="modal-actions" style="justify-content: center; display: flex; gap: 10px;">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Batal</button>
+      <button class="btn-ok" onclick="forceSubmitOrder()">Ya, Kirim</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="invoice-card">
+    <div class="top-header">
+      <div class="brand-section">
+          <img src="https://raw.githubusercontent.com/accountingauxie/Asset/refs/heads/main/Screenshot_2025-12-17_161250-removebg-preview.png" alt="Logo Perusahaan" class="brand-logo">
+      </div>
+      <div class="xero-header-right">
+          <h1 id="xeroOrderTitle" class="xero-order-title">Pesanan Baru</h1>
+          <span id="xeroStatusBadge" class="xero-badge badge-draft">Draft</span>
+      </div>
+    </div>
+
+    <div class="header-grid">
+      <div><span class="field-label">Pelanggan</span><select id="customerSelect"></select></div>
+      <div>
+          <span class="field-label">Jenis Order</span>
+          <select id="orderType">
+              <option value="General Order" selected>General Order</option>
+              <option value="Pre-Order">Pre-Order</option>
+              <option value="Back Order">Back Order</option>
+          </select>
+      </div>
+      <div><span class="field-label">Tanggal</span><input type="date" id="issueDate" class="main-input"></div>
+      <div><span class="field-label">Est. Pengiriman</span><input type="date" id="estDeliveryDate" class="main-input"></div>
+      <div><span class="field-label">Jatuh Tempo (Due Date)</span><input type="text" id="termPayment" class="main-input" readonly placeholder="-"></div>
+    </div>
+
+    <div class="detail-grid">
+        <div><span class="field-label">Kontak Person</span><input type="text" id="detailPerson" class="detail-readonly" readonly placeholder="-"></div>
+        <div><span class="field-label">NIK / NPWP</span><input type="text" id="detailNPWP" class="detail-readonly" readonly placeholder="-"></div>
+        <div><span class="field-label">Alamat</span><input type="text" id="detailAddress" class="detail-readonly" readonly placeholder="-"></div>
+        <div><span class="field-label">Kecamatan</span><input type="text" id="detailKec" class="detail-readonly" readonly placeholder="-"></div>
+        <div><span class="field-label">Kota</span><input type="text" id="detailCity" class="detail-readonly" readonly placeholder="-"></div>
+    </div>
+
+    <div class="table-container">
+      <table class="xero-table">
+        <thead>
+          <tr>
+            <th class="col-drag"></th>
+            <th class="col-type">Tipe</th>
+            <th class="col-item">Nama Barang</th>
+            <th class="col-unit">Satuan</th>
+            <th class="col-meter">Meter</th>
+            <th class="col-qty">Jml (Qty)</th>
+            <th class="col-price">Harga Satuan</th>
+            <th class="col-disc">Diskon</th>
+            <th class="col-net">Harga Net</th>
+            <th class="col-total">Total</th>
+            <th class="col-stock">Stok</th>
+            <th class="col-status">Status</th>
+            <th class="col-del"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+
+    <button class="add-row-btn" onclick="addRow()"><span>+ Tambah Baris</span></button>
+
+    <div class="footer-grid">
+      <div><span class="field-label">Catatan (Notes)</span><textarea id="notes" class="main-input" style="height:60px; resize:vertical;"></textarea></div>
+      
+      <div style="text-align: right;">
+        <div class="summary-box">
+            <div class="summary-row"><span class="label">DPP</span><span class="value" id="dppDisplay">0.00</span></div>
+            <div class="summary-row"><span class="label">PPN (11%)</span><span class="value" id="ppnDisplay">0.00</span></div>
+            <div class="grand-total-row"><span>Total</span><span id="grandTotalDisplay">0.00</span></div>
+        </div>
+        <button class="btn-primary approve-btn" type="button" onclick="validateAndAsk()">Kirim Pesanan</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// --- INITIALIZE ICONS ---
+feather.replace();
+
+// --- KONFIGURASI URL BACKEND ---
+// GANTI DENGAN URL DEPLOYMENT BARU ANDA (PASTIKAN DEPLOY SEBAGAI "ANYONE")
+const baseURL = "https://script.google.com/macros/s/AKfycbxpozSPfRKCL3h9iczHcXFljKsy5zXqHjCaUF19BL0UuYVxyADnmfuotwHeEFbHQ0d06Q/exec";
+
+// --- URL INVENTORY ---
+const inventoryAPI = "https://script.google.com/macros/s/AKfycby5N2auQ__JVSp-RdO-5xtUwanRZZW7YZMZ163j2NP61N3SIfVnPxr8PBXYbgBC6LJH/exec";
+
+let customerData=[], listSpandek=[], listNonSpandek=[], priceSpan=[], priceNon=[], unitSpan=[], unitNon=[];
+let inventoryData = {}; 
+let choiceCustomer, choiceOrderType;
+let currentCustTOP = 0; 
+
+function showToast(msg, type="info") {
+  const t = document.getElementById("toast"); t.textContent = msg;
+  t.style.background = type==="success"?"#3fba13":type==="error"?"#d93c3c":"#333";
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500);
+}
+
+function formatMoney(n) { return (Number(n)||0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function parseMoney(s) { return parseFloat((s||"").replace(/,/g,"")) || 0; }
+
+// --- INIT UTAMA ---
+window.onload = async function () {
+  // Init feather lagi in case dynamic load
+  if(typeof feather !== 'undefined') feather.replace();
+
+  // 1. Setup Dropdown Statis
+  choiceCustomer = new Choices("#customerSelect", { searchEnabled: true, shouldSort: false, placeholder: true, placeholderValue: "Pilih Pelanggan", itemSelectText:"" });
+  choiceOrderType = new Choices("#orderType", { searchEnabled: false, shouldSort: false, itemSelectText:"" });
+
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("issueDate").value = today;
+  document.getElementById("estDeliveryDate").value = today;
+  document.getElementById("issueDate").addEventListener("change", calculateDueDate);
+  
+  // 2. Fetch ID (Non-Blocking)
+  fetchNextOrderID();
+
+  // 3. AMBIL DATA DULU (Blocking) - Mencegah Dropdown Kosong
+  showToast("Sedang memuat data...", "info");
+  await loadDropdowns(); 
+  
+  // 4. Load Inventory
+  loadInventoryData(); 
+
+  // 5. Buat Baris Default
+  for(let i=0; i<3; i++) addRow();
+  
+  new Sortable(document.getElementById("itemsBody"), { handle: ".drag-cell", animation: 150 });
+  document.getElementById('customerSelect').addEventListener('change', function(e) { fillCustomerDetails(e.target.value); });
+  
+  showToast("Sistem Siap", "success");
+};
+
+async function fetchNextOrderID() {
+    const titleEl = document.getElementById("xeroOrderTitle");
+    try {
+        titleEl.textContent = "Memuat..."; 
+        const res = await fetch(baseURL + "?action=getnextid");
+        const fullID = await res.text(); 
+        titleEl.textContent = "Order #" + fullID; 
+    } catch (e) { titleEl.textContent = "Order #Error"; }
+}
+
+function fillCustomerDetails(name) {
+    const p = document.getElementById('detailPerson');
+    const n = document.getElementById('detailNPWP');
+    const a = document.getElementById('detailAddress');
+    const k = document.getElementById('detailKec');
+    const c = document.getElementById('detailCity');
+
+    // 1. REVISI: Cek apakah yang dipilih adalah TUNAI/CASH
+    const isCash = (name === "TUNAI/CASH");
+    
+    // 2. REVISI: Atur gembok (readonly) & ubah warna background agar terlihat bisa diketik
+    [p, n, a, k, c].forEach(input => {
+        input.readOnly = !isCash; // Terbuka jika isCash true, tergembok jika false
+        if (isCash) {
+            input.style.background = "#ffffff";
+            input.style.borderBottom = "1px solid var(--xero-blue)";
+            input.style.color = "#000000";
+        } else {
+            input.style.background = "transparent";
+            input.style.borderBottom = "1px dashed #ccc";
+            input.style.color = "#555555";
+        }
+    });
+    
+    if(!name || name === "add_new") { 
+        p.value="-"; n.value="-"; a.value="-"; k.value="-"; c.value="-"; 
+        currentCustTOP = 0;
+        calculateDueDate();
+        if(name === "add_new") openCustomerModal(); 
+        return; 
+    }
+
+    // 3. REVISI: Jika TUNAI/CASH, kosongkan value agar admin langsung bisa ngetik
+    if (isCash) {
+        p.value=""; n.value=""; a.value=""; k.value=""; c.value="";
+        currentCustTOP = 0; // Pembelian cash terminnya 0 hari
+        calculateDueDate();
+        p.focus(); // Otomatis kursor pindah ke Kontak Person
+        return;
+    }
+
+    // Jika pelanggan tetap (dari database)
+    const data = customerData.find(x => x.name === name);
+    if(data) { 
+        p.value = data.person||"-"; 
+        n.value = data.npwp||"-"; 
+        a.value = data.address||"-"; 
+        k.value = data.kecamatan||"-"; 
+        c.value = data.kota||"-"; 
+        currentCustTOP = parseInt(data.top) || 0;
+        calculateDueDate();
+    }
+}
+function calculateDueDate() {
+    const issueDateVal = document.getElementById("issueDate").value;
+    const termInput = document.getElementById("termPayment");
+    if (!issueDateVal) { termInput.value = "-"; return; }
+    const parts = issueDateVal.split('-');
+    const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    dateObj.setDate(dateObj.getDate() + currentCustTOP);
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const yyyy = dateObj.getFullYear();
+    termInput.value = `${dd}/${mm}/${yyyy}`;
+}
+
+async function loadDropdowns() {
+  try {
+    const res = await fetch(baseURL + "?action=getdata");
+    if (!res.ok) throw new Error("Gagal load data");
+    const data = await res.json();
+    
+    customerData = data.customers || [];
+    listSpandek = data.spandek || []; listNonSpandek = data.nonspandek || [];
+    priceSpan = data.priceSpan || []; priceNon = data.priceNon || [];
+    unitSpan = data.unitSpan || []; unitNon = data.unitNon || [];
+    
+    choiceCustomer.clearStore();
+    const items = customerData.map(c => ({ value: c.name, label: c.name }));
+    choiceCustomer.setChoices([{ value: "add_new", label: "+ Tambah Pelanggan Baru" }, ...items], "value", "label", true);
+  } catch (err) { console.error(err); showToast("Gagal koneksi server", "error"); listSpandek=["Error Load"]; }
+}
+
+async function loadInventoryData() {
+    try {
+        const response = await fetch(inventoryAPI + "?action=getInventoryData");
+        if (!response.ok) throw new Error("Failed");
+        inventoryData = await response.json();
+        document.querySelectorAll("#itemsBody tr").forEach(row => recalcRow(row));
+    } catch (err) { console.error("Error loading inventory:", err); }
+}
+
+// --- FUNGSI BARIS TABEL (UPDATED: NO DEFAULT VALUE) ---
+function addRow() {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="drag-cell">::</td>
+    <td><select class="type-select"></select></td>
+    <td><select class="item-select"></select></td>
+    <td><input class="unit-input" readonly></td>
+    <td><input class="meter-input" disabled min="0"></td> 
+    <td><input type="number" class="qty-input" min="0"></td> 
+    <td><input class="uprice-input" readonly></td>
+    <td><input class="disc-input" value="0.00"></td>
+    <td><input class="pqty-input" readonly></td>
+    <td><input class="total-input" readonly></td>
+    <td><div class="stock-display">-</div></td>
+    <td style="text-align:center"><div class="status-container"></div></td>
+    <td class="col-del"><button class="delete-btn" onclick="deleteRow(this)">🗑</button></td>
+  `;
+  document.getElementById("itemsBody").appendChild(tr);
+
+  const typeSel = tr.querySelector(".type-select");
+  const itemSel = tr.querySelector(".item-select");
+  const meterInp = tr.querySelector(".meter-input");
+  
+  // Setup Choices TIPE (KOSONGKAN DEFAULT)
+  const choiceType = new Choices(typeSel, { 
+      searchEnabled: false, shouldSort: false, itemSelectText:"", 
+      position: 'bottom',
+      placeholder: true, // AKTIFKAN PLACEHOLDER
+      placeholderValue: "Pilih Tipe", // TEXT PLACEHOLDER
+      choices: [ 
+        // JANGAN ADA YANG SELECTED SECARA DEFAULT
+        { value: 'Spandek', label: 'Spandek' }, 
+        { value: 'Non Spandek', label: 'Non Spandek' } 
+      ] 
+  });
+
+  // Setup Choices ITEM (AWAL KOSONG)
+  const choiceItem = new Choices(itemSel, { 
+      searchEnabled: true, shouldSort: false, itemSelectText:"", 
+      position: 'bottom', placeholder: true, placeholderValue: "Pilih Barang" 
+      // JANGAN SET CHOICES DI SINI AGAR TETAP KOSONG
+  });
+
+  // --- FIX POSISI DROPDOWN (AGAR TIDAK KEPOTONG TABEL) ---
+  const fixDropdownPos = (event) => {
+      const container = event.target.closest('.choices');
+      if (!container) return;
+      const dropdown = container.querySelector('.choices__list--dropdown');
+      if (!dropdown) return;
+
+      const rect = container.getBoundingClientRect();
+      dropdown.style.position = 'fixed';
+      dropdown.style.top = (rect.bottom) + 'px';
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.width = rect.width + 'px';
+      dropdown.style.maxHeight = '300px'; 
+  };
+  typeSel.addEventListener('showDropdown', fixDropdownPos);
+  itemSel.addEventListener('showDropdown', fixDropdownPos);
+
+  // Meteran default disabled
+  meterInp.disabled = true;
+  meterInp.style.background = "#f9f9f9";
+
+  // Logic Ganti Tipe
+  typeSel.addEventListener("change", () => {
+    let list = [];
+    tr.querySelector(".unit-input").value = ""; 
+    tr.querySelector(".uprice-input").value = "";
+    tr.querySelector(".stock-display").textContent = "-";
+    
+    if (typeSel.value === "Spandek") { 
+        list = listSpandek; meterInp.disabled = false; meterInp.style.background = "transparent"; 
+    } else { 
+        list = listNonSpandek; meterInp.disabled = true; meterInp.style.background = "#f9f9f9"; meterInp.value = ""; 
+    }
+    
+    // Load barang sesuai tipe yang dipilih
+    choiceItem.clearStore();
+    choiceItem.setChoices(list.map(n => ({ value: n, label: n })), "value", "label", true);
+    recalcRow(tr);
+  });
+
+  itemSel.addEventListener("change", () => {
+    const item = itemSel.value, type = typeSel.value;
+    let price = 0, unit = "-", index = -1;
+    if (type === "Spandek") { 
+        index = listSpandek.indexOf(item); 
+        if(index >= 0) { price = priceSpan[index]; unit = unitSpan[index]; } 
+    } else { 
+        index = listNonSpandek.indexOf(item); 
+        if(index >= 0) { price = priceNon[index]; unit = unitNon[index]; } 
+    }
+    tr.querySelector(".uprice-input").value = formatMoney(price);
+    tr.querySelector(".unit-input").value = unit;
+    recalcRow(tr);
+  });
+
+  // Kalkulasi
+  tr.querySelectorAll(".meter-input, .qty-input").forEach(inp => {
+      inp.addEventListener("keydown", function(e) { if (["-", "+", "e"].includes(e.key)) e.preventDefault(); });
+      inp.addEventListener("input", function() { recalcRow(tr); recalcTotals(); });
+  });
+
+  tr.querySelector(".disc-input").addEventListener("blur", function() { this.value = formatMoney(parseMoney(this.value)); });
+  tr.querySelectorAll("input").forEach(i => { 
+      if(!i.classList.contains("meter-input") && !i.classList.contains("qty-input")) { 
+          i.addEventListener("input", () => { recalcRow(tr); recalcTotals(); }); 
+      } 
+  });
+}
+
+function deleteRow(btn) { btn.closest("tr").remove(); recalcTotals(); }
+
+function recalcRow(row) {
+  const type = row.querySelector(".type-select").value;
+  const item = row.querySelector(".item-select").value;
+  
+  let meter = parseFloat(row.querySelector(".meter-input").value) || 0;
+  if (type === "Non Spandek") meter = 1;
+  const qty = parseFloat(row.querySelector(".qty-input").value) || 0;
+  const unitPrice = parseMoney(row.querySelector(".uprice-input").value);
+  let disc = parseMoney(row.querySelector(".disc-input").value);
+  
+  if(unitPrice > 0 && disc > unitPrice) { disc = unitPrice; row.querySelector(".disc-input").value = formatMoney(unitPrice); }
+
+  const netPrice = (unitPrice - disc);
+  const priceQty = netPrice * meter; 
+  const total = priceQty * qty;
+
+  row.querySelector(".pqty-input").value = formatMoney(priceQty);
+  row.querySelector(".total-input").value = formatMoney(total);
+
+  // Stock Logic
+  let stock = 0;
+  const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
+  const norm = (str) => String(str || "").trim().toUpperCase();
+
+  if (item) {
+      let found = null;
+      if (type === "Spandek" && Array.isArray(inventoryData.spandek)) {
+          found = inventoryData.spandek.find(r => norm(r[0]) === norm(item));
+      } else if (type === "Non Spandek" && Array.isArray(inventoryData.nonSpandek)) {
+          found = inventoryData.nonSpandek.find(r => norm(r[0]) === norm(item));
+      }
+      if (found) stock = cleanNum(found[4]);
+  }
+  
+  const stockDisp = row.querySelector(".stock-display");
+  const statusCont = row.querySelector(".status-container");
+  
+  stockDisp.textContent = item ? (Number(stock)||0).toLocaleString("en-US", {maximumFractionDigits:2}) : "-";
+  statusCont.innerHTML = "";
+
+  if(item) {
+      let req = (type==="Spandek") ? (meter*qty) : qty; 
+      const badge = document.createElement("span");
+      if(req === 0) { 
+          // Do nothing
+      } else if(stock >= req) { 
+          badge.className = "status-badge status-ok"; badge.textContent = "Tersedia"; 
+      } else { 
+          badge.className = "status-badge status-oos"; badge.textContent = "Kurang"; 
+      }
+      if(req > 0) statusCont.appendChild(badge);
+  }
+}
+
+function recalcTotals() {
+  let grand = 0;
+  document.querySelectorAll(".total-input").forEach(e => grand += parseMoney(e.value));
+  document.getElementById("dppDisplay").textContent = formatMoney(grand/1.11);
+  document.getElementById("ppnDisplay").textContent = formatMoney(grand - (grand/1.11));
+  document.getElementById("grandTotalDisplay").textContent = formatMoney(grand);
+}
+
+// --- MODAL & SUBMIT ---
+function openCustomerModal() { document.getElementById("modalAddCustomer").style.display="flex"; }
+function closeCustomerModal() { document.getElementById("modalAddCustomer").style.display="none"; }
+function openConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "flex"; }
+function closeConfirmModal() { document.getElementById("modalConfirmSubmit").style.display = "none"; }
+
+function validateAndAsk() {
+    const cust = document.getElementById("customerSelect").value;
+    const type = document.getElementById("orderType").value;
+    const oos = document.querySelectorAll(".status-oos").length > 0;
+    
+    if(!cust || cust==="add_new") return showToast("Pilih Pelanggan Dulu", "error");
+    if (type === "General Order" && oos) { return showToast("General Order barang harus tersedia semua!", "error"); }
+    
+    openConfirmModal();
+}
+
+async function submitNewCustomer() {
+    const data = {
+        name: document.getElementById("ncName").value, person: document.getElementById("ncPerson").value,
+        npwp: document.getElementById("ncNPWP").value, address: document.getElementById("ncAddress").value,
+        kecamatan: document.getElementById("ncKec").value, kota: document.getElementById("ncCity").value, top: document.getElementById("ncTOP").value
+    };
+    if(!data.name) return showToast("Nama Pelanggan Wajib Diisi", "error");
+    document.getElementById("modalSpinner").style.display="inline-block";
+    
+    try { 
+        const res = await fetch(baseURL, { method: "POST", body: JSON.stringify({ action: "addcustomer", payload: JSON.stringify(data) }) });
+        const txt = await res.text();
+
+        if (txt === "OK") {
+            const newEntry = { name: data.name.toUpperCase(), person: data.person.toUpperCase(), npwp: data.npwp.toUpperCase(), address: data.address.toUpperCase(), kecamatan: data.kecamatan.toUpperCase(), kota: data.kota.toUpperCase(), top: data.top };
+            customerData.push(newEntry);
+            choiceCustomer.setChoices([{value: newEntry.name, label: newEntry.name}], "value", "label", false);
+            choiceCustomer.setChoiceByValue(newEntry.name);
+            fillCustomerDetails(newEntry.name);
+            closeCustomerModal(); showToast("Pelanggan Tersimpan!", "success"); 
+        } else if (txt === "DUPLICATE") { showToast("Pelanggan Sudah Ada!", "error"); } 
+        else { throw new Error(txt); }
+    } catch(e) { showToast("Gagal: " + e.message, "error"); }
+    document.getElementById("modalSpinner").style.display="none";
+}
+
+function forceSubmitOrder() {
+    closeConfirmModal();
+    const btn = document.querySelector(".approve-btn");
+    btn.disabled=true; btn.textContent="Memproses...";
+    
+    const payload = {
+        customer: document.getElementById("customerSelect").value, orderType: document.getElementById("orderType").value,
+        issueDate: document.getElementById("issueDate").value, estDelivery: document.getElementById("estDeliveryDate").value,
+        top: document.getElementById("termPayment").value, notes: document.getElementById("notes").value,
+        person: document.getElementById("detailPerson").value, npwp: document.getElementById("detailNPWP").value,
+        address: document.getElementById("detailAddress").value, kecamatan: document.getElementById("detailKec").value,
+        kota: document.getElementById("detailCity").value, items: []
+    };
+
+    // --- FILTER PENTING: HANYA YANG QTY > 0 ---
+    document.querySelectorAll("#itemsBody tr").forEach(tr => {
+        const item = tr.querySelector(".item-select").value;
+        const qty = parseFloat(tr.querySelector(".qty-input").value) || 0;
+        
+        // Cek Nama Barang HARUS ada (tidak null) & Qty > 0
+        if(item && qty > 0) {
+            payload.items.push({
+                type: tr.querySelector(".type-select").value, item: item,
+                satuan: tr.querySelector(".unit-input").value, meter: tr.querySelector(".meter-input").value,
+                qty: qty, total: parseMoney(tr.querySelector(".total-input").value),
+                unitPrice: parseMoney(tr.querySelector(".uprice-input").value), discount: parseMoney(tr.querySelector(".disc-input").value),
+                priceQty: parseMoney(tr.querySelector(".pqty-input").value)
+            });
         }
-    </script>
+    });
+
+    if (payload.items.length === 0) {
+        showToast("Isi minimal 1 barang dengan Qty yang benar.", "error");
+        btn.disabled = false; btn.textContent = "Kirim Pesanan";
+        return; 
+    }
+
+    fetch(baseURL, {
+        method: "POST",
+        body: JSON.stringify({ action: "submitorder", payload: payload })
+    })
+    .then(res => res.text())
+    .then(txt => {
+        if(txt.startsWith("OK")) { 
+            const finalID = txt.split(":")[1] || "";
+            document.getElementById("xeroOrderTitle").textContent = "Order #" + finalID;
+            document.getElementById("xeroStatusBadge").textContent = "TERKIRIM";
+            document.getElementById("xeroStatusBadge").className = "xero-badge badge-sent";
+            showToast("Berhasil! No: " + finalID, "success"); 
+            btn.textContent="Terkirim";
+            setTimeout(()=>location.reload(), 3000); 
+        } else { throw new Error(txt); }
+    }).catch(e => { showToast("Gagal: " + e.message, "error"); btn.disabled=false; btn.textContent="Kirim Pesanan"; });
+}
+
+// Tutup dropdown jika scroll layar utama
+window.addEventListener('scroll', function(e) {
+    if (e.target === document || e.target === document.body) {
+        document.querySelectorAll('.choices__list--dropdown').forEach(d => {
+            if (d.style.position === 'fixed') { d.closest('.choices').choices.hideDropdown(); }
+        });
+    }
+}, true);
+</script>
+
 </body>
 </html>
