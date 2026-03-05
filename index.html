@@ -3,96 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR Dashboard - Expandable Table</title>
+  <title>AR Dashboard - Review Invoice</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-    .loader {
-      border-top-color: #3b82f6;
-      -webkit-animation: spinner 1.5s linear infinite;
-      animation: spinner 1.5s linear infinite;
-    }
-    @keyframes spinner {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
     .expand-icon { transition: transform 0.2s; }
     .expanded .expand-icon { transform: rotate(180deg); }
   </style>
 </head>
 <body class="text-slate-800 pb-20">
 
-  <nav class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+  <nav class="bg-white shadow-sm px-8 py-4 flex justify-between items-center mb-8">
     <div class="flex items-center space-x-3">
       <div class="bg-blue-600 text-white p-2 rounded-lg"><i class="fas fa-chart-pie"></i></div>
       <h1 class="text-xl font-bold tracking-tight">Finance AR Dashboard</h1>
     </div>
-    <div class="text-sm text-slate-500 font-medium">
-      Data Source: PaymentInvStatus
-    </div>
   </nav>
 
-  <main class="p-4 md:p-8 max-w-7xl mx-auto">
+  <main class="p-4 md:px-8 max-w-7xl mx-auto">
     <div class="mb-6 flex justify-between items-end">
       <div>
         <h2 class="text-2xl font-bold text-slate-800">Review Piutang (AR)</h2>
         <p class="text-slate-500 text-sm mt-1">Ringkasan status invoice (Grouped by Order Number).</p>
       </div>
-      <button onclick="fetchData()" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition shadow-sm">
+      <button onclick="fetchData()" class="bg-white border border-slate-200 text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition shadow-sm">
         <i class="fas fa-sync-alt mr-2"></i>Refresh Data
       </button>
     </div>
 
-    <div id="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-12 w-12 mb-4"></div>
-      <p class="text-slate-500 font-medium animate-pulse">Memuat & merangkum data dari Google Sheets...</p>
+    <div id="error-msg" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+      <p class="font-bold">Error</p><p id="error-text"></p>
     </div>
 
-    <div id="error-msg" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-      <p class="font-bold">Error</p>
-      <p id="error-text">Gagal memuat data.</p>
-    </div>
-
-    <div id="dashboard-content" class="hidden">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-t-red-500">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Sisa AR</p>
-          <h3 class="text-2xl lg:text-3xl font-bold text-slate-800" id="val-totalAR">Rp 0</h3>
+    <div id="dashboard-content">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 border-t-4 border-t-red-500">
+          <p class="text-xs font-bold text-slate-500 uppercase mb-2">Total Sisa AR</p>
+          <h3 class="text-3xl font-bold text-slate-800" id="val-totalAR">Rp 0</h3>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-t-emerald-500">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Paid Invoices</p>
-          <div class="flex justify-between items-center"><h3 class="text-3xl font-bold text-slate-800" id="val-paid">0</h3><div class="bg-emerald-100 text-emerald-600 p-3 rounded-full"><i class="fas fa-check-double"></i></div></div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 border-t-4 border-t-emerald-500 flex justify-between items-center">
+          <div><p class="text-xs font-bold text-slate-500 uppercase mb-2">Paid Invoices</p><h3 class="text-3xl font-bold text-slate-800" id="val-paid">0</h3></div>
+          <div class="bg-emerald-50 text-emerald-500 p-3 rounded-full text-xl"><i class="fas fa-check-circle"></i></div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-t-amber-500">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Partial Paid</p>
-          <div class="flex justify-between items-center"><h3 class="text-3xl font-bold text-slate-800" id="val-partial">0</h3><div class="bg-amber-100 text-amber-600 p-3 rounded-full"><i class="fas fa-adjust"></i></div></div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-t-rose-500">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Not Paid</p>
-          <div class="flex justify-between items-center"><h3 class="text-3xl font-bold text-slate-800" id="val-notpaid">0</h3><div class="bg-rose-100 text-rose-600 p-3 rounded-full"><i class="fas fa-times"></i></div></div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 border-t-4 border-t-amber-500 flex justify-between items-center">
+          <div><p class="text-xs font-bold text-slate-500 uppercase mb-2">Partial Paid</p><h3 class="text-3xl font-bold text-slate-800" id="val-partial">0</h3></div>
+          <div class="bg-amber-50 text-amber-500 p-3 rounded-full text-xl"><i class="fas fa-adjust"></i></div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
           <h3 class="font-bold text-slate-700">Detail Invoice per Order</h3>
           <p class="text-xs text-slate-400"><i class="fas fa-info-circle mr-1"></i> Klik baris untuk melihat detail item</p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm whitespace-nowrap">
-            <thead class="bg-slate-100 text-slate-600">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
               <tr>
-                <th class="px-6 py-3 font-semibold w-10"></th>
-                <th class="px-6 py-3 font-semibold">Order Number</th>
-                <th class="px-6 py-3 font-semibold">Customer</th>
-                <th class="px-6 py-3 font-semibold">Total Invoice</th>
-                <th class="px-6 py-3 font-semibold">Sisa (Amount Due)</th>
-                <th class="px-6 py-3 font-semibold text-center">Status</th>
+                <th class="px-6 py-4 font-semibold w-10"></th>
+                <th class="px-6 py-4 font-semibold">Order Number</th>
+                <th class="px-6 py-4 font-semibold">Customer</th>
+                <th class="px-6 py-4 font-semibold">Total Invoice</th>
+                <th class="px-6 py-4 font-semibold">Sisa (Amount Due)</th>
+                <th class="px-6 py-4 font-semibold text-center">Status</th>
               </tr>
             </thead>
             <tbody id="table-body" class="divide-y divide-slate-100 text-slate-700">
-              </tbody>
+              <tr><td colspan="6" class="text-center py-10 text-slate-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -100,95 +80,158 @@
   </main>
 
   <script>
-    // --- MASUKKAN WEB APP URL DARI APPS SCRIPT DI SINI ---
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZVM0IimkLbzGNFQzbArrePxPot10zvHfGKqqBfPw_16ePjtn3ORyoEwLvgDJvSs5O/exec';
-    // -----------------------------------------------------
+    // --- GANTI DENGAN URL WEB APP BARU ANDA ---
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyM9SnEot8TUwB2pH8f1LYIY8cL2RxYPoSCmqowBIalX0m-ZR3u0H2FhNKgfbF-511e/exec';
+    
+    const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    
+    // Format tanggal ke DD/MM/YYYY
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '-';
+      const d = new Date(dateStr);
+      return isNaN(d) ? dateStr : `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    };
 
-    const formatRupiah = (angka) => {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-    }
-
-    // Fungsi Toggle Dropdown Detail Item
     function toggleDetail(orderId) {
       const row = document.getElementById('row-' + orderId);
       const detailRow = document.getElementById('detail-' + orderId);
-      
       if (detailRow.classList.contains('hidden')) {
         detailRow.classList.remove('hidden');
-        row.classList.add('bg-blue-50', 'expanded');
+        row.classList.add('bg-blue-50/50', 'expanded');
       } else {
         detailRow.classList.add('hidden');
-        row.classList.remove('bg-blue-50', 'expanded');
+        row.classList.remove('bg-blue-50/50', 'expanded');
       }
     }
 
     function renderTable(orders) {
       const tbody = document.getElementById('table-body');
-      tbody.innerHTML = ''; // Kosongkan tabel
+      tbody.innerHTML = ''; 
       
-      // Sortir agar Not Paid / Partial tampil di atas (opsional)
+      // Urutkan sisa tagihan terbesar di atas
       orders.sort((a, b) => b.amountDue - a.amountDue);
 
       orders.forEach((order, index) => {
-        // Abaikan order yang tidak ada harganya sama sekali
         if(order.totalInvoice === 0 && order.items.length === 0) return;
 
-        // Label Status
-        let statusHtml = '';
-        if (order.statusPayment === 'PAID') {
-          statusHtml = `<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">PAID</span>`;
-        } else if (order.statusPayment === 'PARTIAL') {
-          statusHtml = `<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">PARTIAL</span>`;
-        } else {
-          statusHtml = `<span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold">NOT PAID</span>`;
-        }
+        // Styling status utama (Kanan)
+        let statusStyle = 'bg-rose-100 text-rose-700';
+        if (order.statusPayment === 'PAID') statusStyle = 'bg-emerald-100 text-emerald-700';
+        if (order.statusPayment === 'PARTIAL PAID') statusStyle = 'bg-amber-100 text-amber-700';
 
-        // Render Baris Utama (Order)
+        // Render Baris Utama
         const mainRow = document.createElement('tr');
         mainRow.id = `row-${index}`;
         mainRow.className = "hover:bg-slate-50 cursor-pointer transition";
         mainRow.onclick = () => toggleDetail(index);
         mainRow.innerHTML = `
           <td class="px-6 py-4 text-center text-slate-400"><i class="fas fa-chevron-down expand-icon"></i></td>
-          <td class="px-6 py-4 font-semibold text-blue-600">${order.orderNo}</td>
+          <td class="px-6 py-4 font-bold text-blue-600">${order.orderNo}</td>
           <td class="px-6 py-4">${order.customer}</td>
-          <td class="px-6 py-4 font-medium">${formatRupiah(order.totalInvoice)}</td>
+          <td class="px-6 py-4">${formatRupiah(order.totalInvoice)}</td>
           <td class="px-6 py-4 font-bold ${order.amountDue > 0 ? 'text-red-500' : 'text-slate-600'}">${formatRupiah(order.amountDue)}</td>
-          <td class="px-6 py-4 text-center">${statusHtml}</td>
+          <td class="px-6 py-4 text-center"><span class="${statusStyle} px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide">${order.statusPayment}</span></td>
         `;
 
-        // Render Baris Detail (Items di dalam Order)
+        // Render Baris Detail (Gaya Review Invoice)
         let itemsHtml = order.items.map(item => `
-          <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-100">
-            <td class="py-2 px-4 text-slate-600">${item.itemName || '-'}</td>
-            <td class="py-2 px-4 text-center text-slate-600">${item.qty || 0} ${item.satuan || ''}</td>
-            <td class="py-2 px-4 text-right text-slate-600">${formatRupiah(item.unitPrice)}</td>
-            <td class="py-2 px-4 text-right text-slate-800 font-medium">${formatRupiah(item.gross)}</td>
+          <tr class="border-b border-slate-100 last:border-0">
+            <td class="py-3 px-2">
+              <p class="font-bold text-slate-800">${item.itemName || '-'}</p>
+              <p class="text-[11px] text-slate-400">${item.type || '-'}</p>
+            </td>
+            <td class="py-3 px-2 text-center text-slate-600">${item.meter || '-'}</td>
+            <td class="py-3 px-2 text-center text-slate-600">${item.qty || 0}</td>
+            <td class="py-3 px-2 text-center text-slate-600">${item.satuan || '-'}</td>
+            <td class="py-3 px-2 text-right text-slate-600">${formatRupiah(item.harga)}</td>
+            <td class="py-3 px-2 text-right text-slate-600">${formatRupiah(item.disc)}</td>
+            <td class="py-3 px-2 text-right text-slate-600">${formatRupiah(item.net)}</td>
+            <td class="py-3 px-2 text-right text-slate-800 font-bold">${formatRupiah(item.total)}</td>
           </tr>
         `).join('');
 
+        // Warna Teks Status "Partial Paid" / "Paid" di dalam detail
+        let textStatusColor = 'text-red-500';
+        if (order.statusPayment === 'PAID') textStatusColor = 'text-emerald-500';
+        if (order.statusPayment === 'PARTIAL PAID') textStatusColor = 'text-amber-500';
+
         const detailRow = document.createElement('tr');
         detailRow.id = `detail-${index}`;
-        detailRow.className = "hidden bg-slate-50 border-b border-slate-200";
+        detailRow.className = "hidden bg-slate-50/50 border-b-2 border-slate-200";
         detailRow.innerHTML = `
           <td colspan="6" class="p-0">
-            <div class="px-16 py-4 border-l-4 border-blue-400">
-              <h4 class="text-xs font-bold text-slate-500 uppercase mb-3"><i class="fas fa-box-open mr-1"></i> Detail Item</h4>
-              <table class="w-full text-sm text-left">
-                <thead class="text-slate-400 border-b border-slate-200">
+            <div class="m-6 bg-white border border-slate-200 shadow-sm rounded-xl p-8">
+              
+              <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-6">
+                <div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Order #${order.orderNo}</h3>
+                  <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider">${order.statusDelv || 'NO STATUS'}</span>
+                </div>
+                <div class="text-right">
+                  <i class="fas fa-times text-slate-300 cursor-pointer hover:text-slate-500" onclick="event.stopPropagation(); toggleDetail(${index});"></i>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-start mb-8 text-sm">
+                <div>
+                  <p class="text-[11px] text-slate-400 font-bold uppercase mb-1">Customer</p>
+                  <p class="font-bold text-slate-800 text-base">${order.customer}</p>
+                </div>
+                <div class="text-right flex items-center space-x-12">
+                  <div>
+                    <p class="text-slate-500 mb-1">Date: <span class="font-bold text-slate-800">${formatDate(order.date)}</span></p>
+                  </div>
+                  <div>
+                    <p class="text-xl font-bold ${textStatusColor}">${order.statusPayment}</p>
+                  </div>
+                </div>
+              </div>
+
+              <table class="w-full text-xs text-left mb-6">
+                <thead class="text-slate-400 border-b-2 border-slate-100 uppercase text-[10px]">
                   <tr>
-                    <th class="py-2 px-4 font-medium">Item Name</th>
-                    <th class="py-2 px-4 font-medium text-center">Qty</th>
-                    <th class="py-2 px-4 font-medium text-right">Unit Price</th>
-                    <th class="py-2 px-4 font-medium text-right">Gross Total</th>
+                    <th class="py-2 px-2 font-bold">Item Name</th>
+                    <th class="py-2 px-2 font-bold text-center">Meter</th>
+                    <th class="py-2 px-2 font-bold text-center">Qty</th>
+                    <th class="py-2 px-2 font-bold text-center">Satuan</th>
+                    <th class="py-2 px-2 font-bold text-right">Harga</th>
+                    <th class="py-2 px-2 font-bold text-right">Disc</th>
+                    <th class="py-2 px-2 font-bold text-right">Net</th>
+                    <th class="py-2 px-2 font-bold text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody>${itemsHtml}</tbody>
+                <tbody class="divide-y divide-slate-50">
+                  ${itemsHtml}
+                </tbody>
               </table>
-              <div class="mt-4 text-xs text-slate-500 flex gap-4">
-                <span><b>Issue Date:</b> ${order.date ? new Date(order.date).toLocaleDateString('id-ID') : '-'}</span>
-                <span><b>Payment In:</b> <span class="text-emerald-600 font-bold">${formatRupiah(order.payment)}</span></span>
+
+              <div class="flex justify-between items-end mt-8">
+                <div class="w-1/2">
+                  <div class="border border-dashed border-slate-300 rounded-lg p-4 text-xs text-slate-600 bg-slate-50 min-h-[60px]">
+                    <span class="font-bold text-slate-800 uppercase text-[10px]">Notes:</span><br>
+                    ${order.notes}
+                  </div>
+                </div>
+                
+                <div class="w-1/3 bg-slate-50 rounded-lg p-4 border border-slate-100">
+                  <div class="flex justify-between items-end border-b border-slate-200 pb-3 mb-3">
+                    <div class="text-lg font-bold text-blue-700">Total</div>
+                    <div class="text-right">
+                      <div class="text-xl font-bold text-blue-700">${formatRupiah(order.totalInvoice)}</div>
+                      <div class="text-[10px] text-slate-400 italic mt-1">Harga sudah termasuk PPN</div>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center text-sm mb-2 text-slate-700 font-bold">
+                    <span>Paid Amount</span>
+                    <span>${formatRupiah(order.payment)}</span>
+                  </div>
+                  <div class="flex justify-between items-center text-lg text-red-600 font-bold mt-2">
+                    <span>Amount Due</span>
+                    <span>${formatRupiah(order.amountDue)}</span>
+                  </div>
+                </div>
               </div>
+
             </div>
           </td>
         `;
@@ -199,14 +242,8 @@
     }
 
     async function fetchData() {
-      document.getElementById('loading').classList.remove('hidden');
-      document.getElementById('dashboard-content').classList.add('hidden');
-      document.getElementById('error-msg').classList.add('hidden');
-
       if (APPS_SCRIPT_URL === 'PASTE_URL_WEB_APP_ANDA_DI_SINI') {
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('error-msg').classList.remove('hidden');
-        document.getElementById('error-text').innerText = "Silakan masukkan URL Web App Apps Script ke dalam variabel APPS_SCRIPT_URL.";
+        document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="text-center py-10 text-red-500 font-bold">URL Web App belum dimasukkan di kode HTML!</td></tr>';
         return;
       }
 
@@ -214,26 +251,19 @@
         const response = await fetch(APPS_SCRIPT_URL);
         const result = await response.json();
 
-        document.getElementById('loading').classList.add('hidden');
-
         if (result.status === 'success') {
-          // Update KPI
           document.getElementById('val-totalAR').innerText = formatRupiah(result.data.kpi.totalAR);
           document.getElementById('val-paid').innerText = result.data.kpi.paid;
           document.getElementById('val-partial').innerText = result.data.kpi.partial;
-          document.getElementById('val-notpaid').innerText = result.data.kpi.notPaid;
           
-          // Render Tabel
           renderTable(result.data.orders);
-
-          document.getElementById('dashboard-content').classList.remove('hidden');
         } else {
           throw new Error(result.message);
         }
       } catch (error) {
-        document.getElementById('loading').classList.add('hidden');
         document.getElementById('error-msg').classList.remove('hidden');
         document.getElementById('error-text').innerText = "Gagal memuat data. Detail: " + error.message;
+        document.getElementById('table-body').innerHTML = '';
       }
     }
 
